@@ -2,7 +2,7 @@
 function linkit() {
     tgt=~/.$1
 
-    if [ !-e $1 ] ; then
+    if [ ! -e $1 ] ; then
         echo "I can't find $1, check your code"
         exit 1
     fi
