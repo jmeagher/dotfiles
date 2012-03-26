@@ -1,4 +1,4 @@
-if [ -d ~/bin ]; then
+if [ -d ~/bin ] ; then
     export PATH=~/bin:$PATH
 fi
 

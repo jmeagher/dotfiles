@@ -1,0 +1,4 @@
+declare -i jtime
+jtime=$1
+jtime=$(($jtime/1000))
+date -r $jtime
