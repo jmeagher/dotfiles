@@ -17,7 +17,7 @@ function linkit() {
     fi
 
     echo "Adding link for $1"
-    ln -s $1 $tgt
+    ln -s `pwd`/$1 $tgt
 }
 
 linkit bashrc
