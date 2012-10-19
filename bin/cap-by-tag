@@ -19,7 +19,16 @@ else
     FILTER="$1"
 
     # TODO: make sure this works with multiple hosts, I don't think it will yet
-    export HOSTS=`ec2-describe-instances -F $FILTER | grep INSTANCE | grep running | awk '{print $4}'`
+    hl=`ec2-describe-instances -F $FILTER | grep INSTANCE | grep running | awk '{print $4}'`
+    HOSTS=
+    for h in $hl ; do
+        if [ "$HOSTS" = "" ] ; then
+            HOSTS=$u@$h
+        else
+            HOSTS=$HOSTS,$u@$h
+        fi
+    done
+
     cap shell
 
 fi
