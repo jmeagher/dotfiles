@@ -4,9 +4,17 @@
 
 if [ "$1" = "" ] ; then
     echo "No filter was specified"
-    echo "Usage $0 tag:name=value"
+    echo "Usage $0 [-u sshUser] tag:name=value"
     echo "Example: $0 tag:user=$USER"
+    echo "-u can be used to login as a different user than the current user"
 else
+    u=$USER
+
+    if [ "$1" = "-u" ] ; then
+        u=$2
+        shift
+        shift
+    fi
 
     FILTER="$1"
 
