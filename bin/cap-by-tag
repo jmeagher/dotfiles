@@ -1,0 +1,18 @@
+#! /bin/sh
+
+# Utility to give a capistrano shell on a set of AWS nodes based on instance tags
+
+if [ "$1" = "" ] ; then
+    echo "No filter was specified"
+    echo "Usage $0 tag:name=value"
+    echo "Example: $0 tag:user=$USER"
+else
+
+    FILTER="$1"
+
+    # TODO: make sure this works with multiple hosts, I don't think it will yet
+    export HOSTS=`ec2-describe-instances -F $FILTER | grep INSTANCE | grep running | awk '{print $4}'`
+    cap shell
+
+fi
+
