@@ -12,7 +12,7 @@ alias ls="ls -F -G"
 alias vi=vim
 
 # Setup custom maven shortcuts
-if [ "" != "`which mvn`" ] ; then
+if [ "" != "`which mvn 2> /dev/null `" ] ; then
     m() {
         start=`pwd`
         found=false
