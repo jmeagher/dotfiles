@@ -28,6 +28,7 @@ else
             HOSTS=$HOSTS,$u@$h
         fi
     done
+    export HOSTS
 
     cap shell
 
