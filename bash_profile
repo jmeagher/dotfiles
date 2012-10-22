@@ -1,3 +1,5 @@
+#! /bin/bash
+
 if [ -f ~/.bash_profile_local_pre ]; then
         . ~/.bash_profile_local_pre
 fi
@@ -58,11 +60,34 @@ if [ "" != "$EC2_HOME" ] ; then
 fi
 
 
-# Set a default prompt of: user@host and current_directory and git branch
+# Set a really fancy prompt
 parse_git_branch() {
    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/git:\1/'
 }
-PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] \[\e[35m\]$(date +%Y-%m-%d\ %H:%M:%S)\[\e[0m\] \[\e[36m\]$(parse_git_branch)\[\e[0m\]\n\$ '
+
+parse_aws_info() {
+    if [ "$_AWS_CHECK" = "" ] ; then
+
+        TRY_EC2=false
+        # Note, this is not the best check, but it's quick and should work for me
+        # Need to get this to run once, but haven't figured it out yet
+        uname -a | grep amzn >& /dev/null && TRY_EC2=true
+        if [ "$TRY_EC2" = "true" ] ; then
+            AWS_PROMPT=AWS
+        #    EC2_INSTANCE_ID="`wget -q -O - http://169.254.169.254/latest/meta-data/instance-id`"
+        #    INSTANCE_NAME="`ec2-describe-instances $EC2_INSTANCE_ID | grep TAG | grep Name | awk '{print $5}'`"
+        #    if [ "$INSTANCE_NAME" != "" ] ; then
+        #        AWS_PROMPT="AWS $INSTANCE_NAME $EC2_INSTANCE_ID"
+        #    fi
+        fi
+
+        _AWS_CHECK=true
+    fi
+    echo -n $AWS_PROMPT
+}
+
+
+PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] \[\e[35m\]$(date +%Y-%m-%d\ %H:%M:%S)\[\e[0m\] \[\e[36m\]$(parse_git_branch)\[\e[0m\] \[\e[31m\]$(parse_aws_info)\[\e[0m\]\n\$ '
 
 
 if [ -f /opt/local/etc/bash_completion ]; then
