@@ -27,7 +27,7 @@ linkit bash_profile .bash_profile
 linkit vimrc .vimrc
 
 # Link everything from bin to ~/bin
-for f in `ls bin/*` ; do
+for f in `ls bin/* | grep -v "~"` ; do
     linkit $f $f
 done
 
