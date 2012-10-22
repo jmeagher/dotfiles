@@ -2,35 +2,21 @@
 
 # Utility to give a capistrano shell on a set of AWS nodes based on instance tags
 
+baseDir=`dirname $0`
+
 if [ "$1" = "" ] ; then
     echo "No filter was specified"
     echo "Usage $0 [-u sshUser] tag:name=value"
     echo "Example: $0 tag:user=$USER"
     echo "-u can be used to login as a different user than the current user"
 else
-    u=$USER
-
-    if [ "$1" = "-u" ] ; then
-        u=$2
-        shift
-        shift
+    export HOSTS=`$baseDir/tag-to-host $@`
+    if [ "$HOSTS" = "" ] ; then
+        echo "Something went wrong determining the host list"
+    else
+        echo "Using host list '${HOSTS}'"
+        cap shell
     fi
-
-    FILTER="$1"
-
-    # TODO: make sure this works with multiple hosts, I don't think it will yet
-    hl=`ec2-describe-instances -F $FILTER | grep INSTANCE | grep running | awk '{print $4}'`
-    HOSTS=
-    for h in $hl ; do
-        if [ "$HOSTS" = "" ] ; then
-            HOSTS=$u@$h
-        else
-            HOSTS=$HOSTS,$u@$h
-        fi
-    done
-    export HOSTS
-
-    cap shell
 
 fi
 

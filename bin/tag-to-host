@@ -1,0 +1,31 @@
+#! /bin/sh
+
+if [ "$1" = "" ] ; then
+    echo "No filter was specified"
+    echo "Usage $0 [-u sshUser] tag:name=value"
+    echo "Example: $0 tag:user=$USER"
+    echo "-u can be used to login as a different user than the current user"
+else
+
+    u=$USER
+
+    if [ "$1" = "-u" ] ; then
+        u=$2
+        shift
+        shift
+    fi
+
+    FILTER=$1
+
+
+    hl=`ec2-describe-instances -F $FILTER | grep INSTANCE | grep running | awk '{print $4}'`
+    HOSTS=
+    for h in $hl ; do
+        if [ "$HOSTS" = "" ] ; then
+            HOSTS=$u@$h
+        else
+            HOSTS=$HOSTS,$u@$h
+        fi
+    done
+    echo $HOSTS
+fi
