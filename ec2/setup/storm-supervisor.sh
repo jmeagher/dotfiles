@@ -13,5 +13,6 @@ if [ "$SUPERVISOR_PORTS" != "" ] ; then
     echo "" >> $config
 fi
 
-nohup /opt/storm/bin/storm supervisor
+# This should really be something in /etc/init.d, but hey this is for development
+nohup /opt/storm/bin/storm supervisor &
 
