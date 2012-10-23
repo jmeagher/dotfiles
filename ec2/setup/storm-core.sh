@@ -1,6 +1,12 @@
 #! /bin/bash
 # Installs the base things needed for storm, but doesn't setup anything to run
-# See the nimbus, supervisor, and node files for the actual setup
+# See the nimbus and supervisor files for the actual setup
+# This requires the EC2 tag that identifies the zookeeper nodes or a zookeeper server list, same for nimbus
+# Specify these with either (Note, for the EC2_TAG version to work the tagged host needs to already be up and running):
+# ZK_EC2_TAG=Name=JPM-Zookeeper
+# ZK_SERVER_LIST=server1,server2,server3
+# NIMBUS_EC2_TAG=Name=JPM-Nimbus
+# NIMBUS_SERVER=nimbus
 
 STORM_VER=0.8.1
 ZERO_MQ_VER=2.0.10
@@ -11,7 +17,7 @@ ZERO_MQ_URL=http://download.zeromq.org/zeromq-$ZERO_MQ_VER.tar.gz
 
 
 # Install things required for packages in here
-yum -y install git libtool libuuid-devel gcc-c++ java-1.6.0-openjdk-devel
+yum -y install libtool libuuid-devel gcc-c++ 
 
 
 # Install ZeroMQ
@@ -62,3 +68,27 @@ unzip $TMP_DIR/storm*.zip
 
 ln -s $INSTALL_BASE/storm-* $INSTALL_DIR
 
+# Setup the storm config file
+
+if [ "$ZK_SERVER_LIST" = "" ] ; then
+    ZK_SERVER_LIST=`tag_to_host tag:$ZK_EC2_TAG`
+fi
+
+if [ "$NIMBUS_SERVER" = "" ] ; then
+    NIMBUS_SERVER=`tag_to_host tag:$NIMBUS_EC2_TAG`
+fi
+
+echo "Using ZK Servers: $ZK_SERVER_LIST"
+echo "Using Nimbus Server: $NIMBUS_SERVER"
+
+config=/opt/storm/conf/storm.yaml
+echo "storm.zookeeper.servers:" >> $config
+for s in `echo $ZK_SERVER_LIST | sed "s/,/ /g"` ; do
+    echo "    - \"$s\"" >> $config
+done
+echo "" >> $config
+mkdir -p /var/storm
+echo "storm.local.dir: /var/storm" >> $config
+echo "" >> $config
+echo "nimbus.host: \"$NIMBUS_SERVER\"" >> $config
+echo "" >> $config

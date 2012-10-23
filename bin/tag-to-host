@@ -7,7 +7,7 @@ if [ "$1" = "" ] ; then
     echo "-u can be used to login as a different user than the current user"
 else
 
-    u=$USER
+    u=
 
     if [ "$1" = "-u" ] ; then
         u=$2
@@ -22,9 +22,17 @@ else
     HOSTS=
     for h in $hl ; do
         if [ "$HOSTS" = "" ] ; then
-            HOSTS=$u@$h
+            if [ "$u" = "" ] ; then
+                HOSTS=$h
+            else
+                HOSTS=$u@$h
+            fi
         else
-            HOSTS=$HOSTS,$u@$h
+            if [ "$u" = "" ] ; then
+                HOSTS=$HOSTS,$h
+            else
+                HOSTS=$HOSTS,$u@$h
+            fi
         fi
     done
     echo $HOSTS
