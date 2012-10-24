@@ -12,6 +12,8 @@ STORM_VER=0.8.1
 ZERO_MQ_VER=2.0.10
 # Use the older version of ZeroMQ per storm recomendations on https://github.com/nathanmarz/storm/wiki/Setting-up-a-Storm-cluster
 
+init_status Storm-Starting
+
 STORM_URL=https://github.com/downloads/nathanmarz/storm/storm-$STORM_VER.zip
 ZERO_MQ_URL=http://download.zeromq.org/zeromq-$ZERO_MQ_VER.tar.gz
 
@@ -25,6 +27,7 @@ TMP_DIR=/tmp/zmq
 INSTALL_BASE=/opt
 INSTALL_DIR=$INSTALL_BASE/zmq
 
+init_status Storm-ZMQ-Download
 mkdir -p $TMP_DIR
 cd $TMP_DIR
 wget $ZERO_MQ_URL
@@ -33,6 +36,7 @@ mkdir -p $INSTALL_BASE
 cd $INSTALL_BASE
 tar xzf $TMP_DIR/zeromq*.tar.gz
 
+init_status Storm-ZMQ-Build
 ln -s $INSTALL_BASE/zeromq-* $INSTALL_DIR
 cd $INSTALL_DIR
 ./configure
@@ -41,11 +45,13 @@ make install
 
 
 # Install jzmq
+init_status Storm-jzmq-Download
 TMP_DIR=/tmp/jzmq
 mkdir -p $TMP_DIR
 cd $TMP_DIR
 git clone https://github.com/nathanmarz/jzmq.git
 cd jzmq
+init_status Storm-jzmq-Build
 JAVA_HOME=/usr/lib/jvm/java ./autogen.sh
 JAVA_HOME=/usr/lib/jvm/java ./configure
 JAVA_HOME=/usr/lib/jvm/java make
@@ -58,6 +64,7 @@ TMP_DIR=/tmp/storm
 INSTALL_BASE=/opt
 INSTALL_DIR=$INSTALL_BASE/storm
 
+init_status Storm-Download
 mkdir -p $TMP_DIR
 cd $TMP_DIR
 wget $STORM_URL
@@ -66,6 +73,7 @@ mkdir -p $INSTALL_BASE
 cd $INSTALL_BASE
 unzip $TMP_DIR/storm*.zip
 
+init_status Storm-Setup
 ln -s $INSTALL_BASE/storm-* $INSTALL_DIR
 
 # Setup the storm config file

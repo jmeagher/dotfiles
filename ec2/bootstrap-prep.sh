@@ -46,6 +46,6 @@ cat $input $EXTRA_FILES | \
     $output
 
 echo "" >> $output
-echo "ec2addtag $EC2_INSTANCE_ID -tag init=extra_scripts" >> $output
+echo "init_status finished" >> $output
 
 

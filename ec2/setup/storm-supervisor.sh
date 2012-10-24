@@ -14,5 +14,6 @@ if [ "$SUPERVISOR_PORTS" != "" ] ; then
 fi
 
 # This should really be something in /etc/init.d, but hey this is for development
+init_status Storm-Supervisor
 nohup /opt/storm/bin/storm supervisor &
 
