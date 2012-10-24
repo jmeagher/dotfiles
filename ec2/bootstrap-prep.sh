@@ -41,9 +41,11 @@ if [ "$ENV_VARS" != "" ] ; then
 fi
 
 cat $input $EXTRA_FILES | \
-    sed "s/__AWS_ACCESS_KEY__/$AWS_ACCESS_KEY/" | \
-    sed "s/__AWS_SECRET_KEY__/$AWS_SECRET_KEY/" | \
     sed "s/__YUM_LIST__/$YUM_LIST/" | \
     sed "s/__TAG_LIST__/$TAG_LIST/" >> \
     $output
+
+echo "" >> $output
+echo "ec2addtag $EC2_INSTANCE_ID -tag init=extra_scripts" >> $output
+
 
