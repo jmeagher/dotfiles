@@ -4,6 +4,10 @@
 # Specify these with either (Note, for the EC2_TAG version to work the tagged host needs to already be up and running):
 # ZK_EC2_TAG=Name=JPM-Zookeeper
 # ZK_SERVER_LIST=server1,server2,server3
+# 
+# Optional settings
+# Number of partitions per topic "num.partitions" kafka config property, probably set this to the number of kafka servers launched, but not sure yet on the best way to tune this
+# NUM_PARTITIONS=2
 
 KAFKA_VER=0.7.2
 KAFKA_URL=http://mirror.cc.columbia.edu/pub/software/apache/incubator/kafka/kafka-$KAFKA_VER-incubating/kafka-$KAFKA_VER-incubating-src.tgz
@@ -48,6 +52,7 @@ echo "" >> $PROP_FILE
 echo "# Property overrides" >> $PROP_FILE
 echo "zk.connect=$ZK_SERVER_LIST" >> $PROP_FILE
 echo "brokerid=$BROKERID" >> $PROP_FILE
+echo "num.partitions=$NUM_PARTITIONS" >> $PROP_FILE
 
 # Setup a simple init script for the server
 INIT=/etc/init.d/kafka
