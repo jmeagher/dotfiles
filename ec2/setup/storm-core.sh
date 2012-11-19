@@ -8,7 +8,7 @@
 # NIMBUS_EC2_TAG=Name=JPM-Nimbus
 # NIMBUS_SERVER=nimbus
 
-STORM_VER=0.8.1
+STORM_VER=0.9.0-wip3
 ZERO_MQ_VER=2.0.10
 # Use the older version of ZeroMQ per storm recomendations on https://github.com/nathanmarz/storm/wiki/Setting-up-a-Storm-cluster
 
