@@ -9,7 +9,8 @@ OLD_FP=`cat $OLD_FILE`
 if [ "$OLD_FP" != "$FINGERPRINT" ] ; then
     source ~/.bash_profile
     EC2_INSTANCE_ID="`wget -q -O - http://169.254.169.254/latest/meta-data/instance-id`"
-    ec2addtag $EC2_INSTANCE_ID -tag ssh_FP=$FINGERPRINT >> ~/.ssh_log
+    REGION=`wget -q -O - http://169.254.169.254/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}'`
+    ec2addtag --region $REGION $EC2_INSTANCE_ID -tag ssh_FP=$FINGERPRINT >> ~/.ssh_log
     echo -n "$FINGERPRINT" > $OLD_FILE
 fi
 

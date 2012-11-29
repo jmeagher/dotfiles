@@ -9,15 +9,17 @@ export PATH=$PATH:/opt/aws/bin:$EC2_HOME/bin:$JAVA_HOME/bin
 export EC2_INSTANCE_ID="`wget -q -O - http://169.254.169.254/latest/meta-data/instance-id`"
 echo "Instance ID: $EC2_INSTANCE_ID"
 
+export REGION=`wget -q -O - http://169.254.169.254/latest/dynamic/instance-identity/document|grep region|awk -F\" '{print $4}'`
+echo "Region $REGION"
 
 function init_status() {
-    ec2addtag $EC2_INSTANCE_ID -tag init=$1
+    ec2addtag --region $REGION $EC2_INSTANCE_ID -tag init=$1
 }
 
 init_status started
 
 for TAG in __TAG_LIST__ ; do
-    ec2addtag $EC2_INSTANCE_ID -tag $TAG
+    ec2addtag --region $REGION $EC2_INSTANCE_ID -tag $TAG
 done
 
 if [ "" != "__YUM_LIST__" ] ; then

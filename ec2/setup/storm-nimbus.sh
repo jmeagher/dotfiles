@@ -4,4 +4,5 @@
 
 init_status Storm-Nimbus
 nohup /opt/storm/bin/storm nimbus &
+nohup /opt/storm/bin/storm drpc &
 

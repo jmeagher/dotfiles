@@ -5,10 +5,12 @@
 # Specify these with either (Note, for the EC2_TAG version to work the tagged host needs to already be up and running):
 # ZK_EC2_TAG=Name=JPM-Zookeeper
 # ZK_SERVER_LIST=server1,server2,server3
+# DPRC_EC2_TAG=Name=JPM-Zookeeper
+# DPRC_SERVER_LIST=server1,server2,server3
 # NIMBUS_EC2_TAG=Name=JPM-Nimbus
 # NIMBUS_SERVER=nimbus
 
-STORM_VER=0.9.0-wip3
+STORM_VER=0.9.0-wip4
 ZERO_MQ_VER=2.0.10
 # Use the older version of ZeroMQ per storm recomendations on https://github.com/nathanmarz/storm/wiki/Setting-up-a-Storm-cluster
 
@@ -82,12 +84,17 @@ if [ "$ZK_SERVER_LIST" = "" ] ; then
     ZK_SERVER_LIST=`tag_to_host tag:$ZK_EC2_TAG`
 fi
 
+if [ "$DPRC_SERVER_LIST" = "" ] ; then
+    DPRC_SERVER_LIST=`tag_to_host tag:$DPRC_EC2_TAG`
+fi
+
 if [ "$NIMBUS_SERVER" = "" ] ; then
     NIMBUS_SERVER=`tag_to_host tag:$NIMBUS_EC2_TAG`
 fi
 
 echo "Using ZK Servers: $ZK_SERVER_LIST"
 echo "Using Nimbus Server: $NIMBUS_SERVER"
+echo "Using DPRC Servers: $DPRC_SERVER_LIST"
 
 config=/opt/storm/conf/storm.yaml
 echo "storm.zookeeper.servers:" >> $config
@@ -100,3 +107,10 @@ echo "storm.local.dir: /var/storm" >> $config
 echo "" >> $config
 echo "nimbus.host: \"$NIMBUS_SERVER\"" >> $config
 echo "" >> $config
+
+echo "drpc.servers:" >> $config
+for s in `echo $DPRC_SERVER_LIST | sed "s/,/ /g"` ; do
+    echo "    - \"$s\"" >> $config
+done
+echo "" >> $config
+
