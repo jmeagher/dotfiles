@@ -30,7 +30,7 @@ fi
 # Define some useful utility functions
 function tag_to_host() {
     FILTER=$1
-    hl=`ec2-describe-instances -F $FILTER | grep INSTANCE | grep running | awk '{print $4}'`
+    hl=`ec2-describe-instances --region $REGION -F $FILTER | grep INSTANCE | grep running | awk '{print $4}'`
     HOSTS=
     for h in $hl ; do
         if [ "$HOSTS" = "" ] ; then
