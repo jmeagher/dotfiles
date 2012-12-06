@@ -25,7 +25,7 @@ fi
 
 # Determine settings for the config file
 MY_IP=`ec2-metadata | grep local-ipv4 | grep -v user-data | awk '{print $2}'`
-TEMP_HOST_LIST=`ec2-describe-instances -F tag:$CASSANDRA_NODE_TAG | grep running | awk '{print $15}' | sort`
+TEMP_HOST_LIST=`ec2-describe-instances -region $REGION -F tag:$CASSANDRA_NODE_TAG | grep running | awk '{print $15}' | sort`
 NODE_IPS=`echo $TEMP_HOST_LIST | sed "s/ /,/g"`
 #NODE_COUNT=`echo $TEMP_HOST_LIST | wc | awk '{print $2}'`
 
