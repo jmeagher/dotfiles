@@ -19,20 +19,20 @@ IAM_PROFILE=arn:aws:iam::543259464462:instance-profile/TagManager
 # US East
 #AMI=ami-e8249881
 # US West
-#AMI=ami-2e31bf1e
-#INSTANCE_TYPE=m1.large
+AMI=ami-2e31bf1e
+INSTANCE_TYPE=m1.large
 
 # US East
 #AMI=ami-1624987f
 # US West
-AMI=ami-2a31bf1a
-INSTANCE_TYPE=t1.micro
+#AMI=ami-2a31bf1a
+#INSTANCE_TYPE=t1.micro
 
 #REGION=us-east
 REGION=us-west-2
 
-KAFKA_NODES=1
-STORM_NODES=1
+KAFKA_NODES=2
+STORM_NODES=4
 SUPERVISOR_PORT_COUNT=4
 
 KAFKA_PARTITIONS_PER_HOST=10
@@ -43,13 +43,17 @@ KAFKA_PARTITIONS_PER_HOST=10
 -t user=$USER \
 -t type=StormMaster \
 -p REGION=$REGION \
+-p GMETA_TAG=Name=JPM-ssh \
+-p GMOND_PORT=8701 \
+-p GANGLIA_CLUSTER=StormMaster \
 -p NIMBUS_EC2_TAG=Name=JPM-Storm-Master \
 -p ZK_EC2_TAG=Name=JPM-Storm-Master \
 -p DPRC_EC2_TAG=Name=JPM-Storm-Master \
 -e setup/yum_update.sh \
 -e setup/ssh_key_info.sh \
--e setup/cdh3_repo_setup.sh \
 -e setup/devtools.sh \
+-e setup/ganglia-core.sh \
+-e setup/cdh3_repo_setup.sh \
 -e setup/zookeeper.sh \
 -e setup/storm-core.sh \
 -e setup/storm-nimbus.sh \
@@ -61,6 +65,9 @@ KAFKA_PARTITIONS_PER_HOST=10
 -t user=$USER \
 -t type=StormNode \
 -p REGION=$REGION \
+-p GMETA_TAG=Name=JPM-ssh \
+-p GMOND_PORT=8702 \
+-p GANGLIA_CLUSTER=StormNode \
 -p NIMBUS_EC2_TAG=Name=JPM-Storm-Master \
 -p ZK_EC2_TAG=Name=JPM-Storm-Master \
 -p DPRC_EC2_TAG=Name=JPM-Storm-Master \
@@ -68,6 +75,7 @@ KAFKA_PARTITIONS_PER_HOST=10
 -e setup/yum_update.sh \
 -e setup/ssh_key_info.sh \
 -e setup/devtools.sh \
+-e setup/ganglia-core.sh \
 -e setup/storm-core.sh \
 -e setup/storm-supervisor.sh 
  
@@ -77,11 +85,15 @@ KAFKA_PARTITIONS_PER_HOST=10
 -t user=$USER \
 -t type=KafkaServer \
 -p REGION=$REGION \
+-p GMETA_TAG=Name=JPM-ssh \
+-p GMOND_PORT=8700 \
+-p GANGLIA_CLUSTER=Kafka \
 -p ZK_EC2_TAG=Name=JPM-Storm-Master \
 -p NUM_PARTITIONS=$KAFKA_PARTITIONS_PER_HOST \
 -e setup/yum_update.sh \
 -e setup/ssh_key_info.sh \
 -e setup/devtools.sh \
+-e setup/ganglia-core.sh \
 -e setup/kafka.sh
  
  

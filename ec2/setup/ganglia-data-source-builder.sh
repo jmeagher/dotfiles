@@ -1,3 +1,8 @@
+
+# This doesn't really work since gmetad only pulls from the first host in the list
+# Keeping it around just in case
+
+
 function tag_to_host() {
     FILTER=$1
     hl=`ec2-describe-instances --region $REGION -F $FILTER | grep INSTANCE | grep running | awk '{print $4}'`

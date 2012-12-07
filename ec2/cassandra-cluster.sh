@@ -17,19 +17,19 @@ IAM_PROFILE=arn:aws:iam::543259464462:instance-profile/TagManager
 # US East
 #AMI=ami-e8249881
 # US West
-#AMI=ami-2e31bf1e
-#INSTANCE_TYPE=m1.large
+AMI=ami-2e31bf1e
+INSTANCE_TYPE=m1.large
 
 # US East
 #AMI=ami-1624987f
 # US West
-AMI=ami-2a31bf1a
-INSTANCE_TYPE=t1.micro
+#AMI=ami-2a31bf1a
+#INSTANCE_TYPE=t1.micro
 
 #REGION=us-east
 REGION=us-west-2
 
-CASSANDRA_NODES=1
+CASSANDRA_NODES=3
 
  
 # Prepare a user-data script for a storm master node with zookeeper, nimbus, and the storm ui
@@ -40,9 +40,13 @@ CASSANDRA_NODES=1
 -p REGION=$REGION \
 -p CASSANDRA_NODE_TAG=Name=JPM-Cassandra \
 -p CASSANDRA_CLUSTER_NAME=JPM-Cassandra \
+-p GMETA_TAG=Name=JPM-ssh \
+-p GMOND_PORT=8703 \
+-p GANGLIA_CLUSTER=Cassandra \
 -e setup/yum_update.sh \
 -e setup/ssh_key_info.sh \
 -e setup/devtools.sh \
+-e setup/ganglia-core.sh \
 -e setup/cassandra.sh
 
 
