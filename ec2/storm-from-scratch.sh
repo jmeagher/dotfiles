@@ -21,6 +21,10 @@ IAM_PROFILE=arn:aws:iam::543259464462:instance-profile/TagManager
 # US West
 AMI=ami-2e31bf1e
 INSTANCE_TYPE=m1.large
+# Normally do this
+STORM_NODE_AMI=$AMI
+
+STORM_NODE_INSTANCE=c1.xlarge
 
 # US East
 #AMI=ami-1624987f
@@ -32,7 +36,7 @@ INSTANCE_TYPE=m1.large
 REGION=us-west-2
 
 KAFKA_NODES=2
-STORM_NODES=4
+STORM_NODES=3
 SUPERVISOR_PORT_COUNT=4
 
 KAFKA_PARTITIONS_PER_HOST=10
@@ -48,7 +52,7 @@ KAFKA_PARTITIONS_PER_HOST=10
 -p GANGLIA_CLUSTER=StormMaster \
 -p NIMBUS_EC2_TAG=Name=JPM-Storm-Master \
 -p ZK_EC2_TAG=Name=JPM-Storm-Master \
--p DPRC_EC2_TAG=Name=JPM-Storm-Master \
+-p DRPC_EC2_TAG=Name=JPM-Storm-Drpc \
 -e setup/yum_update.sh \
 -e setup/ssh_key_info.sh \
 -e setup/devtools.sh \
@@ -70,7 +74,7 @@ KAFKA_PARTITIONS_PER_HOST=10
 -p GANGLIA_CLUSTER=StormNode \
 -p NIMBUS_EC2_TAG=Name=JPM-Storm-Master \
 -p ZK_EC2_TAG=Name=JPM-Storm-Master \
--p DPRC_EC2_TAG=Name=JPM-Storm-Master \
+-p DRPC_EC2_TAG=Name=JPM-Storm-Drpc \
 -p SUPERVISOR_PORT_COUNT=$SUPERVISOR_PORT_COUNT \
 -e setup/yum_update.sh \
 -e setup/ssh_key_info.sh \
@@ -78,7 +82,27 @@ KAFKA_PARTITIONS_PER_HOST=10
 -e setup/ganglia-core.sh \
 -e setup/storm-core.sh \
 -e setup/storm-supervisor.sh 
- 
+
+ # Prepare a user-data script for a storm worker node with the storm supervisor
+./bootstrap-prep.sh bootstrap.template.sh .storm-drpc.sh \
+-t Name=JPM-Storm-Drpc \
+-t user=$USER \
+-t type=StormNode \
+-p REGION=$REGION \
+-p GMETA_TAG=Name=JPM-ssh \
+-p GMOND_PORT=8702 \
+-p GANGLIA_CLUSTER=StormNode \
+-p NIMBUS_EC2_TAG=Name=JPM-Storm-Master \
+-p ZK_EC2_TAG=Name=JPM-Storm-Master \
+-p DRPC_EC2_TAG=Name=JPM-Storm-Drpc \
+-p SUPERVISOR_PORT_COUNT=$SUPERVISOR_PORT_COUNT \
+-e setup/yum_update.sh \
+-e setup/ssh_key_info.sh \
+-e setup/devtools.sh \
+-e setup/ganglia-core.sh \
+-e setup/storm-core.sh \
+-e setup/storm-drpc.sh 
+  
 # Prepare a user-data script for a kafka message broker
 ./bootstrap-prep.sh bootstrap.template.sh .kafka-server.sh \
 -t Name=JPM-Kafka-Server \
@@ -111,12 +135,15 @@ KAFKA_PARTITIONS_PER_HOST=10
 # Launch the storm master node
 ec2-run-instances $AMI --region $REGION -n 1 -g $SECURITY_GROUP -f .storm-master.sh --instance-type $INSTANCE_TYPE \
   -k $KEYPAIR -p $IAM_PROFILE
- 
+
+ec2-run-instances $STORM_NODE_AMI --region $REGION -n 1 -g $SECURITY_GROUP -f .storm-drpc.sh --instance-type $STORM_NODE_INSTANCE \
+  -k $KEYPAIR -p $IAM_PROFILE
+
 # Wait a little for that instance to start, check that it's running manually by verifying the tags are added to the instance
-sleep 120s
+sleep 20s
  
 # Launch Storm worker nodes
-ec2-run-instances $AMI --region $REGION -n $STORM_NODES -g $SECURITY_GROUP -f .storm-node.sh --instance-type $INSTANCE_TYPE \
+ec2-run-instances $STORM_NODE_AMI --region $REGION -n $STORM_NODES -g $SECURITY_GROUP -f .storm-node.sh --instance-type $STORM_NODE_INSTANCE \
   -k $KEYPAIR -p $IAM_PROFILE
 
 # Launch Kafka message brokers
