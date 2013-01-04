@@ -9,6 +9,9 @@
 # DRPC_SERVER_LIST=server1,server2,server3
 # NIMBUS_EC2_TAG=Name=JPM-Nimbus
 # NIMBUS_SERVER=nimbus
+#
+# Optional args, will not be added to the config if not set
+# MAX_SPOUT_PENDING=1000
 
 STORM_VER=0.9.0-wip7
 ZERO_MQ_VER=2.0.10
@@ -26,7 +29,7 @@ yum -y install libtool libuuid-devel gcc-c++
 
 # Install ZeroMQ
 TMP_DIR=/tmp/zmq
-INSTALL_BASE=/opt
+INSTALL_BASE=~/storm
 INSTALL_DIR=$INSTALL_BASE/zmq
 
 init_status Storm-ZMQ-Download
@@ -63,7 +66,7 @@ JAVA_HOME=/usr/lib/jvm/java make install
 
 # Install Storm
 TMP_DIR=/tmp/storm
-INSTALL_BASE=/opt
+INSTALL_BASE=~/storm
 INSTALL_DIR=$INSTALL_BASE/storm
 
 init_status Storm-Download
@@ -112,5 +115,10 @@ echo "drpc.servers:" >> $config
 for s in `echo $DRPC_SERVER_LIST | sed "s/,/ /g"` ; do
     echo "    - \"$s\"" >> $config
 done
+echo "" >> $config
+
+if [ "$MAX_SPOUT_PENDING" != "" ] ; then
+    echo "topology.max.spout.pending:  $MAX_SPOUT_PENDING" >> $config
+fi
 echo "" >> $config
 

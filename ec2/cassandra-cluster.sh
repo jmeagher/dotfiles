@@ -18,7 +18,7 @@ IAM_PROFILE=arn:aws:iam::543259464462:instance-profile/TagManager
 #AMI=ami-e8249881
 # US West
 AMI=ami-2e31bf1e
-INSTANCE_TYPE=m1.large
+INSTANCE_TYPE=m1.medium
 
 # US East
 #AMI=ami-1624987f
