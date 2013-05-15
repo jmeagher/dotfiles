@@ -2,9 +2,16 @@
 # Some of this is taken from from https://github.com/mathiasbynens/dotfiles
 
 
-# Set a really fancy prompt
 parse_git_branch() {
-   git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/git:\1/'
+   GIT_BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/git:\1/'`
+   GIT_MOD=`git status -s 2> /dev/null | egrep "^ ?M" > /dev/null && echo M`
+   GIT_NEW=`git status -s 2> /dev/null | egrep "^\?\?" > /dev/null && echo N`
+   GIT_EXTRA=${GIT_MOD}${GIT_NEW}
+   if [ "$GIT_EXTRA" = "" ] ; then
+       echo "$GIT_BRANCH"
+   else
+       echo "$GIT_BRANCH (${GIT_EXTRA})"
+   fi
 }
 
 parse_aws_info() {
@@ -17,6 +24,7 @@ parse_aws_info() {
         uname -a | grep amzn >& /dev/null && TRY_EC2=true
         if [ "$TRY_EC2" = "true" ] ; then
             AWS_PROMPT=AWS
+            # The instance printing proved too slow, just print AWS instead
         #    EC2_INSTANCE_ID="`wget -q -O - http://169.254.169.254/latest/meta-data/instance-id`"
         #    INSTANCE_NAME="`ec2-describe-instances $EC2_INSTANCE_ID | grep TAG | grep Name | awk '{print $5}'`"
         #    if [ "$INSTANCE_NAME" != "" ] ; then
@@ -67,18 +75,19 @@ if [ "$HAS_TPUT" = "true" ] ; then
 	BOLD=$(tput bold)
 	RESET=$(tput sgr0)
 else
-    # This doesn't work right now, not sure why, but tput seems pretty widely supported so it should be ok
-	#BLACK="\033[1;30m"
-	#RED="\033[1;31m"
-	#GREEN="\033[1;32m"
-	#YELLOW="\033[1;33m"
-	#BLUE="\033[1;34m"
-	#MAGENTA="\033[1;35m"
-	#CYAN="\033[1;36m"
-	#WHITE="\033[1;37m"
-	#BOLD=""
-	#RESET="\033[m"
+	BLACK="\033[30m"
+	RED="\033[31m"
+	GREEN="\033[32m"
+	YELLOW="\033[33m"
+	BLUE="\033[34m"
+	MAGENTA="\033[35m"
+	CYAN="\033[36m"
+	WHITE="\033[37m"
+	BOLD=""
+	RESET="\033[m"
 fi
+# Couldn't get this one working the same was with tput
+TITLE="\e]0;"
 
 export BLACK
 export RED
@@ -92,18 +101,20 @@ export BOLD
 export RESET
 
 
+# Now build up all the pieces of the command prompt
+PS_TITLE="\[$TITLE\w\a\]"
+PS_BASIC="\[${GREEN}\]\u@\h \[${YELLOW}\]\w \[${MAGENTA}\]\$(date +%Y-%m-%d\ %H:%M:%S)"
+PS_END="\[${RESET}\] \n\$ "
 
-#PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\] \[\e[35m\]$(date +%Y-%m-%d\ %H:%M:%S)\[\e[0m\] \[\e[36m\]$(parse_git_branch)\[\e[0m\] \[\e[31m\]$(parse_aws_info)\[\e[0m\]\n\$ '
+# Extra stuff
+if [ "" != "`which git 2> /dev/null `" ] ; then
+    PS_GIT="\[${CYAN}\]\$(parse_git_branch)"
+fi
 
-#PS1='\n${GREEN}\u@\h ${YELLOW}\w ${MAGENTA}]$(date +%Y-%m-%d\ %H:%M:%S) ${CYAN}$(parse_git_branch) ${RED}$(parse_aws_info)${RESET} \n$ '
-#PS1="\n${GREEN}\u@\h ${YELLOW}\w ${MAGENTA}\$(date +%Y-%m-%d\ %H:%M:%S) ${CYAN}\$(parse_git_branch) ${RED}\$(parse_aws_info)${RESET} \n$ "
+PS_AWS="\[${RED}\]\$(parse_aws_info)"
 
-PS_BASIC="\n${GREEN}\u@\h ${YELLOW}\w ${MAGENTA}\$(date +%Y-%m-%d\ %H:%M:%S)"
-PS_END="${RESET} \n$ "
 
-PS_GIT="${CYAN}\$(parse_git_branch)"
-PS_AWS="${RED}\$(parse_aws_info)"
-
-PS1="$PS_BASIC $PS_GIT $PS_AWS $PS_END"
+# And put them all together
+PS1="$PS_TITLE\n$PS_BASIC $PS_GIT $PS_AWS $PS_EXTRAS $PS_END"
 
 
