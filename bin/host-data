@@ -1,0 +1,4 @@
+
+# This will need to run as the hdfs user (or someone else with dfsadmin access)
+hdfs dfsadmin -report | awk 'BEGIN { host=""; } /Hostname:/ { host=$2; } /Rack:/ { print host "\t" $2; }' | sort
+
