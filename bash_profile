@@ -8,9 +8,15 @@ unset file
 
 
 # Setup a few really basic things
+
+# Let /usr/local/bin override things
+PATH=/usr/local/bin:$PATH
+
+# My bin folder overrides all
 if [ -d ~/bin ] ; then
-    export PATH=~/bin:$PATH
+    PATH=~/bin:$PATH
 fi
+export PATH
 
 alias ls="ls -F -G"
 
