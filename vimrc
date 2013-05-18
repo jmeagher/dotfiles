@@ -61,11 +61,18 @@ set fileformats=unix,dos
 " matches and complete up until the longest common string (like the shell).
 set wildmode=list:longest
 
-
 " Turn on spell checking if available (Vim 7)
 " if has("spell")
 "   set spell
 " endif
+
+" From https://github.com/seekshreyas/dotfiles/blob/master/.vimrc
+" Centralize backups, swapfiles and undo history
+set backupdir=~/.vim/backups
+set directory=~/.vim/swaps
+if exists("&undodir")
+  set undodir=~/.vim/undo
+endif
 
 "------------------------------------------------------------
 " Customizations for compiling 
