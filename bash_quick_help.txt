@@ -1,0 +1,108 @@
+Wildcards/Expansion:
+*=.*
+?=.
+[SET],[!SET]=Any one of / none of, [a-z] [!a-c,w-z]
+{s1,s2}=(s1|s2)
+
+Handling Arguments:
+$1, $2, $3, Args in order
+$@ List of all args
+
+String Operators:
+${var:-word} If var exists and is not null returns it's value, otherwise
+return word
+${var:=word} If var exists and is not null return it's value, otherwise set
+var to word and return it's value
+${var:+word} If var exists and is not null return word, otherwise return null
+${var:?message} If var exists and is not null return it's value, otherwise
+displays "bash: $var:$message" and aborts the current script or command
+${#string} String length
+${var:offset[:length]} Returns substring of var from offset that's length long
+
+Pattern matching
+${var#pattern} Deletes the shortest match of pattern from the front of var
+${var##pattern} Deletes the longest match of pattern form the front of var
+${var%pattern} Deletes the shortest match of pattern from the end of var
+${var%%pattern} Deletes the longest match of pattern form the end of var
+${var/pattern/string} Replaces the longest match of pattern in var with
+string, replaces only the first match
+${var//pattern/string} Replaces the longest match of pattern in var with
+string, replaces all matches
+
+Condition test operators:
+-d file, file exists and is a directory
+-e file, file exists
+-f file, file exists and is a regular file
+-r file, file is readable
+-s file, file exists and is not empty
+-w file, file is writable
+-x file, file is executable
+-O file, you own file
+-G file, your group owns file
+file1 -nt file2, file 1 is newer than file 2
+file1 -ot file2, file 1 is older than file 2
+
+String comparisons:
+str1 = str2, str1 matches str2
+str1 != str2, str1 does not match str2
+str1 < str2, str1 is less than str2
+str1 > str2, str1 is greater than str2
+-n str, str has length > 0
+-z str, str has length = 0
+
+Integer tests:
+-eq, -ge, -gt, -le, -lt, -ne
+
+Flow Control:
+if "Condition"; then
+  Do something here
+elif "Condition"
+  Do somethine else
+else
+  Fall through
+fi
+
+for value in list; do
+  Statements using $value
+done
+
+while condition; do
+  something
+done
+
+until condition; do
+  something
+done
+
+Traditional for loop:
+declare -i idx
+idx=0
+while [ $idx -lt 100 ]; do
+  echo $idx
+  idx=$idx+1
+done
+
+case expr in
+ pattern1)
+  do something;;
+ pattern2)
+  do somethine else;;
+esac
+
+select value [ in list ]; do
+ do something with $value as chosen by the user
+done
+
+Functions:
+function funcName
+{
+  do commands
+}
+#Invoke it:
+funcName some args
+
+Here-documents:
+command << label
+pass some lines directly
+as input to command until
+label
