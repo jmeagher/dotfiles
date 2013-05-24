@@ -18,6 +18,11 @@ done
 unset p
 export PATH
 
+if [ -d /usr/local/opt/coreutils/libexec/gnuman ] ; then
+    MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+fi
+export MANPATH
+
 # Handle mac vs gnu ls color options
 ls --color >& /dev/null && alias ls="ls -F --color" || alias ls="ls -F -G"
 
