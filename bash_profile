@@ -9,16 +9,17 @@ unset file
 
 # Setup a few really basic things
 
-# Let /usr/local/bin override things
-PATH=/usr/local/bin:$PATH
-
-# My bin folder overrides all
-if [ -d ~/bin ] ; then
-    PATH=~/bin:$PATH
-fi
+# Lots of path overrides later ones take precedence 
+for p in /usr/local/opt/coreutils/libexec/gnubin /usr/local/bin ~/bin ; do
+    if [ -d $p ] ; then
+        PATH=$p:$PATH
+    fi
+done
+unset p
 export PATH
 
-alias ls="ls -F -G"
+# Handle mac vs gnu ls color options
+ls --color >& /dev/null && alias ls="ls -F --color" || alias ls="ls -F -G"
 
 # Setup common aliases
 alias vi=vim

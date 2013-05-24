@@ -27,6 +27,7 @@ linkit bashrc .bashrc
 linkit bash_profile .bash_profile
 linkit vimrc .vimrc
 linkit vim .vim
+linkit gitconfig .gitconfig
 
 mkdir -p ~/bin
 

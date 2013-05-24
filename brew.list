@@ -1,0 +1,41 @@
+#
+# Install homebrew
+ruby -e "$(curl -fsSkL raw.github.com/mxcl/homebrew/go)"
+
+# Really basic stuff
+brew install coreutils
+
+# Dev tools
+brew install git
+brew install maven
+brew install wget
+brew install bash-completion
+
+
+# Install native apps
+# From https://github.com/mathiasbynens/dotfiles/blob/master/.brew
+brew tap phinze/homebrew-cask
+brew install brew-cask
+
+function installcask() {
+    if brew cask info "${@}" | grep "Not installed" > /dev/null; then
+        brew cask install "${@}"
+    else
+        echo "${@} is already installed."
+    fi
+}
+
+caskroom="/opt/homebrew-cask/Caskroom"
+
+installcask macvim
+# hack to get the mvim command
+cp ${caskroom}/macvim/*/*/mvim ~/bin/
+
+
+installcask iterm2
+
+installcask google-chrome
+installcask google-chrome-canary
+
+brew cleanup
+

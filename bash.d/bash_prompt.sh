@@ -38,6 +38,13 @@ parse_aws_info() {
     echo -n $AWS_PROMPT
 }
 
+parse_last_command_error() {
+    code=$?
+    if [ "$code" != "0" ] ; then
+        echo "Err: $code "
+    fi
+}
+
 
 # Color test output from http://www.commandlinefu.com/commands/view/6533/print-all-256-colors-for-testing-term-or-for-a-quick-reference
 # ( x=`tput op` y=`printf %$((${COLUMNS}-6))s`;for i in {0..256};do o=00$i;echo -e ${o:${#o}-3:3} `tput setaf $i;tput setab $i`${y// /=}$x;done; )
@@ -56,13 +63,13 @@ if [ "$HAS_TPUT" = "true" ] ; then
 	tput sgr0
 	if [[ `tput colors` -ge 256 ]] ; then
 		BLACK=$(tput setaf 0)
-		RED=$(tput setaf 1)
-		GREEN=$(tput setaf 2)
-		YELLOW=$(tput setaf 3)
-		BLUE=$(tput setaf 4)
-		MAGENTA=$(tput setaf 5)
-		CYAN=$(tput setaf 6)
-		WHITE=$(tput setaf 7)
+		RED=$(tput setaf 124)
+		GREEN=$(tput setaf 46)
+		YELLOW=$(tput setaf 192)
+		BLUE=$(tput setaf 39)
+		MAGENTA=$(tput setaf 129)
+		CYAN=$(tput setaf 39)
+		WHITE=$(tput setaf 15)
 	else
 		BLACK=$(tput setaf 0)
 		RED=$(tput setaf 1)
@@ -105,17 +112,17 @@ export RESET
 # Now build up all the pieces of the command prompt
 PS_TITLE="\[$TITLE\w\a\]"
 PS_BASIC="\[${GREEN}\]\u@\h \[${YELLOW}\]\w \[${MAGENTA}\]\$(date +%Y-%m-%d\ %H:%M:%S)"
-PS_END="\[${RESET}\] \n\$ "
+PS_ERROR="\[$RED\]\$(parse_last_command_error)"
+PS_END="\n\[${RESET}\]$ "
 
 # Extra stuff
 if [ "" != "`which git 2> /dev/null `" ] ; then
     PS_GIT="\[${CYAN}\]\$(parse_git_branch)"
 fi
 
-PS_AWS="\[${RED}\]\$(parse_aws_info)"
-
+PS_AWS="\[${WHITE}\]\$(parse_aws_info)"
 
 # And put them all together
-PS1="$PS_TITLE\n$PS_BASIC $PS_GIT $PS_AWS $PS_EXTRAS $PS_END"
+PS1="${PS_TITLE}${PS_ERROR}\n${PS_BASIC} ${PS_GIT} ${PS_AWS} ${PS_EXTRAS} ${PS_END}"
 
 
