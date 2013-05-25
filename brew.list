@@ -4,12 +4,25 @@ ruby -e "$(curl -fsSkL raw.github.com/mxcl/homebrew/go)"
 
 # Really basic stuff
 brew install coreutils
+brew install findutils --default-names
+brew install gnu-indent --default-names
+brew install gnu-sed --default-names
+brew install gnu-tar --default-names
+brew install gnu-which --default-names
+brew install gnutls --default-names
+brew install gawk
+brew install watch
+brew install bash-completion
 
 # Dev tools
 brew install git
 brew install maven
 brew install wget
-brew install bash-completion
+
+# Extra thing needed for grep
+brew tap homebrew/dupes
+brew install grep --default-names
+brew install screen
 
 
 # Install native apps
