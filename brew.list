@@ -18,6 +18,7 @@ brew install bash-completion
 brew install git
 brew install maven
 brew install wget
+brew install sqlite
 
 # Extra thing needed for grep
 brew tap homebrew/dupes
@@ -49,6 +50,11 @@ installcask iterm2
 
 installcask google-chrome
 installcask google-chrome-canary
+installcack virtualbox
+
+# Deps for r
+brew cask install x-quartz
+brew install r
 
 brew cleanup
 

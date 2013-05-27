@@ -4,7 +4,6 @@
 for file in ~/.{bash_profile_local_pre,bash_${HOSTNAME}_pre}; do
 	[ -r "$file" ] && source "$file"
 done
-unset file
 
 
 # Setup a few really basic things
@@ -44,7 +43,6 @@ shopt -s cdspell
 for file in `ls ~/.mydotfiles/bash.d/* | grep -v "~"` ; do
     source $file
 done
-unset file
 
 # Final post-run options for local settings
 for file in ~/.{bash_profile_local,bash_${HOSTNAME}}; do
