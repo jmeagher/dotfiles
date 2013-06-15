@@ -4,7 +4,7 @@
 
 parse_git_branch() {
    GIT_BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/git:\1/'`
-   GIT_EXTRA=`git status --porcelain | cut -c 1-2 | tr "?" "N" | sed -r 's/(.)/\n\1/g' | sort | uniq | tr "\n" " " | sed "s/\s//g"`
+   GIT_EXTRA=`git status --porcelain 2> /dev/null | cut -c 1-2 | tr "?" "N" | sed -r 's/(.)/\n\1/g' | sort | uniq | tr "\n" " " | sed "s/\s//g"`
    if [ "$GIT_EXTRA" = "" ] ; then
        echo "$GIT_BRANCH"
    else
