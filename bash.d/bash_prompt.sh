@@ -4,10 +4,7 @@
 
 parse_git_branch() {
    GIT_BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/git:\1/'`
-   GIT_MOD=`git status -s 2> /dev/null | egrep "^ ?M" > /dev/null && echo M`
-   GIT_ADD=`git status -s 2> /dev/null | egrep "^ ?A" > /dev/null && echo A`
-   GIT_NEW=`git status -s 2> /dev/null | egrep "^\?\?" > /dev/null && echo N`
-   GIT_EXTRA=${GIT_MOD}${GIT_NEW}${GIT_ADD}
+   GIT_EXTRA=`git status --porcelain | cut -c 1-2 | tr "?" "N" | sed -r 's/(.)/\n\1/g' | sort | uniq | tr "\n" " " | sed "s/\s//g"`
    if [ "$GIT_EXTRA" = "" ] ; then
        echo "$GIT_BRANCH"
    else
