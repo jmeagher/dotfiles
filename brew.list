@@ -50,7 +50,7 @@ installcask iterm2
 
 installcask google-chrome
 installcask google-chrome-canary
-installcack virtualbox
+installcask virtualbox
 
 # Deps for r
 brew cask install x-quartz
