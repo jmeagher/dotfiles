@@ -61,6 +61,7 @@ brew install r
 # More dev tools
 # installcask eclipse # Not working now
 installcask sourcetree
+installcask github
 
 # Other work related things
 installcask propane
