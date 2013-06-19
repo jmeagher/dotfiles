@@ -54,9 +54,11 @@ installcask virtualbox
 installcask firefox
 
 # Deps for r
+# This doesn't seem to load completely, but can be manually installed from what's downloaded
 installcask x-quartz
 brew install gfortran
 brew install r
+installcask rstudio
 
 # More dev tools
 # installcask eclipse # Not working now
@@ -64,6 +66,8 @@ installcask sourcetree
 
 # Other work related things
 installcask propane
+installcask mysql-workbench
+brew install apple-gcc42
 
 
 brew cleanup
