@@ -50,11 +50,21 @@ installcask iterm2
 
 installcask google-chrome
 installcask google-chrome-canary
-installcack virtualbox
+installcask virtualbox
+installcask firefox
 
 # Deps for r
-brew cask install x-quartz
+installcask x-quartz
+brew install gfortran
 brew install r
+
+# More dev tools
+# installcask eclipse # Not working now
+installcask sourcetree
+
+# Other work related things
+installcask propane
+
 
 brew cleanup
 
