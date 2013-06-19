@@ -7,6 +7,17 @@
 # Ask for the administrator password upfront
 sudo -v
 
+# Set a timeout on the system-launched ssh-agent
+# see https://discussions.apple.com/thread/2135145?threadID=2135145&tstart=45
+# Set to 3 hours by default
+dest=/System/Library/LaunchAgents/org.openbsd.ssh-agent.plist
+src=org.openbsd.ssh-agent.plist
+diff $src $dest > /dev/null && \
+    echo ssh-agent appears to be already setup || \
+    (echo setting up ssh-agent; sudo cp $dest $dest.bak.`date +%Y%m%d`; sudo cp $src $dest)
+
+
+
 # Keep-alive: update existing `sudo` time stamp until `.osx` has finished
 # while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
