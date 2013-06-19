@@ -206,6 +206,7 @@ imap !scroll JScrollPane scroller = new JScrollPane(  );scroller.getHorizontalS
 augroup filetypedetect 
   au BufNewFile,BufRead *.pig set filetype=pig syntax=pig 
   au BufNewFile,BufRead *.hive set filetype=sql syntax=sql 
+  au BufNewFile,BufRead *.hsql set filetype=sql syntax=sql 
 augroup END 
  
 
