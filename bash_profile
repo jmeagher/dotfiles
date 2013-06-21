@@ -1,5 +1,10 @@
 #! /bin/bash
 
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+fi
+
 # Pre-run overrides, if the files are defined
 for file in ~/.{bash_profile_local_pre,bash_${HOSTNAME}_pre}; do
 	[ -r "$file" ] && source "$file"
