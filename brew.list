@@ -25,6 +25,8 @@ brew tap homebrew/dupes
 brew install grep --default-names
 brew install screen
 
+# Misc other stuff
+brew install gpg
 
 # Install native apps
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.brew
