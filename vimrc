@@ -46,6 +46,11 @@ set shiftwidth=4
 set softtabstop=4
 set tabstop=4
 
+" disable automatic text wrapping
+" set nowrap " but still wrap long lines for display
+set textwidth=0
+set wrapmargin=0
+
 " Use spaces instead of tabs
 set expandtab
 
