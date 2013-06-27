@@ -71,6 +71,7 @@ installcask github
 installcask propane
 installcask mysql-workbench
 brew install apple-gcc42
+brew install redis
 
 
 # MySql55 is a little messy
