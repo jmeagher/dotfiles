@@ -73,5 +73,14 @@ installcask mysql-workbench
 brew install apple-gcc42
 
 
+# MySql55 is a little messy
+brew install mysql55
+# Extra mysql setup
+# The first 2 are a hack to get around a missing error file message and might not really be needed
+#    cd `brew --prefix mysql55`/share
+#    ln -s mysql55 mysql
+#    unset TMPDIR
+#    mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql55)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
+
 brew cleanup
 
