@@ -1,0 +1,18 @@
+EXTRAS=~/devel/other
+mkdir -p $EXTRAS
+cd $EXTRAS
+mkdir -p ~/.bash_completion.d
+
+# Option 1, cap only
+# git clone https://github.com/bashaus/capistrano-autocomplete.git
+
+# Option 2, cap and rake
+git clone https://github.com/sgruhier/rake_cap_bash_autocomplete.git
+
+cd ~/.bash_completion.d
+for f in $EXTRAS/capistrano-autocomplete/cap $EXTRAS/rake_cap_bash_autocomplete/rake_cap_bash_autocomplete.sh ; do
+    if [ -e $f ] ; then
+        ln -s $f .
+    fi
+done
+
