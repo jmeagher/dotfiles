@@ -16,6 +16,7 @@ brew install bash-completion
 
 # Dev tools
 brew install git
+brew install git-flow
 brew install maven
 brew install wget
 brew install sqlite
