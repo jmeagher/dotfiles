@@ -5,8 +5,10 @@ for file in /usr/local/etc/bash_completion /opt/local/etc/bash_completion /etc/b
 done
 
 # run any user completion setup
-for file in ~/.bash_completion.d/* ; do
-    source $file
-done
+if [ -d ~/.bash_completion.d ] ; then
+    for file in ~/.bash_completion.d/* ; do
+        [ -r "$file" ] && source "$file"
+    done
+fi
 unset file
 
