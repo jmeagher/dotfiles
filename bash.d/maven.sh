@@ -1,7 +1,7 @@
 
 # Setup custom maven shortcuts
 if [ "" != "`which mvn 2> /dev/null `" ] ; then
-    m() {
+    function m() {
         start=`pwd`
         found=false
         top=
