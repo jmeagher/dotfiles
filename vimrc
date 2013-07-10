@@ -79,6 +79,17 @@ if exists("&undodir")
   set undodir=~/.vim/undo
 endif
 
+
+" Sql formatting mods
+" Disable aligning the = in where clauses
+let g:sqlutil_align_where = 0
+vmap <silent>!sf        <Plug>SQLUFormatter<CR> 
+nmap <silent>!scl       <Plug>SQLUCreateColumnList<CR> 
+nmap <silent>!scd       <Plug>SQLUGetColumnDef<CR> 
+nmap <silent>!scdt      <Plug>SQLUGetColumnDataType<CR> 
+nmap <silent>!scp       <Plug>SQLUCreateProcedure<CR> 
+
+
 "------------------------------------------------------------
 " Customizations for compiling 
 "------------------------------------------------------------
