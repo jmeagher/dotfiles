@@ -33,6 +33,9 @@ ls --color >& /dev/null && alias ls="ls -F --color" || alias ls="ls -F -G"
 # Setup common aliases
 alias vi=vim
 
+# Get less to support ansi codes in files
+alias less="less -r"
+
 # A few things from https://github.com/mathiasbynens/dotfiles
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob
