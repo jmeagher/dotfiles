@@ -29,6 +29,7 @@ brew install screen
 # Misc other stuff
 brew install gpg
 brew install gdal
+brew install node
 
 # Install native apps
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.brew
