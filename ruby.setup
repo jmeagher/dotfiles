@@ -19,3 +19,11 @@ for f in $EXTRAS/capistrano-autocomplete/cap $EXTRAS/rake_cap_bash_autocomplete/
     fi
 done
 
+
+# Extra setup for rbenv
+mkdir -p ~/.rbenv/plugins
+cd ~/.rbenv/plugins
+git clone git://github.com/jamis/rbenv-gemset.git
+
+rbenv gemset create `rbenv local` `cat .ruby-gemset`
+

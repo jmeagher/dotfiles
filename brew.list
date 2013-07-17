@@ -76,6 +76,11 @@ installcask mysql-workbench
 brew install apple-gcc42
 brew install redis
 
+# Ruby
+brew install rbenv
+brew install ruby-build
+#brew install rbenv-gemset
+
 
 # MySql55 is a little messy
 brew install mysql55
