@@ -24,6 +24,7 @@ source $VIMRUNTIME/filetype.vim
 source $VIMRUNTIME/indent.vim 
 source $VIMRUNTIME/ftplugin.vim 
 
+
 "------------------------------------------------------------
 " Customize the look of vim
 "------------------------------------------------------------
@@ -171,52 +172,9 @@ nmap <F12> :cnext
 
 " Wrap the word under the cursor in a <XXX></XXX> block
 " The cursor must be on the first letter of the word to wrap.
-nmap !code i<code>ea</code>
-nmap !iname i<interfacename>ea</interfacename>
-nmap !cname i<classname>ea</classname>
-nmap !meth i<methodname>ea</methodname>
-nmap !emp i<emphasis>ea</emphasis>
-nmap !con i<constant>ea</constant>
-nmap !file i<filename>ea</filename>
-
-imap !dp System.out.println( "" );gei
-
-imap !time long time = System.currentTimeMillis();time = System.currentTimeMillis() - time;System.out.println( "time = " + time + "ms" );
-
-imap !code <code></code>2ba
-imap !iname <interfacename></interfacename>2ba
-imap !cname <classname></classname>2ba
-imap !meth <methodname></methodname>2ba
-imap !emp <emphasis></emphasis>2ba
-imap !con <constant></constant>2ba
-imap !file <filename></filename>2ba
-
-imap !li {@link }i
-
-imap !implug import com.solipsys.dynamicloader.Plugin;
-imap !imsol import com.solipsys.
-imap !imswg import javax.swing.
-
-imap !il SwingUtilities.invokeLater( new Runnable() {public void run(){}} );kO
-
-imap !aa addActionListener( new ActionListener() {public void actionPerformed( ActionEvent e ){}} );kO
-
-imap !ap addPropertyChangeListener( new PropertyChangeListener() {public void propertyChange( PropertyChangeEvent evt ){}} );kO
-
-imap !ac addChangeListener( new ChangeListener() {public void stateChanged( ChangeEvent e ){}} );kO
-
-imap !ai addItemListener( new ItemListener() {public void itemStateChanged( ItemEvent e ){if ( e.getStateChange() == ItemEvent.SELECTED ){}}} );2kO
-
-imap !ad getDocument().addDocumentListener( new DocumentListener() {public void insertUpdate( DocumentEvent e ){}public void removeUpdate( DocumentEvent e ){}public void changedUpdate( DocumentEvent e ){}} );kO
-
-imap !main public static void main( String[] args ){JPanel panel = new ;JFrame frame = new JFrame( "Test Program" );frame.getContentPane().add( panel , BorderLayout.CENTER );frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );frame.pack();frame.show();}%j$i
-
-imap !log private final static org.apache.log4j.Logger log =org.apache.log4j.Logger.getLogger( .class );3bi
-
-imap !res private final static com.solipsys.util.resource.Resources res =com.solipsys.util.resource.ResourceManager.getDefault().getResources( .class );3bi
-
-imap !scroll JScrollPane scroller = new JScrollPane(  );scroller.getHorizontalScrollBar().setUnitIncrement( 10 );scroller.getVerticalScrollBar().setUnitIncrement( 10 );kkhhi
-
+" Examples for doing text expansion 
+" nmap !code i<code>ea</code>
+" imap !dp System.out.println( "" );gei
 
 
 augroup filetypedetect 
