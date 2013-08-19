@@ -29,3 +29,5 @@
 [push]
 	default = matching
 
+[core]
+	excludesfile = ~/.gitignore_global
