@@ -28,3 +28,7 @@ if [ "" != "`which rbenv 2> /dev/null `" ] ; then
     }
 fi
 
+if [ "" != "`which rspec 2> /dev/null `" ] ; then
+    alias rspec="rspec -c -f d"
+fi
+
