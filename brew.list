@@ -20,6 +20,7 @@ brew install git-flow
 brew install maven
 brew install wget
 brew install sqlite
+brew install jq
 
 # Extra thing needed for grep
 brew tap homebrew/dupes
