@@ -38,8 +38,30 @@ parse_aws_info() {
 parse_last_command_error() {
     code=$?
     if [ "$code" != "0" ] ; then
-        echo "Err: $code "
+        echo "Err ◕︵◕ $code"
     fi
+}
+
+__DO_UNICODE=false
+[[ "$(locale charmap)" = "UTF-8" ]] && __DO_UNICODE=true
+export __DO_UNICODE
+prompt_time() {
+    p_icon=
+    if [ "$__DO_UNICODE" = "true" ] ; then
+        declare -i t_hour=$(date +%H%M)
+        if [[ $t_hour -lt 1100 ]] ; then 
+            p_icon="☕  "
+        elif [[ $t_hour -lt 1330 ]] ; then
+            p_icon="🍔  "
+        elif [[ $t_hour -lt 1600 ]] ; then
+            p_icon="☀  "
+        elif [[ $t_hour -lt 2200 ]] ; then 
+            p_icon="🍺  "
+        else
+            p_icon="❄  "
+        fi
+    fi
+    echo -n "${p_icon}$(date +%Y-%m-%d\ %H:%M:%S)"
 }
 
 
@@ -59,65 +81,65 @@ tput setaf 1 &> /dev/null && HAS_TPUT=true
 if [ "$HAS_TPUT" = "true" ] ; then
 	tput sgr0
 	if [[ `tput colors` -ge 256 ]] ; then
-		BLACK=$(tput setaf 0)
-		RED=$(tput setaf 124)
-		GREEN=$(tput setaf 46)
-		YELLOW=$(tput setaf 192)
-		BLUE=$(tput setaf 39)
-		MAGENTA=$(tput setaf 129)
-		CYAN=$(tput setaf 39)
-		WHITE=$(tput setaf 15)
+		_BLACK=$(tput setaf 0)
+		_RED=$(tput setaf 124)
+		_GREEN=$(tput setaf 46)
+		_YELLOW=$(tput setaf 192)
+		_BLUE=$(tput setaf 39)
+		_MAGENTA=$(tput setaf 129)
+		_CYAN=$(tput setaf 39)
+		_WHITE=$(tput setaf 15)
 	else
-		BLACK=$(tput setaf 0)
-		RED=$(tput setaf 1)
-		GREEN=$(tput setaf 2)
-		YELLOW=$(tput setaf 3)
-		BLUE=$(tput setaf 4)
-		MAGENTA=$(tput setaf 5)
-		CYAN=$(tput setaf 6)
-		WHITE=$(tput setaf 7)
+		_BLACK=$(tput setaf 0)
+		_RED=$(tput setaf 1)
+		_GREEN=$(tput setaf 2)
+		_YELLOW=$(tput setaf 3)
+		_BLUE=$(tput setaf 4)
+		_MAGENTA=$(tput setaf 5)
+		_CYAN=$(tput setaf 6)
+		_WHITE=$(tput setaf 7)
 	fi
-	BOLD=$(tput bold)
-	RESET=$(tput sgr0)
+	_BOLD=$(tput bold)
+	_RESET=$(tput sgr0)
 else
-	BLACK="\033[30m"
-	RED="\033[31m"
-	GREEN="\033[32m"
-	YELLOW="\033[33m"
-	BLUE="\033[34m"
-	MAGENTA="\033[35m"
-	CYAN="\033[36m"
-	WHITE="\033[37m"
-	BOLD=""
-	RESET="\033[m"
+	_BLACK="\033[30m"
+	_RED="\033[31m"
+	_GREEN="\033[32m"
+	_YELLOW="\033[33m"
+	_BLUE="\033[34m"
+	_MAGENTA="\033[35m"
+	_CYAN="\033[36m"
+	_WHITE="\033[37m"
+	_BOLD=""
+	_RESET="\033[m"
 fi
 # Couldn't get this one working the same was with tput
 TITLE="\e]0;"
 
-export BLACK
-export RED
-export GREEN
-export YELLOW
-export BLUE
-export MAGENTA
-export CYAN
-export WHITE
-export BOLD
-export RESET
+export _BLACK
+export _RED
+export _GREEN
+export _YELLOW
+export _BLUE
+export _MAGENTA
+export _CYAN
+export _WHITE
+export _BOLD
+export _RESET
 
 
 # Now build up all the pieces of the command prompt
 PS_TITLE="\[$TITLE\w\a\]"
-PS_BASIC="\[${GREEN}\]\u@\h \[${YELLOW}\]\w \[${MAGENTA}\]\$(date +%Y-%m-%d\ %H:%M:%S)"
-PS_ERROR="\[$RED\]\$(parse_last_command_error)"
-PS_END="\n\[${RESET}\]$ "
+PS_BASIC="\[${_GREEN}\]\u@\h \[${_YELLOW}\]\w \[${_MAGENTA}\]\$(prompt_time)"
+PS_ERROR="\[$_RED\]\$(parse_last_command_error)"
+PS_END="\n\[${_RESET}\]$ "
 
 # Extra stuff
 if [ "" != "`which git 2> /dev/null `" ] ; then
-    PS_GIT="\[${CYAN}\]\$(parse_git_branch)"
+    PS_GIT="\[${_CYAN}\]\$(parse_git_branch)"
 fi
 
-PS_AWS="\[${WHITE}\]\$(parse_aws_info)"
+PS_AWS="\[${_WHITE}\]\$(parse_aws_info)"
 
 # And put them all together
 PS1="${PS_TITLE}${PS_ERROR}\n${PS_BASIC} ${PS_GIT} ${PS_AWS} ${PS_EXTRAS} ${PS_END}"
