@@ -5,7 +5,7 @@
 parse_git_branch() {
    GIT_BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/git:\1/'`
    # Can't figure out how to get this to work with the built in OSX sed
-   GIT_EXTRA=`git status --porcelain 2> /dev/null | cut -c 1-2 | tr "?" "N" | extsed 's/(.)/\n\1/g' | sort | uniq | tr "\n" " " | sed "s/\s//g"`
+   GIT_EXTRA=`git status --porcelain 2> /dev/null | cut -c 1-2 | tr "?" "N" | extsed 's/(.)/-\1/g' | tr "-" "\n" | sort | uniq | tr "\n" " " | sed "s/ //g"`
    if [ "$GIT_EXTRA" = "" ] ; then
        echo "$GIT_BRANCH"
    else
