@@ -4,7 +4,8 @@
 
 parse_git_branch() {
    GIT_BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/git:\1/'`
-   GIT_EXTRA=`git status --porcelain 2> /dev/null | cut -c 1-2 | tr "?" "N" | sed -r 's/(.)/\n\1/g' | sort | uniq | tr "\n" " " | sed "s/\s//g"`
+   # Can't figure out how to get this to work with the built in OSX sed
+   GIT_EXTRA=`git status --porcelain 2> /dev/null | cut -c 1-2 | tr "?" "N" | extsed 's/(.)/\n\1/g' | sort | uniq | tr "\n" " " | sed "s/\s//g"`
    if [ "$GIT_EXTRA" = "" ] ; then
        echo "$GIT_BRANCH"
    else
@@ -48,7 +49,7 @@ export __DO_UNICODE
 prompt_time() {
     p_icon=
     if [ "$__DO_UNICODE" = "true" ] ; then
-        declare -i t_hour=$(date +%H%M)
+        declare -i t_hour=$(date +%k%M)
         if [[ $t_hour -lt 1100 ]] ; then 
             p_icon="☕  "
         elif [[ $t_hour -lt 1330 ]] ; then
