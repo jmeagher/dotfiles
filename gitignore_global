@@ -3,5 +3,11 @@
 .ruby-version
 .ruby-gemset
 
+# For java/maven projects
+target
+.classpath
+.project
+.settings
+
 
 

@@ -31,6 +31,8 @@ brew install screen
 brew install gpg
 brew install gdal
 brew install node
+brew install figlet
+brew install groovy
 
 # Install native apps
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.brew
