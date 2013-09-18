@@ -29,6 +29,7 @@ linkit vimrc .vimrc
 linkit vim .vim
 linkit gitconfig .gitconfig
 linkit gitignore_global .gitignore_global
+linkit gdbinit .gdbinit
 
 mkdir -p ~/bin
 
