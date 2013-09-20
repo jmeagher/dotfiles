@@ -1,6 +1,7 @@
 
 
 # Ruby related helpers
+# Note: This only seems to work on linux, not osx
 #
 # The big one here is ruby_stack.  To call it run...
 # $ gdb /usr/bin/ruby [PID]

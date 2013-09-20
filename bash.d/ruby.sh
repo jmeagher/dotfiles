@@ -26,6 +26,17 @@ if [ "" != "`which rbenv 2> /dev/null `" ] ; then
       unset a
 
     }
+
+    function ruby_stack() {
+      pid=$1
+      gdb $(which ruby) $pid  <<STACKGEN_END
+          ruby_stack
+          detach
+          quit
+STACKGEN_END
+
+    }
+
 fi
 
 if [ "" != "`which rspec 2> /dev/null `" ] ; then
