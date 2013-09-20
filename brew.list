@@ -33,6 +33,7 @@ brew install gdal
 brew install node
 brew install figlet
 brew install groovy
+brew install go
 
 # Install native apps
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.brew
