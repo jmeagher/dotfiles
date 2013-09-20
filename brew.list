@@ -34,6 +34,7 @@ brew install node
 brew install figlet
 brew install groovy
 brew install go
+brew install gnuplot
 
 # Install native apps
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.brew
