@@ -9,3 +9,12 @@ if [ "`uname`" == "Darwin" ] ; then
         fi
     fi
 fi
+
+# If Sublime is installed add it to bin for cli support
+if [ -e /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl ] ; then
+    if [ ! -e ~/bin/subl ] ; then
+        ln -s /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl ~/bin/subl
+    fi
+fi
+
+
