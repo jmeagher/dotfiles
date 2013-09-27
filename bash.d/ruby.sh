@@ -27,6 +27,35 @@ if [ "" != "`which rbenv 2> /dev/null `" ] ; then
 
     }
 
+    # Does a walk through the gem list trying to figure out what isn't installing right
+    function gem_step_install() {
+      to_install=bundler
+      install_version=
+      while [ "$to_install" != "" ] ; do
+          cmd="gem install $to_install"
+          if [ "$install_version" != "" ] ; then
+              cmd="$cmd -v $install_version"
+          fi
+          echo "Trying to install $to_install -v $install_version" # [press enter to continue]"
+          #read blah
+          $cmd
+
+          stat=$(bundle list | grep "Could not find gem" | sed -r "s/^.*Could not find gem '([^ ]+).*[^0-9.]([0-9.]+)[^0-9].*$/\1 \2/")
+
+          old_install=$to_install
+          to_install=${stat%% *}
+          install_version=${stat##* }
+          if [ "$install_version" = "0" ] ; then
+              install_version=
+          fi
+
+          if [ "$old_install" = "$to_install" ] ; then
+              to_install=
+              echo "It looks like the installation of $old_install failed, check things and try again"
+          fi
+      done
+    }
+
     function ruby_stack() {
       pid=$1
       gdb $(which ruby) $pid  <<STACKGEN_END
