@@ -8,6 +8,10 @@ if [ "`uname`" == "Darwin" ] ; then
             export JAVA_HOME
         fi
     fi
+
+    # Example of moving windows
+    # osascript -e 'tell application "System Events" to set position of first window of application process "iTerm" to {20, 20} '
+    
 fi
 
 # If Sublime is installed add it to bin for cli support
