@@ -29,8 +29,11 @@ if [ "" != "`which rbenv 2> /dev/null `" ] ; then
 
     # Does a walk through the gem list trying to figure out what isn't installing right
     function gem_step_install() {
-      to_install=bundler
+      to_install=$1
       install_version=
+      if [ "$to_install" = "" ] ; then
+          to_install=bundler
+      fi
       while [ "$to_install" != "" ] ; do
           cmd="gem install $to_install"
           if [ "$install_version" != "" ] ; then
