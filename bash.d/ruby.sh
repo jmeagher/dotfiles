@@ -40,7 +40,7 @@ if [ "" != "`which rbenv 2> /dev/null `" ] ; then
           #read blah
           $cmd
 
-          stat=$(bundle list | grep "Could not find gem" | extsed -r "s/^.*Could not find gem '([^ ]+).*[^0-9.]([0-9.]+)[^0-9].*$/\1 \2/")
+          stat=$(bundle list | grep "Could not find gem" | extsed "s/^.*Could not find gem '([^ ]+).*[^0-9.]([0-9.]+)[^0-9].*$/\1 \2/")
 
           old_install=$to_install
           to_install=${stat%% *}

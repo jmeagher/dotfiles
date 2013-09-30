@@ -1,6 +1,6 @@
 
 # Sed with extended regex
-if [ "`echo "test" | sed -r "s/t(es)t/\1/" 2>&1 > /dev/null`" = "es" ] ; then
+if [ "$(echo "test" | sed -r "s/t(es)t/\1/" 2>&1 )" = "es" ] ; then
     alias extsed="sed -r"
 else
     # OSX mode
