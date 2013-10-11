@@ -7,6 +7,14 @@
 # Ask for the administrator password upfront
 sudo -v
 
+# Extra useful software
+
+sudo easy_install pip
+
+
+
+
+
 # Set a timeout on the system-launched ssh-agent
 # see https://discussions.apple.com/thread/2135145?threadID=2135145&tstart=45
 # Set to 3 hours by default
