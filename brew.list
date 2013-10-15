@@ -62,6 +62,7 @@ installcask google-chrome
 installcask google-chrome-canary
 installcask virtualbox
 installcask firefox
+installcask vagrant
 
 # Deps for r
 # This doesn't seem to load completely, but can be manually installed from what's downloaded
