@@ -82,6 +82,9 @@ installcask propane
 installcask mysql-workbench
 brew install apple-gcc42
 brew install redis
+brew install rpm2cpio
+# Needed to get the "right" command setup for some work stuff
+ln -s /usr/loca/bin/rpm2cpio.pl ~/bin/rpm2cpio
 
 # Ruby
 brew install rbenv
