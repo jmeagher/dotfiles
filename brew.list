@@ -85,6 +85,7 @@ brew install redis
 brew install rpm2cpio
 # Needed to get the "right" command setup for some work stuff
 ln -s /usr/loca/bin/rpm2cpio.pl ~/bin/rpm2cpio
+brew install qt4
 
 # Ruby
 brew install rbenv
