@@ -12,77 +12,78 @@ S.cfga({
 });
 
 
-function moveOnly(theScreen, xpos, ypos) {
+var wrap = function(op) {
     return {
-    "operations" : [ S.op("move", {
+    "operations" : [ op ],
+    "ignore-fail" : true,
+    "repeat" : true
+};
+}
+
+var w = wrap;
+
+var moveOnly = function(theScreen, xpos, ypos) {
+    return  S.op("move", {
             "screen" : theScreen,
             "x" : xpos + "*screenSizeX + screenOriginX",
             "y" : ypos + "*screenSizeY + screenOriginY",
             "width"  : "windowSizeX",
             "height" : "windowSizeY"
-        }) ],
-    "ignore-fail" : true,
-    "repeat" : true
-};
+        });
 }
 
-function moveSize(theScreen, xpos, ypos, width, height) {
-    return {
-    "operations" : [ S.op("move", {
+var moveSize = function(theScreen, xpos, ypos, width, height) {
+    return S.op("move", {
             "screen" : theScreen,
             "x" : xpos + "*screenSizeX + screenOriginX",
             "y" : ypos + "*screenSizeY + screenOriginY",
             "width"  : width + "*screenSizeX",
             "height" : height + "*screenSizeY",
-        }) ],
-    "ignore-fail" : true,
-    "repeat" : true
-};
+        });
 }
 
-function cornerOnly(theScreen, corner) {
-    return {
-    "operations" : [ S.op("corner", {
+var cornerOnly = function(theScreen, corner) {
+    return S.op("corner", {
             "screen" : theScreen,
             "direction" : corner,
             "width"  : "windowSizeX",
             "height" : "windowSizeY"
-        }) ],
-    "ignore-fail" : true,
-    "repeat" : true
-};
+        });
 }
 
-function cornerSize(theScreen, corner, width, height) {
-    return {
-    "operations" : [ S.op("corner", {
+var cornerSize = function(theScreen, corner, width, height) {
+    return S.op("corner", {
             "screen" : theScreen,
             "direction" : corner,
             "width"  : width + "*screenSizeX",
             "height" : height + "*screenSizeY",
-        }) ],
-    "ignore-fail" : true,
-    "repeat" : true
-};
+        });
 }
 
 /*
- *
-var genBrowserHash = function(regex) {
+ * Example: byTitleRegex([{"r":/^Inbox.*$/, "op":cornerOnly(main,"top-left")}], cornerOnly(main,"top-right"))
+ * The first matching expression will be used
+ */
+var byTitleRegex = function(actionPairs, defaultOperation) {
   return {
-    "operations" : [function(windowObject) {
+    "operations" : [ function(windowObject) {
       var title = windowObject.title();
-      if (title !== undefined && title.match(regex)) {
-        windowObject.doOperation(tboltLLeft);
-      } else {
-        windowObject.doOperation(lapMain);
+      var operation = defaultOperation;
+
+      if (title !== undefined)
+      {
+          var matched = _.find(actionPairs, function(it) { return title.match(it["r"]); });
+          if (matched) {
+             operation = matched["op"];
+          }
       }
-    }],
+      
+      windowObject.doOperation(operation);
+
+    } ],
     "ignore-fail" : true,
     "repeat" : true
   };
 }
 
-*/
-// Log that we're done configuring
-S.log("[SLATE] -------------- Finished Loading Config --------------");
+
