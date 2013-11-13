@@ -49,7 +49,7 @@ export __DO_UNICODE
 prompt_time() {
     p_icon=
     if [ "$__DO_UNICODE" = "true" ] ; then
-        declare -i t_hour=$(date +%k%M)
+        declare -i t_hour=$(date +%H%M | sed 's/^0*//')
         if [[ $t_hour -lt 1100 ]] ; then 
             p_icon="☕  "
         elif [[ $t_hour -lt 1330 ]] ; then
