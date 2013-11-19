@@ -50,7 +50,9 @@ prompt_time() {
     p_icon=
     if [ "$__DO_UNICODE" = "true" ] ; then
         declare -i t_hour=$(date +%H%M | sed 's/^0*//')
-        if [[ $t_hour -lt 1100 ]] ; then 
+        if [[ $t_hour -lt 0600 ]] ; then 
+            p_icon="☣  "☣
+        elif [[ $t_hour -lt 1100 ]] ; then 
             p_icon="☕  "
         elif [[ $t_hour -lt 1330 ]] ; then
             p_icon="🍔  "
@@ -59,7 +61,7 @@ prompt_time() {
         elif [[ $t_hour -lt 2200 ]] ; then 
             p_icon="🍺  "
         else
-            p_icon="❄  "
+            p_icon="☣  "
         fi
     fi
     echo -n "${p_icon}$(date +%Y-%m-%d\ %H:%M:%S)"

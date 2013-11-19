@@ -2,6 +2,7 @@
 # A few ruby specific ones, rbenv config
 .ruby-version
 .ruby-gemset
+*.env
 
 # For java/maven projects
 target
