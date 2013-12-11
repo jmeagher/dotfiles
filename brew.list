@@ -21,6 +21,7 @@ brew install maven
 brew install wget
 brew install sqlite
 brew install jq
+brew install csv-fix
 
 # Extra thing needed for grep
 brew tap homebrew/dupes
@@ -65,6 +66,7 @@ installcask firefox
 installcask vagrant
 installcask slate
 installcask mou
+installcask geektool
 
 # Deps for r
 # This doesn't seem to load completely, but can be manually installed from what's downloaded
