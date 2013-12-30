@@ -38,4 +38,13 @@ for f in `ls bin/* | grep -v "~"` ; do
     linkit $f $f
 done
 
+# A little extra vim setup
+if [ ! -e vim/bundle/vundle ] ; then
+    (cd vim/bundle; git clone https://github.com/gmarik/vundle.git)
+fi
+
+echo "Hit enter to install vundle bundles, ctrl-c to skip"
+read a
+vim +BundleInstall +qall
+
 
