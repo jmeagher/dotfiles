@@ -14,18 +14,30 @@ Bundle 'gmarik/vundle'
 " Include Vundle bundles
 "------------------------------------------------------------
 
-
 " Utility sorta things
+"
 Bundle 'tpope/vim-fugitive'
 Bundle 'tpope/vim-git'
 
+
 " UI Additions
+"
+" Show indent levels as background changes
 Bundle 'nathanaelkane/vim-indent-guides'
+" Better file/directory browsing
 Bundle 'scrooloose/nerdtree'
+" Easier commenting
+Bundle 'scrooloose/nerdcommenter'
+" Better status bar
 Bundle 'bling/vim-airline'
+" Show live git diff markers
+Bundle 'airblade/vim-gitgutter'
+
 
 " Language support
+"
 Bundle 'vim-ruby/vim-ruby'
+Bundle 'Markdown'
 
 "------------------------------------------------------------
 " Customize the look of vim
@@ -46,12 +58,18 @@ Bundle 'vividchalk.vim'
 Bundle "nanotech/jellybeans.vim"
 silent! colorscheme jellybeans
 
+
 " Do syntax highlighting
 syntax on
 
-
 " automatically show matching (, { or [ after matching one is typed
 set showmatch
+
+
+"------------------------------------------------------------
+" Other tweaks for how I like things
+"------------------------------------------------------------
+
 
 " number of spaces to automatically indent
 set sw=2
@@ -79,6 +97,8 @@ set fileformats=unix,dos
 " matches and complete up until the longest common string (like the shell).
 set wildmode=list:longest
 
+" Don't autoindent pasted text
+set paste
 
 " From https://github.com/seekshreyas/dotfiles/blob/master/.vimrc
 " Centralize backups, swapfiles and undo history
@@ -105,6 +125,8 @@ nmap <silent>!scd       <Plug>SQLUGetColumnDef<CR>
 nmap <silent>!scdt      <Plug>SQLUGetColumnDataType<CR> 
 nmap <silent>!scp       <Plug>SQLUCreateProcedure<CR> 
 
+" Ctrl-N to toggle NERDTree
+map <C-n> :NERDTreeToggle<CR>
 
 autocmd BufEnter * cd %:p:h
 
