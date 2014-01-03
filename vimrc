@@ -28,6 +28,8 @@ Bundle 'nathanaelkane/vim-indent-guides'
 Bundle 'scrooloose/nerdtree'
 " Easier commenting
 Bundle 'scrooloose/nerdcommenter'
+" IDE-ish syntax checking
+Bundle 'scrooloose/syntastic'
 " Better status bar
 Bundle 'bling/vim-airline'
 " Show live git diff markers
@@ -133,9 +135,10 @@ autocmd BufEnter * cd %:p:h
 
 " Special file type mappings
 augroup filetypedetect 
-  au BufNewFile,BufRead *.pig set filetype=pig syntax=pig 
-  au BufNewFile,BufRead *.hive set filetype=sql syntax=sql 
-  au BufNewFile,BufRead *.hsql set filetype=sql syntax=sql 
+  au BufNewFile,BufRead *.pig    set filetype=pig  syntax=pig 
+  au BufNewFile,BufRead *.hive   set filetype=sql  syntax=sql 
+  au BufNewFile,BufRead *.hsql   set filetype=sql  syntax=sql 
+  au BufNewFile,BufRead *.config set filetype=yaml syntax=yaml 
 augroup END 
  
 
