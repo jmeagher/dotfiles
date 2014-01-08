@@ -45,6 +45,9 @@ Bundle 'Markdown'
 " Customize the look of vim
 "------------------------------------------------------------
 
+" Default size
+set lines=80
+set columns=140
 
 " Color scheme
 set background=dark
