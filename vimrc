@@ -39,6 +39,7 @@ Bundle 'airblade/vim-gitgutter'
 " Language support
 "
 Bundle 'vim-ruby/vim-ruby'
+Bundle 'tpope/vim-rake'
 Bundle 'Markdown'
 
 "------------------------------------------------------------
@@ -46,8 +47,10 @@ Bundle 'Markdown'
 "------------------------------------------------------------
 
 " Default size
-set lines=80
-set columns=140
+if has("gui_running")
+  set lines=80
+  set columns=140
+endif
 
 " Color scheme
 set background=dark
@@ -112,6 +115,10 @@ set directory=~/.vim/swaps
 if exists("&undodir")
   set undodir=~/.vim/undo
 endif
+
+
+" Set the <leader> key to be , instead of \
+let mapleader = ","
 
 
 
