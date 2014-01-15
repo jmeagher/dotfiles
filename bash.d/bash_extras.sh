@@ -6,3 +6,6 @@ alias gtip="curl -s jakehofman.com/lists/tips.txt | grep -i"
 
 alias rebash="source ~/.bash_profile"
 
+# History control, skip dups
+export HISTCONTROL=erasedups
+
