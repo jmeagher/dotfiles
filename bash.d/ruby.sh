@@ -69,9 +69,27 @@ STACKGEN_END
 
     }
 
+  if [ "" != "`which rspec 2> /dev/null `" ] ; then
+      alias rspec="rspec -c -f d"
+  fi
+else
+  # Fallback to setup a basic rbenv environment
+  function rbenvsetup() {
+    echo "If you're in a mac run 'brew install rbenv rbenv-build rbenv-gemset', if not hit enter to install things the manual way or ctrl-C to quit"
+    read a
+    (cd ~ && git clone https://github.com/sstephenson/rbenv.git ~/.rbenv)
+    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile_local_pre
+
+    # For installing ruby versions
+    git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+    # For having gemsets for gem isolation
+    mkdir -p ~/.rbenv/plugins
+    cd ~/.rbenv/plugins
+    git clone git://github.com/jamis/rbenv-gemset.git
+    
+    echo "Things are setup, run rebash now to fix up your environment"
+  }
 fi
 
-if [ "" != "`which rspec 2> /dev/null `" ] ; then
-    alias rspec="rspec -c -f d"
-fi
 
