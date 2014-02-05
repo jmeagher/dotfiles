@@ -1,4 +1,5 @@
 
 
 go get github.com/jehiah/json2csv
+go get -u github.com/dinedal/textql
 
