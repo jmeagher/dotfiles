@@ -22,6 +22,7 @@ brew install wget
 brew install sqlite
 brew install jq
 brew install csv-fix
+brew install fasd
 
 # Extra thing needed for grep
 brew tap homebrew/dupes
