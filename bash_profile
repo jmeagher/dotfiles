@@ -16,6 +16,7 @@ done
 if [ "" = "$EDITOR" ] ; then
   EDITOR=vi
 fi
+alias e="$EDITOR"
 
 # Lots of path overrides later ones take precedence 
 for p in /usr/local/opt/coreutils/libexec/gnubin /usr/local/bin ~/bin ; do

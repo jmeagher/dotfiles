@@ -10,5 +10,10 @@ if [ "" != "`which fasd 2> /dev/null `" ] ; then
     complete -F _fasd_bash_cmd_complete d
     complete -F _fasd_bash_cmd_complete fv
   fi
+else
+  function setup_fasd() {
+    echo "Setting up fasd in ~/bin"
+    ( cd ~; mkdir -p .tools; cd .tools ; git clone git@github.com:clvv/fasd.git; cd ~/bin; ln -s ../.tools/fasd/fasd . )
+  }
 fi
 
