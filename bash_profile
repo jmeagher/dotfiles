@@ -13,6 +13,10 @@ done
 
 # Setup a few really basic things
 
+if [ "" = "$EDITOR" ] ; then
+  EDITOR=vi
+fi
+
 # Lots of path overrides later ones take precedence 
 for p in /usr/local/opt/coreutils/libexec/gnubin /usr/local/bin ~/bin ; do
     if [ -d $p ] ; then
