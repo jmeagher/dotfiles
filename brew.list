@@ -1,6 +1,6 @@
 #
 # Install homebrew
-ruby -e "$(curl -fsSkL raw.github.com/mxcl/homebrew/go)"
+ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
 
 # Really basic stuff
 brew install coreutils
@@ -23,6 +23,8 @@ brew install sqlite
 brew install jq
 brew install csv-fix
 brew install fasd
+brew install the_silver_searcher
+brew install entr
 
 # Extra thing needed for grep
 brew tap homebrew/dupes
@@ -86,6 +88,7 @@ installcask propane
 installcask mysql-workbench
 brew install apple-gcc42
 brew install redis
+brew install memcached
 brew install rpm2cpio
 # Needed to get the "right" command setup for some work stuff
 ln -s /usr/loca/bin/rpm2cpio.pl ~/bin/rpm2cpio
@@ -94,12 +97,16 @@ brew install qt4
 # Ruby
 brew install rbenv
 brew install ruby-build
-#brew install rbenv-gemset
+brew install rbenv-gemset
 
 
 # MySql55 is a little messy
 brew install mysql55
 # Extra mysql setup
+# More hacks to get the mysql commands in the path
+#   cd /usr/local/bin
+#   \ls `brew --prefix mysql55`/bin/* | xargs -I _ ln -s _ .
+#
 # The first 2 are a hack to get around a missing error file message and might not really be needed
 #    cd `brew --prefix mysql55`/share
 #    ln -s mysql55 mysql

@@ -42,6 +42,15 @@ Bundle 'vim-ruby/vim-ruby'
 Bundle 'tpope/vim-rake'
 Bundle 'Markdown'
 
+" A few other random tools
+"
+" The Silver Surfer integration for faster searching of code
+Bundle 'rking/ag.vim'
+" fasd integration and a required lib for it
+Bundle 'tomtom/tlib_vim'
+Bundle 'amiorin/vim-fasd'
+
+
 "------------------------------------------------------------
 " Customize the look of vim
 "------------------------------------------------------------
@@ -72,6 +81,9 @@ syntax on
 
 " automatically show matching (, { or [ after matching one is typed
 set showmatch
+
+" Spell check by default
+" set spell
 
 
 "------------------------------------------------------------
@@ -139,6 +151,8 @@ nmap <silent>!scp       <Plug>SQLUCreateProcedure<CR>
 
 " Ctrl-N to toggle NERDTree
 map <C-n> :NERDTreeToggle<CR>
+" Ctrl-S to toggle spell check
+map <C-s> :set spell!<CR>
 
 autocmd BufEnter * cd %:p:h
 
