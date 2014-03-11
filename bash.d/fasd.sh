@@ -3,6 +3,7 @@
 if [ "" != "`which fasd 2> /dev/null `" ] ; then
   eval "$(fasd --init auto)"
   alias fv="fasd -aie $EDITOR"
+  alias v="fasd -aie $EDITOR"
   alias d="fasd_cd -di"
 
   # Copied from the fasd init code to detect completion
