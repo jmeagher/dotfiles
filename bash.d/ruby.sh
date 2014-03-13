@@ -78,7 +78,6 @@ else
     echo "If you're in a mac run 'brew install rbenv rbenv-build rbenv-gemset', if not hit enter to install things the manual way or ctrl-C to quit"
     read a
     (cd ~ && git clone https://github.com/sstephenson/rbenv.git ~/.rbenv)
-    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile_local_pre
 
     # For installing ruby versions
     git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
