@@ -9,6 +9,7 @@ if [ "" != "`which fasd 2> /dev/null `" ] ; then
   # Copied from the fasd init code to detect completion
   if [ "$BASH_VERSION" ] && complete > /dev/null 2>&1; then # bash
     complete -F _fasd_bash_cmd_complete d
+    complete -F _fasd_bash_cmd_complete v
     complete -F _fasd_bash_cmd_complete fv
   fi
 else

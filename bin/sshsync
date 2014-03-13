@@ -1,0 +1,14 @@
+#! /bin/bash
+
+# Sync the current folder to a remote server in the same location relative to $HOME
+
+if [ "" = "$1" ] ; then
+  echo "Usage $0 [user@]sync_host"
+  echo "  Syncs the current folder to the same location on the sync_host using rsync"
+  exit 1
+fi
+
+folder=$(pwd | sed "s|$HOME/||")
+
+rsync -avz -e ssh . $1:$folder
+
