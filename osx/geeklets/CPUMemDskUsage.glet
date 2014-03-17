@@ -33,9 +33,9 @@ unset b
 
 
 tmp=`top -l 1 | awk '/PhysMem/ {print $0}' `
-myUsedMem=`echo $tmp   | awk '{print $8}'  | sed s/M// | sed s/G/000/ `
-myFreeMem=`echo $tmp   | awk '{print $10}' | sed s/M// | sed s/G/000/ `
-myActiveMem=`echo $tmp | awk '{print $4}'  | sed s/M// | sed s/G/000/ `
+myUsedMem=`echo $tmp   | awk '{print $2}'  | sed s/M// | sed s/G/000/ `
+myFreeMem=`echo $tmp   | awk '{print $6}' | sed s/M// | sed s/G/000/ `
+myActiveMem=`echo $tmp | awk '{print $4}'  | sed "s/[()]//g" | sed s/M// | sed s/G/000/ `
 myTotalMem=` expr $myUsedMem + $myFreeMem`
 myUsedPer=`echo |awk '{print f / t * 100}' f=$myActiveMem t=$myTotalMem`
 myUsedPer=`echo "tmp=$myUsedPer; tmp /= 1; tmp" | bc`
