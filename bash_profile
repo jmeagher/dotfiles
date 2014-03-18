@@ -14,7 +14,11 @@ done
 # Setup a few really basic things
 
 if [ "" = "$EDITOR" ] ; then
-  EDITOR=vi
+  if [ "" != "`which vim 2> /dev/null `" ] ; then
+    EDITOR=vim
+  else
+    EDITOR=vi
+  fi
 fi
 alias e="$EDITOR"
 
