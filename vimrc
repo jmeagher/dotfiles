@@ -198,6 +198,12 @@ augroup filetypedetect
   au BufNewFile,BufRead *.config set filetype=yaml syntax=yaml 
 augroup END 
  
+" Allow some local customizations of vim
+if isdirectory(expand("$HOME/.vimlocal/"))
+  for rcfile in split(globpath(expand("$HOME/.vimlocal"), "*.vim"), '\n') 
+      execute('source '.rcfile)
+  endfor
+endif
 
 " Required fix for vundle
 filetype plugin indent on     " required!
