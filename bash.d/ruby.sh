@@ -32,16 +32,18 @@ if [ "" != "`which rbenv 2> /dev/null `" ] ; then
       to_install=$1
       install_version=
       if [ "$to_install" = "" ] ; then
-          to_install=bundler
+          to_install=nothing
       fi
       while [ "$to_install" != "" ] ; do
-          cmd="gem install $to_install"
-          if [ "$install_version" != "" ] ; then
-              cmd="$cmd -v $install_version"
+          if [ "$to_install" != "nothing" ] ; then
+            cmd="gem install $to_install"
+            if [ "$install_version" != "" ] ; then
+                cmd="$cmd -v $install_version"
+            fi
+            echo "Trying to install $to_install -v $install_version" # [press enter to continue]"
+            #read blah
+            $cmd
           fi
-          echo "Trying to install $to_install -v $install_version" # [press enter to continue]"
-          #read blah
-          $cmd
 
           stat=$(bundle list | grep "Could not find gem" | extsed "s/^.*Could not find gem '([^ ]+).*[^0-9.]([0-9.]+)[^0-9].*$/\1 \2/")
 
