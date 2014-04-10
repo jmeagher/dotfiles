@@ -43,6 +43,9 @@ Bundle 'airblade/vim-gitgutter'
 " Alignment
 Bundle 'junegunn/vim-easy-align'
 
+" Task list
+Bundle 'superjudge/tasklist-pathogen'
+
 " Language support
 "
 Bundle 'vim-ruby/vim-ruby'
