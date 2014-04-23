@@ -73,9 +73,9 @@ installcask geektool
 
 # Deps for r
 # This doesn't seem to load completely, but can be manually installed from what's downloaded
-installcask x-quartz
-brew install gfortran
-brew install r
+# installcask x-quartz
+# brew install gfortran
+installcask r
 installcask rstudio
 
 # More dev tools
