@@ -95,6 +95,10 @@ set showmatch
 " Spell check by default
 " set spell
 
+if has("gui_macvim")
+  " set macvim specific stuff
+  silent! set transparency=15
+endif
 
 "------------------------------------------------------------
 " Other tweaks for how I like things
