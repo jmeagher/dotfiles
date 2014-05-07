@@ -1,6 +1,9 @@
 if [ "" != "`which rbenv 2> /dev/null `" ] ; then
     eval " $(rbenv init - )"
 
+    # Handy ruby things
+    alias be="bundle exec"
+
     function rbenvsetup() {
       if [ ! -e .ruby-version ] ; then
           rbenv global > .ruby-version 
