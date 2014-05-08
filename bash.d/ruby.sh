@@ -4,11 +4,20 @@ if [ "" != "`which rbenv 2> /dev/null `" ] ; then
     # Handy ruby things
     alias be="bundle exec"
 
+    # If there's a better way to do this please let me know
+    # This works for me when using rbenv and works on the projects I work on
+    function rt() {
+      if [ "$1" = "" ] ; then
+        bundle exec rake spec
+      else
+        bundle exec rspec "$@"
+      fi
+    }
+
     function rbenvsetup() {
       if [ ! -e .ruby-version ] ; then
           rbenv global > .ruby-version 
       fi
-
 
       rbenv gemset version 2>&1 > /dev/null
       r=$?
