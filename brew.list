@@ -59,6 +59,9 @@ installcask macvim
 # hack to get the mvim command
 cp ${caskroom}/macvim/*/*/mvim ~/bin/
 
+# For better vimming
+brew install ctags
+
 
 installcask iterm2
 

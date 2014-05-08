@@ -52,6 +52,9 @@ Bundle 'vim-ruby/vim-ruby'
 Bundle 'tpope/vim-rake'
 Bundle 'Markdown'
 
+" Tag support
+Bundle 'majutsushi/tagbar'
+
 " A few other random tools
 "
 " The Silver Surfer integration for faster searching of code
@@ -163,10 +166,9 @@ nmap <silent>!scd       <Plug>SQLUGetColumnDef<CR>
 nmap <silent>!scdt      <Plug>SQLUGetColumnDataType<CR> 
 nmap <silent>!scp       <Plug>SQLUCreateProcedure<CR> 
 
-" Ctrl-N to toggle NERDTree
 map <C-n> :NERDTreeToggle<CR>
-" Ctrl-S to toggle spell check
 map <C-s> :set spell!<CR>
+map <C-t> :TagbarToggle<CR>
 
 
 " Fancy tab auto-complete
