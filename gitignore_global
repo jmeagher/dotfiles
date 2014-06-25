@@ -3,6 +3,8 @@
 .ruby-version
 .ruby-gemset
 *.env
+# Rubymine
+.idea
 
 # For java/maven projects
 target
