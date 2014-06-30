@@ -27,7 +27,8 @@
 	merge = refs/heads/master
 
 [push]
-	default = matching
+  # Only push the current branch
+	default = current
 
 [core]
 	excludesfile = ~/.gitignore_global
