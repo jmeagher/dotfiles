@@ -14,7 +14,9 @@ done
 # Setup a few really basic things
 
 if [ "" = "$EDITOR" ] ; then
-  if [ "" != "`which vim 2> /dev/null `" ] ; then
+  if [ "" != "`which mvim 2> /dev/null `" ] ; then
+    EDITOR=mvim
+  elif [ "" != "`which vim 2> /dev/null `" ] ; then
     EDITOR=vim
   else
     EDITOR=vi
