@@ -37,13 +37,26 @@ parse_aws_info() {
 }
 
 parse_ruby_info() {
-  _RV=$(rbenv version | cut -f1 -d ' ')
-  if [ "" != "$_RV" ] ; then
-    _GS=$(rbenv gemset active 2>&1 | grep -v "no active gemse" | sed "s/\bglobal\b//" | sed "s/ $//")
-    if [ "$_GS" != "" ] ; then
-      _RV="$_RV($_GS)"
+  if [ "$_RUBY_CHECK" = "" ] ; then
+    _RUBY_CHECK=false
+    if [ "" != "`which rbenv 2> /dev/null `" ] ; then
+      _RUBY_CHECK=rbenv
+    elif [ "" != "`which rvm 2> /dev/null `" ] ; then
+      _RUBY_CHECK=rvm
     fi
-    echo "rbenv:$_RV"
+  fi
+  if [ "$_RUBY_CHECK" = "rbenv" ] ; then
+    _RV=$(rbenv version | cut -f1 -d ' ')
+    if [ "" != "$_RV" ] ; then
+      _GS=$(rbenv gemset active 2>&1 | grep -v "no active gemse" | sed "s/\bglobal\b//" | sed "s/ $//")
+      if [ "$_GS" != "" ] ; then
+        _RV="$_RV($_GS)"
+      fi
+      echo "rbenv:$_RV"
+    fi
+  elif [ "$_RUBY_CHECK" = "rvm" ] ; then
+    _RV=$(rvm list 2>&1 | egrep '^=. ' | cut -d' ' -f2)
+    echo "rvm:$_RV"
   fi
 }
 
@@ -160,7 +173,8 @@ fi
 
 PS_AWS="\[${_WHITE}\]\$(parse_aws_info) "
 
-if [ "" != "`which rbenv 2> /dev/null `" ] ; then
+parse_ruby_info 2>&1 > /dev/null
+if [ "false" != "_RUBY_CHECK" ] ; then
   PS_RUBY="\[${_BLUE}\]\$(parse_ruby_info)"
 else
   PS_RUBY=
