@@ -51,6 +51,7 @@ Bundle 'superjudge/tasklist-pathogen'
 Bundle 'vim-ruby/vim-ruby'
 Bundle 'tpope/vim-rake'
 Bundle 'Markdown'
+Bundle 'rodjek/vim-puppet'
 
 " Tag support
 Bundle 'majutsushi/tagbar'
