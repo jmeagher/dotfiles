@@ -59,7 +59,7 @@ shopt -s cdspell
 
 
 # Run the bulk of the custom setup scripts
-for file in `ls ~/.mydotfiles/bash.d/* | grep -v "~"` ; do
+for file in ~/.mydotfiles/bash.d/*.sh ; do
     source $file
 done
 
