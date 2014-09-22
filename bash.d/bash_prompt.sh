@@ -36,28 +36,61 @@ parse_aws_info() {
   echo -n $AWS_PROMPT
 }
 
+
+if [ "" != "`which rbenv 2> /dev/null `" ] ; then
+  _RUBY_CHECK=rbenv
+elif [ "" != "`which rvm 2> /dev/null `" ] ; then
+  _RUBY_CHECK=rvm
+else
+  _RUBY_CHECK=
+fi
+
 parse_ruby_info() {
-  if [ "$_RUBY_CHECK" = "" ] ; then
-    _RUBY_CHECK=false
-    if [ "" != "`which rbenv 2> /dev/null `" ] ; then
-      _RUBY_CHECK=rbenv
-    elif [ "" != "`which rvm 2> /dev/null `" ] ; then
-      _RUBY_CHECK=rvm
-    fi
+  if [ -e ~/.ruby_prompt ] ; then
+    _RUBY_DATA=$(cat ~/.ruby_prompt)
+    _PROMPT_DATA=${_RUBY_DATA%% *}
+    _RV=${_RUBY_DATA##* }
+    _LAST_RUBY_DIR=${_PROMPT_DATA%%:*}
+    _LAST_RUBY_TIME=${_PROMPT_DATA##*:}
+  else
+    _LAST_RUBY_DIR=/blah
+    _LAST_RUBY_TIME=0
+    _RV=
   fi
-  if [ "$_RUBY_CHECK" = "rbenv" ] ; then
-    _RV=$(rbenv version | cut -f1 -d ' ')
-    if [ "" != "$_RV" ] ; then
-      _GS=$(rbenv gemset active 2>&1 | grep -v "no active gemse" | sed "s/\bglobal\b//" | sed "s/ $//")
-      if [ "$_GS" != "" ] ; then
-        _RV="$_RV($_GS)"
+
+  if [ "$_LAST_RUBY_DIR" = "$PWD" ] ; then
+    if [ $_LAST_RUBY_TIME -gt $(($(date +%s)-60)) ] ; then
+      _RUBY_STAT=skip
+    fi
+  else
+    _LAST_RUBY_DIR="$PWD"
+    export _LAST_RUBY_DIR
+    _RUBY_STAT=
+  fi
+
+  if [ "$_RUBY_STAT" != "skip" ] ; then
+
+    if [ "$_RUBY_CHECK" = "rbenv" ] ; then
+      _RV=$(rbenv version | cut -f1 -d ' ')
+      if [ "" != "$_RV" ] ; then
+        _GS=$(rbenv gemset active 2>&1 | grep -v "no active gemse" | sed "s/\bglobal\b//" | sed "s/ $//")
+        if [ "$_GS" != "" ] ; then
+          _RV="$_RV($_GS)"
+        fi
       fi
-      echo "rbenv:$_RV"
+    elif [ "$_RUBY_CHECK" = "rvm" ] ; then
+      _RV=$(rvm list 2>&1 | egrep '^=. ' | cut -d' ' -f2)
     fi
-  elif [ "$_RUBY_CHECK" = "rvm" ] ; then
-    _RV=$(rvm list 2>&1 | egrep '^=. ' | cut -d' ' -f2)
-    echo "rvm:$_RV"
+
+    if [ "$_RV" != "" ] ; then
+      _RP=$_RUBY_CHECK:$_RV
+    fi
+
   fi
+
+  echo -ne $_RV
+  echo "$PWD:$(date +%s) $_RV" > ~/.ruby_prompt
+
 }
 
 parse_last_command_error() {
