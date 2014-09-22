@@ -2,7 +2,7 @@
 # Some of this is taken from from https://github.com/mathiasbynens/dotfiles
 
 
-parse_git_branch() {
+parse_git_info() {
   GIT_BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/git:\1/'`
   # Can't figure out how to get this to work with the built in OSX sed
   GIT_EXTRA=`git status --porcelain 2> /dev/null | cut -c 1-2 | tr "?" "N" | extsed 's/(.)/-\1/g' | tr "-" "\n" | sort | uniq | tr "\n" " " | sed "s/ //g"`
@@ -10,6 +10,18 @@ parse_git_branch() {
     echo "$GIT_BRANCH"
   else
     echo "$GIT_BRANCH (${GIT_EXTRA})"
+  fi
+}
+
+parse_svn_info() {
+  REV=$(svn info 2>&1 | grep 'Revision:' | cut -d' ' -f2)
+  if [ "" != "$REV" ] ; then
+    SVN_DIRTY=$(svn status | cut -c 1 | sort | uniq | tr "\n" " " | sed "s/ //g")
+    if [ "$SVN_DIRTY" != "" ] ; then
+      echo "svn:$REV ($SVN_DIRTY)"
+    else
+      echo "svn:$REV"
+    fi
   fi
 }
 
@@ -199,9 +211,15 @@ PS_TIME="\[${_MAGENTA}\]\$(prompt_time)"
 
 # Extra stuff
 if [ "" != "`which git 2> /dev/null `" ] ; then
-  PS_GIT="\[${_CYAN}\]\$(parse_git_branch)"
+  PS_GIT="\[${_CYAN}\]\$(parse_git_info)"
 else
   PS_GIT=
+fi
+
+if [ "" != "`which svn 2> /dev/null `" ] ; then
+  PS_SVN="\[${_CYAN}\]\$(parse_svn_info)"
+else
+  PS_SVN=
 fi
 
 PS_AWS="\[${_WHITE}\]\$(parse_aws_info) "
@@ -214,6 +232,6 @@ else
 fi
 
 # And put them all together
-PS1="${PS_TITLE}${PS_ERROR}\n${PS_USER} ${PS_TIME}\n${PS_DIR} ${PS_GIT} ${PS_RUBY} ${PS_AWS} ${PS_EXTRAS} ${PS_END}"
+PS1="${PS_TITLE}${PS_ERROR}\n${PS_USER} ${PS_TIME}\n${PS_DIR} ${PS_GIT}${PS_SVN} ${PS_RUBY} ${PS_AWS} ${PS_EXTRAS} ${PS_END}"
 
 
