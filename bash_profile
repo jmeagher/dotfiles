@@ -14,14 +14,14 @@ done
 # Setup a few really basic things
 
 if [ "" = "$EDITOR" ] ; then
-  if [ "" != "`which mvim 2> /dev/null `" ] ; then
-    EDITOR=mvim
-  elif [ "" != "`which vim 2> /dev/null `" ] ; then
+  if [ "" != "`which vim 2> /dev/null `" ] ; then
     EDITOR=vim
   else
     EDITOR=vi
   fi
+  export EDITOR
 fi
+
 alias e="$EDITOR"
 
 # Lots of path overrides later ones take precedence 
