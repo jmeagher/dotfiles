@@ -52,6 +52,7 @@ Bundle 'vim-ruby/vim-ruby'
 Bundle 'tpope/vim-rake'
 Bundle 'Markdown'
 Bundle 'rodjek/vim-puppet'
+Bundle 'motus/pig.vim'
 
 " Tag support
 Bundle 'majutsushi/tagbar'
