@@ -161,6 +161,7 @@ if [ "$HAS_TPUT" = "true" ] ; then
 		_MAGENTA=$(tput setaf 129)
 		_CYAN=$(tput setaf 51)
 		_WHITE=$(tput setaf 15)
+		_BRIGHT_YELLOW=$(tput setaf 226)
 	else
 		_BLACK=$(tput setaf 0)
 		_RED=$(tput setaf 1)
@@ -170,6 +171,7 @@ if [ "$HAS_TPUT" = "true" ] ; then
 		_MAGENTA=$(tput setaf 5)
 		_CYAN=$(tput setaf 6)
 		_WHITE=$(tput setaf 7)
+		_BRIGHT_YELLOW=$(tput setaf 3)
 	fi
 	_BOLD=$(tput bold)
 	_RESET=$(tput sgr0)
@@ -184,6 +186,7 @@ else
 	_WHITE="\033[37m"
 	_BOLD=""
 	_RESET="\033[m"
+	_BRIGHT_YELLOW="\033[33m"
 fi
 # Couldn't get this one working the same was with tput
 TITLE="\e]0;"
@@ -202,7 +205,7 @@ export _RESET
 
 # Now build up all the pieces of the command prompt
 PS_TITLE="\[$TITLE\w\a\]"
-PS_USER="\[${_GREEN}\]\u@\h"
+PS_USER="\[${_GREEN}\]\u\[${_WHITE}\]@\[${_BRIGHT_YELLOW}\]\h"
 PS_DIR="\[${_YELLOW}\]\w"
 PS_ERROR="\[$_RED\]\$(parse_last_command_error)"
 PS_END="\n\[${_RESET}\]$ "
