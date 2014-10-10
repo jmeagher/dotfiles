@@ -53,6 +53,7 @@ Bundle 'tpope/vim-rake'
 Bundle 'Markdown'
 Bundle 'rodjek/vim-puppet'
 Bundle 'motus/pig.vim'
+Bundle 'digitaltoad/vim-jade'
 
 " Tag support
 Bundle 'majutsushi/tagbar'
@@ -108,6 +109,11 @@ endif
 "------------------------------------------------------------
 " Other tweaks for how I like things
 "------------------------------------------------------------
+
+" Airline status bar config
+" Light theme for good contrast
+let g:airline_theme='light'
+let g:airline#extensions#branch#enabled = 1
 
 
 " number of spaces to automatically indent
@@ -203,10 +209,10 @@ autocmd BufEnter * cd %:p:h
 
 " Special file type mappings
 augroup filetypedetect 
-  au BufNewFile,BufRead *.pig    set filetype=pig  syntax=pig 
-  au BufNewFile,BufRead *.hive   set filetype=sql  syntax=sql 
-  au BufNewFile,BufRead *.hsql   set filetype=sql  syntax=sql 
-  au BufNewFile,BufRead *.config set filetype=yaml syntax=yaml 
+  au BufNewFile,BufRead *.pig    set filetype=pig    syntax=pig 
+  au BufNewFile,BufRead *.hive   set filetype=sql    syntax=sql 
+  au BufNewFile,BufRead *.hsql   set filetype=sql    syntax=sql 
+  au BufNewFile,BufRead *.config set filetype=yaml   syntax=yaml 
 augroup END 
  
 " Allow some local customizations of vim
