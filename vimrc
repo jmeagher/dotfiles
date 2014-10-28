@@ -157,6 +157,8 @@ endif
 " Set the <leader> key to be , instead of \
 let mapleader = ","
 
+" Goodbye error bell
+set vb t_vb=
 
 
 "------------------------------------------------------------
