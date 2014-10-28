@@ -1,11 +1,9 @@
 declare -i jtime
 jtime=$1
-jtime=$(($jtime/1000))
+if [ ${#jtime} -gt 11 ] ; then
+  jtime=$(($jtime/1000))
+fi
 
-# Should add something fancy for switching modes
-# For gnu utils style date
-date --date="@$jtime"
-
-# For mac style date
-# date -r $jtime
+# Hacky way to handle both Gnu and Mac style date options
+date -u --date="@$jtime" 2> /dev/null || date -u -r $jtime 
 
