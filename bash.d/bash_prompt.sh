@@ -49,12 +49,13 @@ parse_aws_info() {
 }
 
 
-if [ "" != "`which rbenv 2> /dev/null `" ] ; then
-  _RUBY_CHECK=rbenv
-elif [ "" != "`which rvm 2> /dev/null `" ] ; then
-  _RUBY_CHECK=rvm
-else
-  _RUBY_CHECK=
+_RUBY_CHECK=""
+if [ "$ENABLE_RUBY_PROMPT" = "true" ] ; then
+  if [ "" != "`which rbenv 2> /dev/null `" ] ; then
+    _RUBY_CHECK=rbenv
+  elif [ "" != "`which rvm 2> /dev/null `" ] ; then
+    _RUBY_CHECK=rvm
+  fi
 fi
 
 parse_ruby_info() {
@@ -227,8 +228,7 @@ fi
 
 PS_AWS="\[${_WHITE}\]\$(parse_aws_info) "
 
-parse_ruby_info 2>&1 > /dev/null
-if [ "false" != "_RUBY_CHECK" ] ; then
+if [ "" != "$_RUBY_CHECK" ] ; then
   PS_RUBY="\[${_BLUE}\]\$(parse_ruby_info)"
 else
   PS_RUBY=
