@@ -54,6 +54,7 @@ Bundle 'Markdown'
 Bundle 'rodjek/vim-puppet'
 Bundle 'motus/pig.vim'
 Bundle 'digitaltoad/vim-jade'
+Bundle 'derekwyatt/vim-scala'
 
 " Tag support
 Bundle 'majutsushi/tagbar'
@@ -227,3 +228,5 @@ endif
 " Required fix for vundle
 filetype plugin indent on     " required!
 
+" For some reason the usual ftplugins folder doesn't work for these settings for python
+au FileType python set shiftwidth=2 softtabstop=2 tabstop=2 textwidth=100 textwidth=100 expandtab smarttab
