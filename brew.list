@@ -43,8 +43,7 @@ brew install tmux
 
 # Install native apps
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.brew
-brew tap phinze/homebrew-cask
-brew install brew-cask
+brew install caskroom/cask/brew-cask
 
 function installcask() {
     if brew cask info "${@}" | grep "Not installed" > /dev/null; then
