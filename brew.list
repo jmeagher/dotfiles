@@ -41,6 +41,12 @@ brew install go
 brew install gnuplot
 brew install tmux
 
+
+# For reStructured Text editing
+brew tap homebrew/python
+brew install retext
+
+
 # Install native apps
 # From https://github.com/mathiasbynens/dotfiles/blob/master/.brew
 brew install caskroom/cask/brew-cask
