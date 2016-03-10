@@ -44,7 +44,7 @@ Bundle 'airblade/vim-gitgutter'
 Bundle 'junegunn/vim-easy-align'
 
 " Task list
-Bundle 'superjudge/tasklist-pathogen'
+" Bundle 'superjudge/tasklist-pathogen'
 
 " Language support
 "
@@ -55,9 +55,11 @@ Bundle 'rodjek/vim-puppet'
 Bundle 'motus/pig.vim'
 Bundle 'digitaltoad/vim-jade'
 Bundle 'derekwyatt/vim-scala'
+Bundle 'chase/vim-ansible-yaml'
+Bundle 'mustache/vim-mustache-handlebars'
 
 " Tag support
-Bundle 'majutsushi/tagbar'
+" Bundle 'majutsushi/tagbar'
 
 " A few other random tools
 "
