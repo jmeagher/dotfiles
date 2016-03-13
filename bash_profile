@@ -1,42 +1,45 @@
 #! /bin/bash
 
-# Get the aliases and functions
+# get the aliases and functions
 if [ -f ~/.bashrc ]; then
-        . ~/.bashrc
+  . ~/.bashrc
 fi
 
 # Pre-run overrides, if the files are defined
-for file in ~/.{bash_profile_local_pre,bash_${HOSTNAME}_pre}; do
-	[ -r "$file" ] && source "$file"
+for file in ~/.{bash_profile_local,bash_$(hostname),bash_$(hostname -s)}_pre; do
+  [ -r "$file" ] && source "$file"
 done
 
 
 # Setup a few really basic things
 
 if [ "" = "$EDITOR" ] ; then
-  if [ "" != "`which vim 2> /dev/null `" ] ; then
-    EDITOR=vim
-  else
-    EDITOR=vi
-  fi
-  export EDITOR
+  # Preferred editor list
+  for EDITOR in mvim vim vi ; do
+    if command -v $EDITOR >& /dev/null ; then
+      export EDITOR
+      break
+    else
+      unset EDITOR
+    fi
+  done
 fi
 
 alias e="$EDITOR"
 
 # Lots of path overrides later ones take precedence 
 for p in /usr/local/opt/coreutils/libexec/gnubin /usr/local/bin ~/bin ; do
-    if [ -d $p ] ; then
-        PATH=$p:$PATH
-    fi
+  if [ -d $p ] ; then
+    PATH=$p:$PATH
+    export PATH
+  fi
 done
 unset p
-export PATH
 
 if [ -d /usr/local/opt/coreutils/libexec/gnuman ] ; then
-    MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+  MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+  export MANPATH
 fi
-export MANPATH
 
 # Handle mac vs gnu ls color options
 ls --color >& /dev/null && alias ls="ls -F --color" || alias ls="ls -F -G"
@@ -60,12 +63,12 @@ shopt -s cdspell
 
 # Run the bulk of the custom setup scripts
 for file in ~/.mydotfiles/bash.d/*.sh ; do
-    source $file
+  source $file
 done
 
 # Final post-run options for local settings
-for file in ~/.{bash_profile_local,bash_${HOSTNAME}}; do
-	[ -r "$file" ] && source "$file"
+for file in ~/.{bash_profile_local,bash_$(hostname),bash_$(hostname -s)}; do
+  [ -r "$file" ] && source "$file"
 done
 unset file
 

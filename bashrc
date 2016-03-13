@@ -4,7 +4,7 @@ __BASHRC_RUN=true
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
-	. /etc/bashrc
+  . /etc/bashrc
 fi
 
 # Change so bash_profile includes this instead
