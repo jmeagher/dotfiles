@@ -18,6 +18,7 @@ Bundle 'gmarik/vundle'
 "
 Bundle 'tpope/vim-fugitive'
 Bundle 'tpope/vim-git'
+Bundle 'tpope/vim-surround'
 
 
 " UI Additions
@@ -57,6 +58,7 @@ Bundle 'digitaltoad/vim-jade'
 Bundle 'derekwyatt/vim-scala'
 Bundle 'chase/vim-ansible-yaml'
 Bundle 'mustache/vim-mustache-handlebars'
+Bundle 'kchmck/vim-coffee-script'
 
 " Tag support
 " Bundle 'majutsushi/tagbar'
