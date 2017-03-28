@@ -10,5 +10,5 @@ fi
 
 folder=$(pwd | sed "s|$HOME/||")
 
-rsync -avz -e ssh . $1:$folder
+rsync -avz -e ssh . $1:$folder || ssh $1 mkdir -p $folder
 
