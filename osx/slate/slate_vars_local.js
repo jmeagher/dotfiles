@@ -1,6 +1,6 @@
 
-var monLaptop = "1680x1050";
-var thunderbolt = "2560x1440";
+var monLaptop = "1440x900";
+var horizontal = "1920x1080";
 
 var mainScreen = monLaptop;
 
