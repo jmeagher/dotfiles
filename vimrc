@@ -36,7 +36,8 @@ Bundle 'scrooloose/nerdcommenter'
 Bundle 'scrooloose/syntastic'
 
 " Better status bar
-Bundle 'bling/vim-airline'
+Bundle 'vim-airline/vim-airline'
+Bundle 'vim-airline/vim-airline-themes'
 
 " Show live git diff markers
 Bundle 'airblade/vim-gitgutter'
