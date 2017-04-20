@@ -8,5 +8,6 @@ if [ "" != "`which git 2> /dev/null `" ] ; then
         done
 
     }
+    alias gitup='for D in $(ls -df */.git) ; do echo $(dirname $D) ; (cd $(dirname $D) && pwd && git pull); done'
 fi
 

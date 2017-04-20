@@ -32,6 +32,7 @@ if [ "" != "`which mvn 2> /dev/null `" ] ; then
     alias msetup="m eclipse:eclipse -DdownloadSources=true"
     alias mc="m compiler:compile"
     alias mdt="m dependency:tree"
+    alias mqp="m package -DskipTests"
 fi
 
 

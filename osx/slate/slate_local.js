@@ -21,7 +21,7 @@ var oneMonitorLayout = S.lay("oneMonitor", _.extend(commonLayout(), {
 var twoMonitorLayout = S.lay("twoMonitor", _.extend(commonLayout(), {
   "MacVim"        : w(cornerOnly(horizontal, "top-right")),
   "iTerm2"        : w(cornerSize(horizontal, "bottom-right", 0.6, 0.6)),
-  "IntelliJ IDEA" : w(cornerSize(horizontal, "top-right", 0.7, 0.7)),
+  "IntelliJ IDEA" : w(cornerSize(horizontal, "top-right", 0.7, 0.9)),
   "Google Chrome" : byTitleRegex([
     {"r":pbr, "op":cornerSize(monLaptop, "top-right", 0.8, 0.8)}
     ], cornerSize(horizontal, "top-left", 0.7, 0.9)),
