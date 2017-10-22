@@ -5,7 +5,7 @@
 set nocompatible              " be iMproved
 filetype on                   " required!
 filetype off                  " required!
-set rtp+=~/.vim/bundle/vundle/
+set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'

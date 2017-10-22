@@ -41,8 +41,8 @@ for f in `ls bin/* | grep -v "~"` ; do
 done
 
 # A little extra vim setup
-if [ ! -e vim/bundle/vundle ] ; then
-    (cd vim/bundle; git clone https://github.com/gmarik/vundle.git)
+if [ ! -e vim/bundle/Vundle.vim ] ; then
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 fi
 
 echo "Hit enter to install vundle bundles, ctrl-c to skip"
