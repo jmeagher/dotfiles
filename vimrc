@@ -7,7 +7,8 @@ filetype on                   " required!
 filetype off                  " required!
 set rtp+=~/.vim/bundle/vundle/
 call vundle#begin()
-Bundle 'gmarik/vundle'
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
 
 
 "------------------------------------------------------------
