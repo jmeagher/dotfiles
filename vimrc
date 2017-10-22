@@ -6,7 +6,7 @@ set nocompatible              " be iMproved
 filetype on                   " required!
 filetype off                  " required!
 set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+call vundle#begin()
 Bundle 'gmarik/vundle'
 
 
@@ -33,7 +33,7 @@ Bundle 'scrooloose/nerdtree'
 Bundle 'scrooloose/nerdcommenter'
 
 " IDE-ish syntax checking
-Bundle 'scrooloose/syntastic'
+" Bundle 'scrooloose/syntastic'
 
 " Better status bar
 Bundle 'vim-airline/vim-airline'
@@ -50,16 +50,23 @@ Bundle 'junegunn/vim-easy-align'
 
 " Language support
 "
-Bundle 'vim-ruby/vim-ruby'
-Bundle 'tpope/vim-rake'
 Bundle 'Markdown'
-Bundle 'rodjek/vim-puppet'
-Bundle 'motus/pig.vim'
-Bundle 'digitaltoad/vim-jade'
-Bundle 'derekwyatt/vim-scala'
 Bundle 'chase/vim-ansible-yaml'
 Bundle 'mustache/vim-mustache-handlebars'
-Bundle 'kchmck/vim-coffee-script'
+
+:let vim_scala = $VIM_SCALA
+if vim_scala == '1'
+  Bundle 'derekwyatt/vim-scala'
+endif
+:let vim_puppet = $VIM_PUPPET
+if vim_puppet == '1'
+  Bundle 'rodjek/vim-puppet'
+endif
+:let vim_ruby = $VIM_RUBY
+if vim_ruby == '1'
+  Bundle 'vim-ruby/vim-ruby'
+  Bundle 'tpope/vim-rake'
+endif
 
 " Tag support
 " Bundle 'majutsushi/tagbar'
