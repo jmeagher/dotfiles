@@ -15,7 +15,7 @@ done
 
 if [ "" = "$EDITOR" ] ; then
   # Preferred editor list
-  for EDITOR in mvim vim vi ; do
+  for EDITOR in vim vi ; do
     if command -v $EDITOR >& /dev/null ; then
       export EDITOR
       break
@@ -25,7 +25,12 @@ if [ "" = "$EDITOR" ] ; then
   done
 fi
 
-alias e="$EDITOR"
+for TRY in mvim $EDITOR ; do
+	if command -v $TRY >& /dev/null ; then
+		alias e="$TRY"
+		break
+	fi
+done
 
 # Lots of path overrides later ones take precedence 
 for p in /usr/local/opt/coreutils/libexec/gnubin /usr/local/bin ~/bin ; do
