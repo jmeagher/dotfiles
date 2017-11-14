@@ -119,7 +119,7 @@ parse_last_command_error() {
 }
 
 __DO_UNICODE=false
-[[ "$(locale charmap)" = "UTF-8" ]] && __DO_UNICODE=true
+[[ "$(locale charmap >& /dev/null)" = "UTF-8" ]] && __DO_UNICODE=true
 export __DO_UNICODE
 prompt_time() {
   p_icon=
