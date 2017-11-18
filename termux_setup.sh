@@ -1,5 +1,5 @@
 # Install with:
-# wget https://raw.githubusercontent.com/jmeagher/dotfiles/master/termux_setup.sh -O - | sh
+# pkg install -y curl && curl https://raw.githubusercontent.com/jmeagher/dotfiles/master/termux_setup.sh | sh
 
 # Pretty much straight copy of the steps in https://blog.lessonslearned.org/building-a-more-secure-development-chromebook/
 
