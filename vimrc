@@ -17,68 +17,68 @@ Plugin 'VundleVim/Vundle.vim'
 
 " Utility sorta things
 "
-Bundle 'tpope/vim-fugitive'
-Bundle 'tpope/vim-git'
-Bundle 'tpope/vim-surround'
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-git'
+Plugin 'tpope/vim-surround'
 
 
 " UI Additions
 "
 " Show indent levels as background changes
-Bundle 'nathanaelkane/vim-indent-guides'
+Plugin 'nathanaelkane/vim-indent-guides'
 
 " Better file/directory browsing
-Bundle 'scrooloose/nerdtree'
+Plugin 'scrooloose/nerdtree'
 
 " Easier commenting
-Bundle 'scrooloose/nerdcommenter'
+Plugin 'scrooloose/nerdcommenter'
 
 " IDE-ish syntax checking
-" Bundle 'scrooloose/syntastic'
+" Plugin 'scrooloose/syntastic'
 
 " Better status bar
-Bundle 'vim-airline/vim-airline'
-Bundle 'vim-airline/vim-airline-themes'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 
 " Show live git diff markers
-Bundle 'airblade/vim-gitgutter'
+Plugin 'airblade/vim-gitgutter'
 
 " Alignment
-Bundle 'junegunn/vim-easy-align'
+Plugin 'junegunn/vim-easy-align'
 
 " Task list
-" Bundle 'superjudge/tasklist-pathogen'
+" Plugin 'superjudge/tasklist-pathogen'
 
 " Language support
 "
-Bundle 'Markdown'
-Bundle 'chase/vim-ansible-yaml'
-Bundle 'mustache/vim-mustache-handlebars'
+Plugin 'Markdown'
+Plugin 'chase/vim-ansible-yaml'
+Plugin 'mustache/vim-mustache-handlebars'
 
 :let vim_scala = $VIM_SCALA
 if vim_scala == '1'
-  Bundle 'derekwyatt/vim-scala'
+  Plugin 'derekwyatt/vim-scala'
 endif
 :let vim_puppet = $VIM_PUPPET
 if vim_puppet == '1'
-  Bundle 'rodjek/vim-puppet'
+  Plugin 'rodjek/vim-puppet'
 endif
 :let vim_ruby = $VIM_RUBY
 if vim_ruby == '1'
-  Bundle 'vim-ruby/vim-ruby'
-  Bundle 'tpope/vim-rake'
+  Plugin 'vim-ruby/vim-ruby'
+  Plugin 'tpope/vim-rake'
 endif
 
 " Tag support
-" Bundle 'majutsushi/tagbar'
+" Plugin 'majutsushi/tagbar'
 
 " A few other random tools
 "
 " The Silver Surfer integration for faster searching of code
-Bundle 'rking/ag.vim'
+Plugin 'rking/ag.vim'
 " fasd integration and a required lib for it
-Bundle 'tomtom/tlib_vim'
-Bundle 'amiorin/vim-fasd'
+Plugin 'tomtom/tlib_vim'
+Plugin 'amiorin/vim-fasd'
 
 
 "------------------------------------------------------------
@@ -91,19 +91,12 @@ if has("gui_running")
   set columns=140
 endif
 
-" Color scheme
-set background=dark
-
-" Fallback if the vundle ones aren't there yet
-colorscheme darkblue
 
 " https://github.com/tpope/vim-vividchalk
-Bundle 'vividchalk.vim'
-" silent! colorscheme vividchalk
+Plugin 'vividchalk.vim'
 
 " https://github.com/nanotech/jellybeans.vim
-Bundle "nanotech/jellybeans.vim"
-silent! colorscheme jellybeans
+Plugin 'nanotech/jellybeans.vim'
 
 
 " Do syntax highlighting
@@ -239,7 +232,17 @@ if isdirectory(expand("$HOME/.vimlocal/"))
 endif
 
 " Required fix for vundle
+call vundle#end()             " required!
 filetype plugin indent on     " required!
 
 " For some reason the usual ftplugins folder doesn't work for these settings for python
 au FileType python set shiftwidth=2 softtabstop=2 tabstop=2 textwidth=100 textwidth=100 expandtab smarttab
+
+" Color scheme
+set background=dark
+
+" These need to go after the vundle end so the plugins are really loaded
+" Fallback if the vundle ones aren't there yet
+colorscheme darkblue
+" silent! colorscheme vividchalk
+silent! colorscheme jellybeans
