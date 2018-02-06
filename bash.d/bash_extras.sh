@@ -24,3 +24,5 @@ else
   alias diffw='diff -W $(( $COLUMNS - 2 ))'
 fi
 
+alias ssh-add-day='ssh-add -t 70000'
+
