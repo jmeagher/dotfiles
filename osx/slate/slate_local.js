@@ -13,18 +13,20 @@ var oneMonitorLayout = S.lay("oneMonitor", _.extend(commonLayout(), {
   "MacVim"        : w(sideOnly(mainScreen, "right")),
   "iTerm2"        : w(moveSize(mainScreen, 0.3, 0.3, 0.7, 0.7)),
   "IntelliJ IDEA" : w(cornerSize(mainScreen, "top-right", 0.7, 0.7)),
+  "Code"          : w(cornerSize(mainScreen, "top-right", 0.7, 0.7)),
   "Google Chrome" : byTitleRegex([
     {"r":pbr, "op":cornerSize(mainScreen, "bottom-right", 0.7, 0.7)}
     ], moveSize(mainScreen, 0.0, 0.09, 0.7, 0.7)),
 }));
 
 var twoMonitorLayout = S.lay("twoMonitor", _.extend(commonLayout(), {
-  "MacVim"        : w(cornerOnly(horizontal, "top-right")),
-  "iTerm2"        : w(cornerSize(horizontal, "bottom-right", 0.6, 0.6)),
-  "IntelliJ IDEA" : w(cornerSize(horizontal, "top-right", 0.7, 0.9)),
+  "MacVim"        : w(cornerOnly(horizontal, "top-left")),
+  "iTerm2"        : w(cornerSize(horizontal, "bottom-right", 0.5, 0.8)),
+  "IntelliJ IDEA" : w(cornerSize(horizontal, "top-right", 0.5, 0.9)),
+  "Code"          : w(cornerSize(horizontal, "top-left", 0.5, 0.9)),
   "Google Chrome" : byTitleRegex([
-    {"r":pbr, "op":cornerSize(monLaptop, "top-right", 0.8, 0.8)}
-    ], cornerSize(horizontal, "top-left", 0.7, 0.9)),
+    {"r":pbr, "op":cornerSize(monLaptop, "top-right", 0.6, 0.7)}
+    ], cornerSize(horizontal, "top-right", 0.5, 0.7)),
 }));
 
 // Defaults
