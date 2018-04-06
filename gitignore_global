@@ -1,3 +1,6 @@
+# General stuff
+tmp
+.*
 
 # A few ruby specific ones, rbenv config
 .ruby-version
@@ -21,3 +24,4 @@ target
 .DS_Store
 
 .vscode
+
