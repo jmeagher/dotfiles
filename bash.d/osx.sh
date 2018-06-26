@@ -21,4 +21,9 @@ if [ -e /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl ] ; then
     fi
 fi
 
+if command -v pwgen >& /dev/null ; then
+  genpasswd() {
+    pwgen -Bs $1 1 |pbcopy |pbpaste; echo “Has been copied to clipboard”
+  }
+fi
 
