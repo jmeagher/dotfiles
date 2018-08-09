@@ -111,11 +111,9 @@ parse_ruby_info() {
 
 }
 
-parse_last_command_error() {
-  code=$?
-  if [ "$code" != "0" ] ; then
-    echo "Err ◕︵◕ $code"
-  fi
+parse_last_command_status() {
+  _status=${PIPESTATUS[@]}
+  echo $_status
 }
 
 __DO_UNICODE=false
@@ -213,7 +211,7 @@ export _RESET
 PS_TITLE="\[$TITLE\w\a\]"
 PS_USER="\[${_GREEN}\]\u\[${_WHITE}\]@\[${_BRIGHT_YELLOW}\]\h"
 PS_DIR="\[${_YELLOW}\]\w"
-PS_ERROR="\[$_RED\]\$(parse_last_command_error)"
+PS_STATUS="\[${_YELLOW}\][\[${_GREEN}\$(parse_last_command_status)\[${_YELLOW}]\]"
 PS_END="\n\[${_RESET}\]$ "
 
 PS_TIME="\[${_MAGENTA}\]\$(prompt_time)"
@@ -240,6 +238,6 @@ else
 fi
 
 # And put them all together
-PS1="${PS_TITLE}${PS_ERROR}\n${PS_USER} ${PS_TIME}\n${PS_DIR} ${PS_GIT}${PS_SVN} ${PS_RUBY} ${PS_AWS} ${PS_EXTRAS} ${PS_END}"
+PS1="${PS_TITLE}\n${PS_USER} ${PS_TIME} ${PS_STATUS}\n${PS_DIR} ${PS_GIT}${PS_SVN} ${PS_RUBY} ${PS_AWS} ${PS_EXTRAS} ${PS_END}"
 
 
