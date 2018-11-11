@@ -73,16 +73,6 @@ if [ "" != "`which rbenv 2> /dev/null `" ] ; then
       done
     }
 
-    function ruby_stack() {
-      pid=$1
-      gdb $(which ruby) $pid  <<STACKGEN_END
-          ruby_stack
-          detach
-          quit
-STACKGEN_END
-
-    }
-
   if [ "" != "`which rspec 2> /dev/null `" ] ; then
       alias rspec="rspec -c -f d"
   fi

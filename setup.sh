@@ -30,7 +30,6 @@ linkit vim .vim
 linkit tmux.conf .tmux.conf
 linkit gitconfig .gitconfig
 linkit gitignore_global .gitignore_global
-linkit gdbinit .gdbinit
 linkit bazelrc .bazelrc
 linkit osx/slate/slate_local.js .slate_local.js
 
