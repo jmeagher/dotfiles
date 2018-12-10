@@ -18,5 +18,8 @@ if [ -d ~/.bash_completion.d ] ; then
     done
 fi
 
+if [ -f ~/.bazel/bin/bazel-complete.bash ] ; then
+  source ~/.bazel/bin/bazel-complete.bash 
+fi
 unset file
 
