@@ -25,10 +25,12 @@ sudo apt-get install -y \
 
 BAZEL_VERSION=0.19.2
 OS=linux
-wget -O bazel-install.sh https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-${OS}-x86_64.sh
-chmod +x bazel-install.sh
-./bazel-install.sh --user
-rm -f bazel-install.sh
+if [ ! -e ~/bazel-install-$BAZEL_VERSION.sh ] ; then
+  wget -O ~/bazel-install-$BAZEL_VERSION.sh https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-${OS}-x86_64.sh
+  chmod +x ~/bazel-install-$BAZEL_VERSION.sh
+fi
+~/bazel-install-$BAZEL_VERSION.sh --user
+# rm -f bazel-install.sh
 
 # For docker, from https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository
 sudo apt-get install -y \
