@@ -23,7 +23,7 @@ sudo apt-get install -y \
   openjdk-8-jdk-headless
 
 
-BAZEL_VERSION=0.19.2
+BAZEL_VERSION=0.22.0
 OS=linux
 if [ ! -e ~/bazel-install-$BAZEL_VERSION.sh ] ; then
   wget -O ~/bazel-install-$BAZEL_VERSION.sh https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-${OS}-x86_64.sh
