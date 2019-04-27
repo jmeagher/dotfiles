@@ -9,10 +9,8 @@ if [ "" != "`which go 2> /dev/null `" ] ; then
             mkdir -p $GOPATH
         fi
 
-        PATH=$PATH:$GOPATH/bin
-
-        export GOPATH
-        export PATH
     fi
+    PATH=$PATH:$GOPATH/bin
+    export GOPATH
+    export PATH
 fi
-
