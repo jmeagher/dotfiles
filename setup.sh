@@ -1,5 +1,6 @@
+#!/bin/sh
 
-function linkit() {
+linkit() {
     tgt=~/$2
     src=$1
 
@@ -23,6 +24,7 @@ function linkit() {
 }
 
 linkit ./ .mydotfiles
+linkit zshrc .zshrc
 linkit bashrc .bashrc
 linkit bash_profile .bash_profile
 linkit vimrc .vimrc
