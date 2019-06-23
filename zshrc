@@ -25,6 +25,10 @@ for p in /usr/local/opt/coreutils/libexec/gnubin /usr/local/bin ~/bin ; do
 done
 unset p
 
+if [ ! -n "${ZSH_THEME+1}" ]; then
+	ZSH_THEME="funky"
+fi
+
 # ##########################################
 #
 # Start of main zsh template copy/paste
@@ -42,7 +46,6 @@ unset p
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 # ZSH_THEME="robbyrussell"
-ZSH_THEME="sunrise"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
