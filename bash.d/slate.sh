@@ -26,7 +26,7 @@ if [ "$HAS_SLATE" = "true" ] ; then
         if [ -e $HOME/.slate.js ] ; then
             mv $HOME/.slate.js $HOME/.slate.js.bak
         fi
-        for f in $SLATE_PRE_FILES $SLATE_LOCAL_FILES $SLATE_POST_FILES ; do
+        for f in $( echo "$SLATE_PRE_FILES $SLATE_LOCAL_FILES $SLATE_POST_FILES" ) ; do
             if [ -e $f ] ; then
                 cat $f >> $HOME/.slate.js
             fi

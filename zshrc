@@ -120,6 +120,27 @@ source $ZSH/oh-my-zsh.sh
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
+# Setup a few really basic things
+
+if [ "" = "$EDITOR" ] ; then
+  # Preferred editor list
+  for EDITOR in vim vi nano ; do
+    if command -v $EDITOR >& /dev/null ; then
+      export EDITOR
+      break
+    else
+      unset EDITOR
+    fi
+  done
+fi
+
+for TRY in mvim $EDITOR ; do
+	if command -v $TRY >& /dev/null ; then
+		alias e="$TRY"
+		break
+	fi
+done
+
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
 #   export EDITOR='vim'
