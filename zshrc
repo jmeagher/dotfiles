@@ -29,10 +29,6 @@ for p in /usr/local/opt/coreutils/libexec/gnubin /usr/local/bin ~/bin ; do
 done
 unset p
 
-if [ ! -n "${ZSH_THEME+1}" ]; then
-	ZSH_THEME="funky"
-fi
-
 # ##########################################
 #
 # Start of main zsh template copy/paste

@@ -1,5 +1,11 @@
 
-	if command -v powerline-go >& /dev/null ; then
+
+if [ ! -n "${ZSH_THEME+1}" ]; then
+	ZSH_THEME="ys"
+fi
+
+
+if command -v powerline-go >& /dev/null && test ! -n "${SKIP_POWERLINE+1}" ; then
 
   if [ ! -n "${POWERLINE_MODE+1}" ]; then
   	POWERLINE_MODE="compatible"
@@ -12,7 +18,7 @@
   function powerline_precmd() {
       eval "$(powerline-go \
         -mode $POWERLINE_MODE \
-        -modules user,host,ssh,time,venv,terraform-workspace,jobs,perms,git,newline,exit,cwd,root \
+        -modules user,host,ssh,venv,terraform-workspace,jobs,perms,git,newline,time,exit,cwd,newline,root \
         -error $? \
         -theme $POWERLINE_THEME \
         -shell zsh \
