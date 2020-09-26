@@ -40,5 +40,5 @@
   copr = "!f() { git fetch -fu origin refs/pull/$1/head:pr-$1; git checkout pr-$1; } ; f"
   prunepr = "!git for-each-ref refs/heads/pr-* --format='%(refname:short)' | while read ref ; do git branch -D $ref ; done"
 
-[url "ssh://git@github.com"]
-	insteadOf = https://github.com
+# [url "ssh://git@github.com"]
+# 	insteadOf = https://github.com
