@@ -6,24 +6,26 @@ sudo apt-get update
 
 # Generally useful dev stuff
 sudo apt-get install -y \
-  coreutils python3 manpages man-db \
+  coreutils manpages man-db \
+  python3 python3-distutils python3-dev \
   bash-completion \
   tmux screen \
   silversearcher-ag jq \
   wget curl net-tools iputils-ping dnsutils \
-  entr golang bc
-  
-
+  entr golang bc \
+  zsh zsh-doc
 
 # For Bazel to work
 sudo apt-get install -y \
-  python2.7 python2.7-dev \
+  python2 \
   pkg-config zip unzip \
   g++ zlib1g-dev \
-  openjdk-8-jdk-headless
+  openjdk-11-jdk-headless
+# Bad thing, but this is needed for bazel
+sudo ln -s /usr/bin/python2 /usr/bin/python
 
 
-BAZEL_VERSION=0.22.0
+BAZEL_VERSION=3.4.1
 OS=linux
 if [ ! -e ~/bazel-install-$BAZEL_VERSION.sh ] ; then
   wget -O ~/bazel-install-$BAZEL_VERSION.sh https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-${OS}-x86_64.sh
