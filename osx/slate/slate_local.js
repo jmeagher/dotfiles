@@ -6,7 +6,7 @@ var commonLayout = function() { return {
 }
 
 // Title regex for finding my personal web browser window vs the work one
-var pbr = /^.*(Facebook|@gmail.com).*$/;
+var pbr = /^.*(Facebook|@gmail.com|Google Chrome Canary).*$/;
 
 // 1 monitor layout
 var oneMonitorLayout = S.lay("oneMonitor", _.extend(commonLayout(), {

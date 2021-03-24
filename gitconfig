@@ -1,8 +1,8 @@
 [include]
-    path = ~/.gitconfig_local
+	path = ~/.gitconfig_local
 
 [diff]
-  renames = true
+	renames = true
 
 [color]
 	# Use colors in Git commands that are capable of colored output when outputting to the terminal
@@ -30,15 +30,20 @@
 	merge = refs/heads/master
 
 [push]
-  # Only push the current branch
+	# Only push the current branch
 	default = current
 
 [core]
 	excludesfile = ~/.gitignore_global
+	splitIndex = true # Make it faster for big repos
+	untackedCache = true # Make it faster for big repos
 
 [alias]
-  copr = "!f() { git fetch -fu origin refs/pull/$1/head:pr-$1; git checkout pr-$1; } ; f"
-  prunepr = "!git for-each-ref refs/heads/pr-* --format='%(refname:short)' | while read ref ; do git branch -D $ref ; done"
+	copr = "!f() { git fetch -fu origin refs/pull/$1/head:pr-$1; git checkout pr-$1; } ; f"
+	prunepr = "!git for-each-ref refs/heads/pr-* --format='%(refname:short)' | while read ref ; do git branch -D $ref ; done"
 
-# [url "ssh://git@github.com"]
-# 	insteadOf = https://github.com
+[feature]
+	manyFiles = 1 # Make it faster for big repos
+
+[pull]
+	ff = only
