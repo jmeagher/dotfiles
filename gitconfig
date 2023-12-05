@@ -37,7 +37,7 @@
 	excludesfile = ~/.gitignore_global
 	splitIndex = true # Make it faster for big repos
 	untackedCache = true # Make it faster for big repos
-	fsmonitor = true # faster status checks https://github.blog/2022-06-29-improve-git-monorepo-performance-with-a-file-system-monitor/
+	# fsmonitor = true # faster status checks https://github.blog/2022-06-29-improve-git-monorepo-performance-with-a-file-system-monitor/
 
 [alias]
 	copr = "!f() { git fetch -fu origin refs/pull/$1/head:pr-$1; git checkout pr-$1; } ; f"
