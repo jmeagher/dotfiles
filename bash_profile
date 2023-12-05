@@ -78,3 +78,4 @@ done
 unset file
 
 
+. "$HOME/.cargo/env"

@@ -13,3 +13,4 @@ fi
 #fi 
 
 fi
+. "$HOME/.cargo/env"
