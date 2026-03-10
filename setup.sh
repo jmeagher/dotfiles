@@ -36,12 +36,12 @@ linkit osx/slate/slate_local.js .slate_local.js
 
 mkdir -p ~/bin
 
-# Build scraper Go binary
+# Build urllist Go binary
 if command -v go > /dev/null 2>&1 ; then
-    echo "Building scraper Go binary..."
-    (cd scraper && go build -o ../bin/scraper .)
+    echo "Building urllist Go binary..."
+    (cd urllist && go build -o ../bin/urllist .)
 else
-    echo "WARNING: Go is not installed, scraper binary won't be built"
+    echo "WARNING: Go is not installed, urllist binary won't be built"
 fi
 
 # Link everything from bin to ~/bin

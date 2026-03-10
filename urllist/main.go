@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"scraper/crawler"
+	"urllist/crawler"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 
 	args := flag.Args()
 	if len(args) < 1 {
-		fmt.Fprintln(os.Stderr, "usage: scraper [flags] <url>")
+		fmt.Fprintln(os.Stderr, "usage: urllist [flags] <url>")
 		os.Exit(1)
 	}
 	startURL := args[0]

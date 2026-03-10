@@ -1,4 +1,4 @@
-module scraper
+module urllist
 
 go 1.22.1
 
