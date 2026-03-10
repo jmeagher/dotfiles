@@ -406,3 +406,32 @@ func TestCrawlBaseURLPrefix(t *testing.T) {
 		}
 	}
 }
+
+func TestCrawlMaxURLs(t *testing.T) {
+	// Create a server with 10 interlinked pages.
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		fmt.Fprint(w, "<html><body>")
+		for i := 0; i < 10; i++ {
+			fmt.Fprintf(w, `<a href="/page%d">page%d</a>`, i, i)
+		}
+		fmt.Fprint(w, "</body></html>")
+	}))
+	defer ts.Close()
+
+	c := New(Config{
+		Concurrency: 1,
+		MaxDepth:    5,
+		MaxURLs:     3,
+		Stdin:       strings.NewReader(""),
+	})
+
+	urls, err := c.Crawl(ts.URL)
+	if err != nil {
+		t.Fatalf("Crawl() error: %v", err)
+	}
+
+	if len(urls) > 3 {
+		t.Errorf("Crawl() returned %d URLs, want at most 3", len(urls))
+	}
+}

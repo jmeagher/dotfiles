@@ -11,6 +11,7 @@ import (
 func main() {
 	concurrency := flag.Int("concurrency", 5, "number of concurrent requests")
 	maxDepth := flag.Int("max-depth", 10, "maximum crawl depth")
+	maxURLs := flag.Int("max-urls", 10000, "maximum number of URLs to return")
 	flag.Parse()
 
 	args := flag.Args()
@@ -23,6 +24,7 @@ func main() {
 	c := crawler.New(crawler.Config{
 		Concurrency: *concurrency,
 		MaxDepth:    *maxDepth,
+		MaxURLs:     *maxURLs,
 		Stdin:       os.Stdin,
 	})
 

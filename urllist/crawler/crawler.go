@@ -21,6 +21,7 @@ var httpClient = &http.Client{Timeout: 30 * time.Second}
 type Config struct {
 	Concurrency int
 	MaxDepth    int
+	MaxURLs     int
 	Stdin       io.Reader
 }
 
@@ -42,6 +43,9 @@ func New(cfg Config) *Crawler {
 	}
 	if cfg.MaxDepth < 1 {
 		cfg.MaxDepth = 10
+	}
+	if cfg.MaxURLs < 1 {
+		cfg.MaxURLs = 10000
 	}
 	stdin := cfg.Stdin
 	if stdin == nil {
@@ -94,7 +98,7 @@ func (c *Crawler) crawlURL(rawURL string, depth int, wg *sync.WaitGroup) {
 	}
 
 	c.mu.Lock()
-	if c.visited[normalized] {
+	if c.visited[normalized] || len(c.results) >= c.config.MaxURLs {
 		c.mu.Unlock()
 		return
 	}
