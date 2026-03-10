@@ -175,3 +175,6 @@ for file in ~/.{zshrc_local,zshrc_$(hostname),zshrc_$(hostname -s)}; do
   [ -r "$file" ] && source "$file"
 done
 unset file
+
+# Created by `pipx` on 2025-06-14 21:06:52
+export PATH="$PATH:$HOME/.local/bin"

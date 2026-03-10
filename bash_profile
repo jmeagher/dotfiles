@@ -33,7 +33,7 @@ for TRY in mvim $EDITOR ; do
 done
 
 # Lots of path overrides later ones take precedence 
-for p in /usr/local/opt/coreutils/libexec/gnubin /usr/local/bin ~/bin ; do
+for p in /usr/local/opt/coreutils/libexec/gnubin /usr/local/bin ~/bin ~/.local/bin ; do
   if [ -d $p ] ; then
     PATH=$p:$PATH
     export PATH
