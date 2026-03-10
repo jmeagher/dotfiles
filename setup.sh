@@ -36,6 +36,14 @@ linkit osx/slate/slate_local.js .slate_local.js
 
 mkdir -p ~/bin
 
+# Build urllist Go binary
+if command -v go > /dev/null 2>&1 ; then
+    echo "Building urllist Go binary..."
+    (cd urllist && go build -o ../bin/urllist .)
+else
+    echo "WARNING: Go is not installed, urllist binary won't be built"
+fi
+
 # Link everything from bin to ~/bin
 for f in `ls bin/* | grep -v "~"` ; do
     linkit $f $f
