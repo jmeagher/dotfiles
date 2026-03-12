@@ -45,7 +45,9 @@ if [ -f "$SETTINGS" ]; then
 
     # Thinking mode: adjust key names below if your settings differ
     thinking_val=$(jq -r '.thinking // .extendedThinking // .enableThinking // "false"' "$SETTINGS" 2>/dev/null)
-    [ "$thinking_val" = "true" ] && is_thinking=1
+    case "$thinking_val" in
+        true|1|yes|enabled) is_thinking=1 ;;
+    esac
 fi
 
 # Also treat "max" in the stdin model name as Max mode
@@ -89,6 +91,7 @@ if [ -z "$used" ]; then
     printf '%b%b' "$model_out" "$badges"
 else
     filled=$(printf '%s' "$used" | awk '{printf "%d", int($1 * 20 / 100 + 0.5)}')
+    [ "$filled" -gt 20 ] && filled=20
     empty=$((20 - filled))
 
     used_int=$(printf '%s' "$used" | awk '{printf "%d", int($1 + 0.5)}')

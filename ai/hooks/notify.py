@@ -3,8 +3,21 @@
 Idle notification hook for Claude Code.
 
 Registered for two events in settings.json:
-  UserPromptSubmit  — records the current timestamp (shared across all sessions)
-  Stop              — if idle longer than IDLE_THRESHOLD_SECONDS, speaks a notification
+  UserPromptSubmit  — records when the user last sent a prompt
+  Stop              — records when Claude last finished; notifies if the user
+                      has not sent a new prompt since the previous Stop and
+                      that was more than IDLE_THRESHOLD_SECONDS ago
+
+How the idle check works:
+  Two timestamp files track state across all sessions:
+    STOP_FILE   — written at every Stop (when Claude finishes and hands off)
+    PROMPT_FILE — written at every UserPromptSubmit (when user is active)
+
+  On Stop, a notification fires only when ALL of:
+    1. A previous Stop exists (not the very first response)
+    2. The user has NOT sent a prompt since that previous Stop
+       (last_prompt <= last_stop  →  user is away)
+    3. It has been >= IDLE_THRESHOLD_SECONDS since that previous Stop
 
 Platform behavior:
   macOS   : runs `say "<message>"`
@@ -19,13 +32,14 @@ import time
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-# Seconds of inactivity before a notification fires on Stop.
+# Seconds since Claude last finished before a notification fires.
 IDLE_THRESHOLD_SECONDS = 60
 
-# File used to share the "last prompt" timestamp across all Claude sessions.
-TIMESTAMP_FILE = "/tmp/claude_last_prompt_time"
+# Shared timestamp files (visible to all Claude sessions via /tmp).
+STOP_FILE = "/tmp/claude_last_stop_time"
+PROMPT_FILE = "/tmp/claude_last_prompt_time"
 
-# Message spoken (macOS) or beeped (other) when the Stop event fires.
+# Message spoken (macOS) or beeped (other) when the notification fires.
 # Common alternatives: "waiting for input", "Claude is done", "your turn"
 NOTIFY_MSG = "all done"
 
@@ -57,22 +71,21 @@ def platform_notify(message: str) -> None:
 # ── Timestamp helpers ─────────────────────────────────────────────────────────
 
 
-def update_timestamp() -> None:
+def read_timestamp(path: str) -> float | None:
+    """Return the float timestamp from a file, or None if missing/unreadable."""
     try:
-        with open(TIMESTAMP_FILE, "w") as f:
+        with open(path) as f:
+            return float(f.read().strip())
+    except Exception:
+        return None
+
+
+def write_timestamp(path: str) -> None:
+    try:
+        with open(path, "w") as f:
             f.write(str(time.time()))
     except Exception:
         pass
-
-
-def elapsed_seconds() -> float:
-    """Seconds since the last recorded prompt, or 0 if no record exists."""
-    try:
-        with open(TIMESTAMP_FILE) as f:
-            last = float(f.read().strip())
-        return time.time() - last
-    except Exception:
-        return 0.0
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
@@ -87,11 +100,21 @@ def main() -> None:
     event = data.get("hook_event_name", "")
 
     if event == "UserPromptSubmit":
-        update_timestamp()
+        write_timestamp(PROMPT_FILE)
 
     elif event == "Stop":
-        if elapsed_seconds() >= IDLE_THRESHOLD_SECONDS:
+        now = time.time()
+        last_stop = read_timestamp(STOP_FILE)
+        last_prompt = read_timestamp(PROMPT_FILE)
+
+        if (
+            last_stop is not None                        # not the very first response
+            and (last_prompt is None or last_prompt <= last_stop)  # no new prompt since last Stop
+            and (now - last_stop) >= IDLE_THRESHOLD_SECONDS
+        ):
             platform_notify(NOTIFY_MSG)
+
+        write_timestamp(STOP_FILE)
 
     sys.exit(0)
 
