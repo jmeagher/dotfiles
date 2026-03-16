@@ -27,8 +27,10 @@ input=$(cat)
 
 model=$(printf '%s' "$input" | jq -r '.model.display_name // .model.id // "Claude"')
 used=$(printf '%s' "$input" | jq -r '.context_window.used_percentage // empty')
+cwd=$(printf '%s' "$input" | jq -r '.workspace.current_dir // .cwd // ""')
+[ -z "$cwd" ] && cwd="$PWD"
 
-model_lower=$(printf '%s' "$model" | tr '[:upper:]' '[:lower:]')
+model_lower=$(printf '%s' "$model" | tr '[:upper:]' '[:lower:]')  # lowercased for case-insensitive matching below
 
 # ── Detect modes from settings.json ──────────────────────────────────────────
 
@@ -54,6 +56,16 @@ fi
 case "$model_lower" in
     *max*) is_max=1 ;;
 esac
+
+# ── Working directory and git branch ─────────────────────────────────────────
+
+folder=$(basename "$cwd")
+git_branch=$(git -C "$cwd" rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+location_out=$(printf '\033[36m%s\033[0m' "$folder")
+if [ -n "$git_branch" ]; then
+    location_out="${location_out}$(printf ' \033[90m(%s)\033[0m' "$git_branch")"
+fi
 
 # ── Color the model name ──────────────────────────────────────────────────────
 
@@ -88,7 +100,7 @@ fi
 # ── Context window bar ────────────────────────────────────────────────────────
 
 if [ -z "$used" ]; then
-    printf '%b%b' "$model_out" "$badges"
+    printf '%b%b  %b' "$model_out" "$badges" "$location_out"
 else
     filled=$(printf '%s' "$used" | awk '{printf "%d", int($1 * 20 / 100 + 0.5)}')
     [ "$filled" -gt 20 ] && filled=20
@@ -124,5 +136,5 @@ else
     done
     empty_bar="${empty_bar}$(printf '%b' "$RST")"
 
-    printf '%b%b  [%s%s] %b%s%%%b' "$model_out" "$badges" "$filled_bar" "$empty_bar" "$ctx_color" "$used_int" "$RST"
+    printf '%b%b  [%s%s] %b%s%%%b  %b' "$model_out" "$badges" "$filled_bar" "$empty_bar" "$ctx_color" "$used_int" "$RST" "$location_out"
 fi
