@@ -10,7 +10,10 @@
 #   Max mode on     → [MAX]   red background, black text
 #   Thinking mode on → [THINK] yellow text
 #
-# Context window: progress bar + percentage, e.g.  [████░░░░░░░░░░░░░░░░] 23%
+# Context window: progress bar + percentage + size, e.g.  [████░░░░░░░░░░░░░░░░] 23% /200k
+#
+# Additional info (when available, shown in grey after location):
+#   agent name, worktree name, cost ($0.12), token count (14k tok), duration (15s)
 #
 # Max and thinking mode are read from ~/.claude/settings.json since the
 # statusline JSON input does not reliably expose them.
@@ -27,8 +30,21 @@ input=$(cat)
 
 model=$(printf '%s' "$input" | jq -r '.model.display_name // .model.id // "Claude"')
 used=$(printf '%s' "$input" | jq -r '.context_window.used_percentage // empty')
+ctx_size=$(printf '%s' "$input" | jq -r '.context_window.context_window_size // empty')
 cwd=$(printf '%s' "$input" | jq -r '.workspace.current_dir // .cwd // ""')
 [ -z "$cwd" ] && cwd="$PWD"
+
+# Cost / tokens / duration
+cost_usd=$(printf '%s' "$input" | jq -r '.cost.total_cost_usd // empty')
+total_tokens=$(printf '%s' "$input" | jq -r '
+  ((.context_window.total_input_tokens // 0) + (.context_window.total_output_tokens // 0))
+  | if . > 0 then tostring else empty end
+')
+duration_ms=$(printf '%s' "$input" | jq -r '.cost.total_duration_ms // empty')
+
+# Worktree / agent
+worktree_name=$(printf '%s' "$input" | jq -r '.worktree.name // empty')
+agent_name=$(printf '%s' "$input" | jq -r '.agent.name // empty')
 
 model_lower=$(printf '%s' "$model" | tr '[:upper:]' '[:lower:]')  # lowercased for case-insensitive matching below
 
@@ -97,10 +113,57 @@ if [ "$is_thinking" = "1" ]; then
     badges="${badges}$(printf ' \033[33mTHINK\033[0m')"
 fi
 
+# ── Context window size suffix (e.g. " /200k") ───────────────────────────────
+
+ctx_size_out=""
+if [ -n "$ctx_size" ]; then
+    ctx_size_k=$(printf '%s' "$ctx_size" | awk '{printf "%dk", int($1/1000 + 0.5)}')
+    ctx_size_out=$(printf ' \033[90m/%s\033[0m' "$ctx_size_k")
+fi
+
+# ── Agent / worktree badges ───────────────────────────────────────────────────
+
+extra_badges=""
+if [ -n "$agent_name" ]; then
+    extra_badges="${extra_badges}$(printf ' \033[36m[%s]\033[0m' "$agent_name")"
+fi
+if [ -n "$worktree_name" ]; then
+    extra_badges="${extra_badges}$(printf ' \033[90m[wt:%s]\033[0m' "$worktree_name")"
+fi
+
+# ── Cost / tokens / duration ──────────────────────────────────────────────────
+
+cost_out=""
+if [ -n "$cost_usd" ]; then
+    cost_fmt=$(printf '%s' "$cost_usd" | awk '{printf "$%.2f", $1}')
+    cost_out=$(printf '  \033[90m%s\033[0m' "$cost_fmt")
+fi
+
+tokens_out=""
+if [ -n "$total_tokens" ]; then
+    tokens_fmt=$(printf '%s' "$total_tokens" | awk '{
+        if ($1 >= 1000) printf "%dk tok", int($1/1000 + 0.5)
+        else printf "%d tok", $1
+    }')
+    tokens_out=$(printf '  \033[90m%s\033[0m' "$tokens_fmt")
+fi
+
+duration_out=""
+if [ -n "$duration_ms" ]; then
+    duration_fmt=$(printf '%s' "$duration_ms" | awk '{
+        s = int($1/1000)
+        m = int(s/60)
+        s = s % 60
+        if (m > 0) printf "%dm %ds", m, s
+        else printf "%ds", s
+    }')
+    duration_out=$(printf '  \033[90m%s\033[0m' "$duration_fmt")
+fi
+
 # ── Context window bar ────────────────────────────────────────────────────────
 
 if [ -z "$used" ]; then
-    printf '%b%b  %b' "$model_out" "$badges" "$location_out"
+    printf '%b%b  %b%b%b%b%b' "$model_out" "$badges" "$location_out" "$extra_badges" "$cost_out" "$tokens_out" "$duration_out"
 else
     filled=$(printf '%s' "$used" | awk '{printf "%d", int($1 * 20 / 100 + 0.5)}')
     [ "$filled" -gt 20 ] && filled=20
@@ -136,5 +199,10 @@ else
     done
     empty_bar="${empty_bar}$(printf '%b' "$RST")"
 
-    printf '%b%b  [%s%s] %b%s%%%b  %b' "$model_out" "$badges" "$filled_bar" "$empty_bar" "$ctx_color" "$used_int" "$RST" "$location_out"
+    printf '%b%b  [%s%s] %b%s%%%b%b  %b%b%b%b%b' \
+        "$model_out" "$badges" \
+        "$filled_bar" "$empty_bar" \
+        "$ctx_color" "$used_int" "$RST" "$ctx_size_out" \
+        "$location_out" "$extra_badges" \
+        "$cost_out" "$tokens_out" "$duration_out"
 fi
