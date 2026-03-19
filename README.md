@@ -30,7 +30,9 @@ Then install plugins via Claude Code:
 /plugin install statusline@jmeagher-dotfiles
 ```
 
-**Option 2: Local install**
+**Option 2: Local install (live development)**
+
+Install directly from your local checkout — edits take effect on the next session without pushing to GitHub:
 
 ```
 /plugin install --local /path/to/dotfiles/ai/plugins/statusline

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "jmeagher-dotfiles",
+  "description": "Personal Claude Code plugins from jmeagher's dotfiles",
+  "owner": {
+    "name": "jmeagher"
+  },
+  "plugins": [
+    {
+      "name": "statusline",
+      "description": "Colored Claude Code status line showing model name, mode badges (MAX/THINK), context window usage bar, cost, tokens, and session duration",
+      "version": "1.0.0",
+      "author": {
+        "name": "jmeagher"
+      },
+      "source": "./plugins/statusline",
+      "category": "productivity"
+    }
+  ]
+}

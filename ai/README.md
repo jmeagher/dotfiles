@@ -5,15 +5,17 @@ Personal Claude Code plugins for [Claude Code](https://claude.ai/claude-code).
 ## Structure
 
 ```
+.claude-plugin/
+└── marketplace.json   # marketplace manifest
 plugins/
-├── statusline/    # Colored status line with model, context, cost, and more
+└── statusline/        # colored status line with model, context, cost, and more
 ```
 
 ## Installation
 
-### Register this marketplace
+### From GitHub (normal use)
 
-Add this repo to `~/.claude/plugins/known_marketplaces.json`:
+Add to `~/.claude/plugins/known_marketplaces.json`:
 
 ```json
 {
@@ -33,9 +35,17 @@ Then install individual plugins via Claude Code:
 /plugin install statusline@jmeagher-dotfiles
 ```
 
-### Local install (alternative)
+### Live local development
 
-Install a plugin directly from this repo without registering the marketplace:
+For developing plugins without pushing to GitHub first, install directly from the local directory:
+
+```
+/plugin install --local /path/to/dotfiles/ai/plugins/statusline
+```
+
+This loads the plugin from the local path so edits to scripts and hooks take effect immediately on the next Claude Code session — no git push required.
+
+To update after making changes, reinstall:
 
 ```
 /plugin install --local /path/to/dotfiles/ai/plugins/statusline
@@ -69,7 +79,9 @@ After installing, the plugin auto-configures `statusLine` in `settings.json` on 
 
 ## Adding more plugins
 
-Each plugin lives in `plugins/<plugin-name>/` with the standard structure:
+Each plugin lives in `plugins/<plugin-name>/` and must be registered in `.claude-plugin/marketplace.json`.
+
+Plugin directory structure:
 
 ```
 plugins/my-plugin/
