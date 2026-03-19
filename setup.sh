@@ -54,6 +54,17 @@ if [ ! -e vim/bundle/Vundle.vim ] ; then
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 fi
 
+# Set up Claude Code statusline symlink
+STATUSLINE_SRC="$HOME/.claude/plugins/cache/jmeagher-dotfiles/statusline/1.0.0/scripts/statusline.sh"
+STATUSLINE_LINK="$HOME/.claude/statusline.sh"
+if [ -f "$STATUSLINE_SRC" ]; then
+    echo "Linking Claude Code statusline script"
+    ln -sf "$STATUSLINE_SRC" "$STATUSLINE_LINK"
+else
+    echo "WARNING: statusline plugin not installed; skipping ~/.claude/statusline.sh symlink"
+    echo "  Install with: /plugin install statusline@jmeagher-dotfiles"
+fi
+
 echo "Hit enter to install vundle bundles, ctrl-c to skip"
 read a
 vim +BundleInstall +qall

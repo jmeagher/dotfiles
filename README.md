@@ -42,6 +42,17 @@ Example output:
 Claude Sonnet 4.6  [MAX]  [████░░░░░░░░░░░░░░░░] 23% /200k  dotfiles (main)  $0.12  15k tok  15s
 ```
 
-After installing, the plugin auto-configures `statusLine` in `settings.json` on first session start.
+After installing, add the following to `~/.claude/settings.json`:
 
-**Requirements:** `jq` (`apt install jq` or `brew install jq`)
+```json
+"statusLine": {
+  "type": "command",
+  "command": "~/.claude/statusline.sh"
+}
+```
+
+Then create the symlink (or run `setup.sh` if using this repo as your dotfiles):
+
+```bash
+ln -sf ~/.claude/plugins/cache/jmeagher-dotfiles/statusline/1.0.0/scripts/statusline.sh ~/.claude/statusline.sh
+```
