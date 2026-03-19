@@ -13,43 +13,27 @@ plugins/
 
 ## Installation
 
-### From GitHub (normal use)
+### Local development (live edits, no git push needed)
 
-Add to `~/.claude/plugins/known_marketplaces.json`:
-
-```json
-{
-  "jmeagher-dotfiles": {
-    "source": {
-      "source": "github",
-      "repo": "jmeagher/dotfiles",
-      "path": "ai"
-    }
-  }
-}
-```
-
-Then install individual plugins via Claude Code:
+Register this directory as a marketplace, then install plugins from it:
 
 ```
+/plugin marketplace add /path/to/dotfiles/ai
 /plugin install statusline@jmeagher-dotfiles
 ```
 
-### Live local development
+Changes to plugin files (scripts, hooks, skills) take effect on the next Claude Code session — no git push or reinstall required.
 
-For developing plugins without pushing to GitHub first, install directly from the local directory:
+### From GitHub
 
-```
-/plugin install --local /path/to/dotfiles/ai/plugins/statusline
-```
-
-This loads the plugin from the local path so edits to scripts and hooks take effect immediately on the next Claude Code session — no git push required.
-
-To update after making changes, reinstall:
+Push this repo, then add the marketplace using the GitHub shorthand:
 
 ```
-/plugin install --local /path/to/dotfiles/ai/plugins/statusline
+/plugin marketplace add jmeagher/dotfiles
+/plugin install statusline@jmeagher-dotfiles
 ```
+
+> **Note:** The marketplace manifest (`ai/.claude-plugin/marketplace.json`) must be at the repository root for this to work. If the dotfiles repo keeps `ai/` as a subdirectory, move the marketplace to its own repository first, or use the local path method above.
 
 ## Plugins
 
