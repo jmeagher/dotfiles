@@ -1,3 +1,0 @@
-# Un-ignore plugin manifest directories (blocked by global gitignore's .* rule)
-!.claude-plugin/
-!plugins/**/.claude-plugin/

@@ -4,19 +4,44 @@ My dotfiles. Not meant for others, but you might find something useful here.
 
 ## Claude Code Plugin Marketplace
 
-The `ai/` directory is a Claude Code plugin marketplace. Register it with Claude Code to install plugins from it.
+This repo is a Claude Code plugin marketplace. Register it with Claude Code to install plugins from it.
 
 ### Local setup
 
 ```
-/plugin marketplace add /path/to/dotfiles/ai
+/plugin marketplace add /path/to/dotfiles
 /plugin install statusline@jmeagher-dotfiles
 ```
 
 Changes to plugin files take effect on the next Claude Code session without needing to push to git.
 
-### Plugins
+### From GitHub
 
-- **statusline** — Colored Claude Code status line showing model, mode badges (MAX/THINK), context window bar, cost, tokens, and session duration. Auto-configures `settings.json` on first session start. Requires `jq`.
+```
+/plugin marketplace add jmeagher/dotfiles
+/plugin install statusline@jmeagher-dotfiles
+```
 
-See [`ai/README.md`](ai/README.md) for full marketplace documentation.
+## Plugins
+
+### statusline
+
+Colored status line showing model name, mode badges, context window bar, cost, tokens, and duration.
+
+| Condition | Appearance |
+|---|---|
+| Model contains `opus` | Orange background, black text |
+| Model contains `sonnet` | Green text |
+| Model contains `haiku` | Yellow text |
+| Max mode active | `[MAX]` badge — red background, black text |
+| Thinking mode active | `THINK` badge — yellow text |
+
+Example output:
+
+```
+Claude Sonnet 4.6  [MAX]  [████░░░░░░░░░░░░░░░░] 23% /200k  dotfiles (main)  $0.12  15k tok  15s
+```
+
+After installing, the plugin auto-configures `statusLine` in `settings.json` on first session start.
+
+**Requirements:** `jq` (`apt install jq` or `brew install jq`)
