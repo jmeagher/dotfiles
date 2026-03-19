@@ -1,49 +1,51 @@
-# Claude Code AI Scripts
+# Claude Code Plugin Marketplace
 
-Statusline script for [Claude Code](https://claude.ai/claude-code).
+Personal Claude Code plugins for [Claude Code](https://claude.ai/claude-code).
 
-## Contents
+## Structure
 
-| File | Purpose |
-|---|---|
-| `statusline/statusline.sh` | Colored status line showing model name, active modes, context window usage, cost, and more |
-
----
+```
+plugins/
+├── statusline/    # Colored status line with model, context, cost, and more
+```
 
 ## Installation
 
-### 1. Copy the script
+### Register this marketplace
 
-```sh
-cp statusline/statusline.sh ~/.claude/statusline.sh
-chmod +x ~/.claude/statusline.sh
-```
-
-### 2. Update `~/.claude/settings.json`
-
-Add or replace the `statusLine` block:
+Add this repo to `~/.claude/plugins/known_marketplaces.json`:
 
 ```json
 {
-  "statusLine": {
-    "type": "command",
-    "command": "sh ~/.claude/statusline.sh"
+  "jmeagher-dotfiles": {
+    "source": {
+      "source": "github",
+      "repo": "jmeagher/dotfiles",
+      "path": "ai"
+    }
   }
 }
 ```
 
----
+Then install individual plugins via Claude Code:
 
-## Configuration
+```
+/plugin install statusline@jmeagher-dotfiles
+```
 
-### statusline.sh
+### Local install (alternative)
 
-The statusline reads model info from the JSON piped by Claude Code and reads
-`~/.claude/settings.json` for Max/Thinking mode flags. No configuration is
-needed unless your `settings.json` uses non-standard key names for thinking
-mode (see the `# Detect modes` section in the script).
+Install a plugin directly from this repo without registering the marketplace:
 
-**Color reference:**
+```
+/plugin install --local /path/to/dotfiles/ai/plugins/statusline
+```
+
+## Plugins
+
+### statusline
+
+Colored status line showing model name, mode badges, context window bar, cost, tokens, and duration.
 
 | Condition | Appearance |
 |---|---|
@@ -53,26 +55,28 @@ mode (see the `# Detect modes` section in the script).
 | Max mode active | `[MAX]` badge — red background, black text |
 | Thinking mode active | `THINK` badge — yellow text |
 
-**Additional info shown when available (in grey, after location):**
-
-| Field | Example |
-|---|---|
-| Context window size | `23% /200k` |
-| Agent name | `[planner]` |
-| Worktree name | `[wt:feature-foo]` |
-| Session cost | `$0.12` |
-| Total tokens | `15k tok` |
-| Session duration | `15s` |
-
-Example output (Sonnet, Max mode on, 23% context used):
+Example output:
 
 ```
 Claude Sonnet 4.6  [MAX]  [████░░░░░░░░░░░░░░░░] 23% /200k  dotfiles (main)  $0.12  15k tok  15s
 ```
 
+After installing, the plugin auto-configures `statusLine` in `settings.json` on first session start.
+
+**Requirements:** `jq` (`apt install jq` or `brew install jq`)
+
 ---
 
-## Requirements
+## Adding more plugins
 
-- **jq** — for the statusline (`brew install jq` on macOS, `apt install jq` on Linux)
-- **Claude Code** with statusline support
+Each plugin lives in `plugins/<plugin-name>/` with the standard structure:
+
+```
+plugins/my-plugin/
+├── .claude-plugin/
+│   └── plugin.json   # required
+├── commands/         # slash commands (optional)
+├── skills/           # auto-activating skills (optional)
+├── hooks/            # event hooks (optional)
+└── scripts/          # helper scripts (optional)
+```
