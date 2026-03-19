@@ -1,0 +1,9 @@
+{
+  "name": "jmeagher-notifications",
+  "version": "1.0.0",
+  "description": "macOS notifications, sounds, and tmux window renaming for Claude Code events (idle detection, subagent completion)",
+  "author": {
+    "name": "jmeagher"
+  },
+  "license": "MIT"
+}
