@@ -4,13 +4,15 @@ Idle notification hook for Claude Code.
 
 Registered for events via hooks/hooks.json:
   UserPromptSubmit  — records timestamp; sets tmux window to "⚙ processing"
-  Stop              — sets tmux window to "✓ done"; plays sound + macOS banner;
+  Stop              — sets tmux window to "✓ done"; plays sound + desktop banner;
                       if idle longer than IDLE_THRESHOLD_SECONDS, speaks a notification
-  Notification      — sets tmux window to "⏳ waiting"; plays sound + macOS banner
+  Notification      — sets tmux window to "⏳ waiting"; plays sound + desktop banner
   SubagentStop      — speaks a notification with tmux context
 
 Platform behavior:
   macOS   : runs `say "<message>"`, `afplay <sound>`, and `osascript` notifications
+  Linux   : runs `espeak "<message>"` (if available), `paplay`/`aplay` for sound,
+            and `notify-send` for desktop banners; falls back to terminal bell
   Others  : tries `beep`, then falls back to a terminal bell via /dev/tty
 """
 
@@ -32,7 +34,14 @@ TIMESTAMP_FILE = "/tmp/claude_last_prompt_time"
 # Common alternatives: "waiting for input", "Claude is done", "your turn"
 NOTIFY_MSG = "all done"
 
-SOUND_FILE = "/System/Library/Sounds/Ping.aiff"
+MACOS_SOUND_FILE = "/System/Library/Sounds/Ping.aiff"
+
+# Candidate Linux sound files (freedesktop standard paths); first existing one is used.
+LINUX_SOUND_FILES = [
+    "/usr/share/sounds/freedesktop/stereo/complete.oga",
+    "/usr/share/sounds/freedesktop/stereo/bell.oga",
+    "/usr/share/sounds/ubuntu/stereo/bell.ogg",
+]
 
 # ── tmux helpers ──────────────────────────────────────────────────────────────
 
@@ -62,25 +71,48 @@ def set_tmux_window_name(name: str) -> None:
 # ── Platform notification ─────────────────────────────────────────────────────
 
 
-def macos_sound_notify(title: str, message: str) -> None:
-    """Play a sound and show a macOS notification banner."""
-    subprocess.Popen(["afplay", SOUND_FILE])
-    subprocess.run(
-        ["osascript", "-e", f'display notification "{message}" with title "{title}"'],
-        check=False,
-    )
+def _cmd_exists(cmd: str) -> bool:
+    """Return True if cmd is found on PATH."""
+    return subprocess.run(["which", cmd], capture_output=True).returncode == 0
+
+
+def sound_notify(title: str, message: str) -> None:
+    """Play a sound and show a desktop notification banner."""
+    if sys.platform == "darwin":
+        subprocess.Popen(["afplay", MACOS_SOUND_FILE])
+        subprocess.run(
+            ["osascript", "-e", f'display notification "{message}" with title "{title}"'],
+            check=False,
+        )
+        return
+
+    # Linux: play first available sound file with paplay or aplay
+    sound_file = next((f for f in LINUX_SOUND_FILES if os.path.exists(f)), None)
+    if sound_file:
+        for player in ("paplay", "aplay"):
+            if _cmd_exists(player):
+                subprocess.Popen([player, sound_file])
+                break
+
+    # Linux: desktop banner via notify-send
+    if _cmd_exists("notify-send"):
+        subprocess.run(["notify-send", title, message], check=False)
 
 
 def platform_say(message: str) -> None:
-    """Speak a message (macOS) or beep (other platforms)."""
+    """Speak a message (macOS/Linux) or beep (other platforms)."""
     if sys.platform == "darwin":
         subprocess.run(["say", message], check=False)
         return
 
-    # Non-macOS: try `beep`, fall back to terminal bell
+    # Linux: use espeak if available
+    if _cmd_exists("espeak"):
+        subprocess.run(["espeak", message], check=False)
+        return
+
+    # Fallback: try `beep`, then terminal bell
     try:
-        result = subprocess.run(["which", "beep"], capture_output=True)
-        if result.returncode == 0:
+        if _cmd_exists("beep"):
             subprocess.run(["beep"], check=False)
             return
     except Exception:
@@ -133,16 +165,14 @@ def main() -> None:
     elif event == "Stop":
         tmux_info = get_tmux_info()
         set_tmux_window_name("✓ done")
-        if sys.platform == "darwin":
-            macos_sound_notify("Claude: Task finished", tmux_info)
+        sound_notify("Claude: Task finished", tmux_info)
         if elapsed_seconds() >= IDLE_THRESHOLD_SECONDS:
             platform_say(NOTIFY_MSG)
 
     elif event == "Notification":
         tmux_info = get_tmux_info()
         set_tmux_window_name("⏳ waiting")
-        if sys.platform == "darwin":
-            macos_sound_notify("Claude: Attention needed", tmux_info)
+        sound_notify("Claude: Attention needed", tmux_info)
 
     elif event == "SubagentStop":
         tmux_info = get_tmux_info()
