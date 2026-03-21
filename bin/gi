@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+# gi - git subcommand helper
+# Strips the first character of the first argument and uses the rest as the git subcommand.
+# Usage: gi <prefix><subcommand> [args...]
+# Example: gi tpull  ->  git pull
+
+if [ $# -eq 0 ]; then
+    echo "gi: missing argument" >&2
+    exit 1
+fi
+
+subcmd="${1#?}"
+shift
+
+case "$subcmd" in
+    add|am|annotate|apply|archive|bisect|blame|branch|bundle|\
+    checkout|cherry|cherry-pick|citool|clean|clone|commit|config|\
+    describe|diff|difftool|fetch|format-patch|fsck|gc|gitk|grep|\
+    gui|init|instaweb|log|merge|mergetool|mv|notes|pull|push|\
+    rebase|reflog|remote|repack|replace|request-pull|reset|restore|\
+    revert|rm|send-email|shortlog|show|show-branch|sparse-checkout|\
+    stash|status|submodule|subtree|switch|tag|worktree)
+        exec git "$subcmd" "$@"
+        ;;
+    *)
+        echo "gi: unknown git subcommand: $subcmd" >&2
+        exit 1
+        ;;
+esac
