@@ -65,6 +65,34 @@ else
     echo "  Install with: /plugin install statusline@jmeagher-dotfiles"
 fi
 
+# Set up Claude Code configuration
+DOTFILES_DIR="$(pwd)"
+mkdir -p "$HOME/.claude"
+
+# CLAUDE.md: symlink base file (which @-imports ~/CLAUDE.local.md for machine-specific additions)
+linkit claude/CLAUDE.md .claude/CLAUDE.md
+
+# ~/CLAUDE.local.md: create a stub if not present (local/work repo may symlink a real one here)
+if [ ! -e "$HOME/CLAUDE.local.md" ] ; then
+    echo "Creating stub ~/CLAUDE.local.md (replace with symlink from your local settings repo)"
+    printf '# Local Claude settings\n\n# Add machine-specific instructions here.\n' > "$HOME/CLAUDE.local.md"
+fi
+
+# settings.json: generate from base template, injecting the dotfiles marketplace path
+# Local overrides go in ~/.claude/settings.local.json (symlinked from local/work repo)
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+SETTINGS_BASE="$DOTFILES_DIR/claude/settings.json"
+if command -v jq > /dev/null 2>&1 ; then
+    echo "Generating ~/.claude/settings.json from dotfiles base"
+    jq --arg path "$DOTFILES_DIR" \
+        '.extraKnownMarketplaces["jmeagher-dotfiles"] = {"source": {"source": "directory", "path": $path}, "autoUpdate": true}' \
+        "$SETTINGS_BASE" > "$CLAUDE_SETTINGS"
+else
+    echo "WARNING: jq not found; copying settings.json without marketplace path injection"
+    echo "  Install jq and re-run setup.sh, or manually add jmeagher-dotfiles to ~/.claude/settings.json"
+    cp "$SETTINGS_BASE" "$CLAUDE_SETTINGS"
+fi
+
 echo "Hit enter to install vundle bundles, ctrl-c to skip"
 read a
 vim +BundleInstall +qall

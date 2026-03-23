@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go mod:*)",
+      "Bash(go version:*)",
+      "Bash(go build:*)",
+      "Bash(go list:*)",
+      "Bash(go test:*)",
+      "Bash(go vet:*)"
+    ],
+    "defaultMode": "default"
+  },
+  "model": "sonnet",
+  "statusLine": {
+    "type": "command",
+    "command": "~/devel/dotfiles/.claude/statusline.sh"
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "github@claude-plugins-official": false,
+    "code-simplifier@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "hookify@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "plugin-dev@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "explanatory-output-style@claude-plugins-official": true,
+    "learning-output-style@claude-plugins-official": true,
+    "semgrep@claude-plugins-official": true,
+    "sourcegraph@claude-plugins-official": true,
+    "atomic-agents@claude-plugins-official": true,
+    "remember@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {},
+  "voiceEnabled": true
+}

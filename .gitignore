@@ -1,5 +1,10 @@
 bin/urllist
 
+# Machine-specific Claude overrides live outside this repo in a separate local/work repo:
+#   ~/CLAUDE.local.md           — extra CLAUDE.md instructions (imported via @~/CLAUDE.local.md)
+#   ~/.claude/settings.local.json — extra Claude settings (merged on top of settings.json)
+# Symlink those from your local settings repo; setup.sh creates a stub CLAUDE.local.md if absent.
+
 # Un-ignore Claude plugin manifest directories (blocked by global gitignore's .* rule)
 !.claude-plugin/
 !plugins/**/.claude-plugin/
