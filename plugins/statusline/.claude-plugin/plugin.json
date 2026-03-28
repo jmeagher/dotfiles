@@ -1,9 +1,0 @@
-{
-  "name": "statusline",
-  "version": "1.0.0",
-  "description": "Colored Claude Code status line showing model name, mode badges (MAX/THINK), context window usage bar, cost, tokens, and session duration",
-  "author": {
-    "name": "jmeagher"
-  },
-  "license": "MIT"
-}

@@ -7,16 +7,6 @@
   },
   "plugins": [
     {
-      "name": "statusline",
-      "description": "Colored Claude Code status line showing model name, mode badges (MAX/THINK), context window usage bar, cost, tokens, and session duration",
-      "version": "1.0.0",
-      "author": {
-        "name": "jmeagher"
-      },
-      "source": "./plugins/statusline",
-      "category": "productivity"
-    },
-    {
       "name": "jmeagher-notifications",
       "description": "macOS notifications, sounds, and tmux window renaming for Claude Code events (idle detection, subagent completion)",
       "version": "1.0.0",
