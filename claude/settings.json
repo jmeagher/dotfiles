@@ -13,7 +13,7 @@
   "model": "sonnet",
   "statusLine": {
     "type": "command",
-    "command": "~/devel/dotfiles/.claude/statusline.sh"
+    "command": "__STATUSLINE_PATH__"
   },
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true,
