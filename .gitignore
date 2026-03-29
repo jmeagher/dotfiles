@@ -11,3 +11,4 @@ bin/urllist
 
 # Un-ignore project-level Claude Code config (blocked by global gitignore's .* rule)
 !.claude/
+.claude/settings.local.json
