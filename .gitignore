@@ -8,3 +8,6 @@ bin/urllist
 # Un-ignore Claude plugin manifest directories (blocked by global gitignore's .* rule)
 !.claude-plugin/
 !plugins/**/.claude-plugin/
+
+# Un-ignore project-level Claude Code config (blocked by global gitignore's .* rule)
+!.claude/

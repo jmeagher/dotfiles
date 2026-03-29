@@ -16,6 +16,7 @@
     "command": "__STATUSLINE_PATH__"
   },
   "enabledPlugins": {
+    "jpm@jmeagher-dotfiles": true,
     "superpowers@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
     "github@claude-plugins-official": false,
@@ -36,6 +37,11 @@
     "atomic-agents@claude-plugins-official": true,
     "remember@claude-plugins-official": true
   },
-  "extraKnownMarketplaces": {},
+  "extraKnownMarketplaces": {
+    "jmeagher-dotfiles": {
+      "source": { "source": "github", "repo": "jmeagher/dotfiles" },
+      "autoUpdate": true
+    }
+  },
   "voiceEnabled": true
 }

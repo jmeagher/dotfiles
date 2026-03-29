@@ -1,0 +1,9 @@
+{
+  "name": "jpm",
+  "version": "1.0.0",
+  "description": "Personal git and workflow commands for common tasks not covered by other plugins.",
+  "author": {
+    "name": "jmeagher"
+  },
+  "license": "MIT"
+}

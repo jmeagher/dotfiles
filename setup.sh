@@ -54,6 +54,22 @@ if [ ! -e vim/bundle/Vundle.vim ] ; then
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 fi
 
+# Ensure each shell config file sources shell_config.sh.
+# No-op if the file is already a dotfiles symlink (handled by linkit above).
+# For machines where OS shell files are left in place, this injects the source line.
+ensure_shell_config() {
+    _file=$1
+    [ -f "$_file" ] || return 0
+    [ -h "$_file" ] && return 0
+    grep -q "shell_config.sh" "$_file" && echo "$_file already includes shell_config.sh" && return 0
+    echo "Adding shell_config.sh to $_file"
+    printf '\n# Load dotfiles shell configuration\n. ~/.mydotfiles/shell_config.sh\n' >> "$_file"
+}
+
+ensure_shell_config ~/.bash_profile
+ensure_shell_config ~/.bashrc
+ensure_shell_config ~/.zshrc
+
 # Set up Claude Code configuration
 sh "$(pwd)/claude/setup.sh"
 
