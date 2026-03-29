@@ -1,1 +1,0 @@
-../bash.d/1pass.sh

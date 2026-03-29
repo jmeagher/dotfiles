@@ -1,1 +1,0 @@
-../bash.d/go.sh

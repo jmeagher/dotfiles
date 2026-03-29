@@ -16,9 +16,6 @@ if [ ! -d "$ZSH" ] ; then
   echo "Fix it with: cd $HOME/devel ; git clone https://github.com/robbyrussell/oh-my-zsh.git"
 fi
 
-if [ ! -n "${ZSH_CUSTOM+1}" ] ; then
-  ZSH_CUSTOM=~/.mydotfiles/zsh.d
-fi
 
 # Lots of path overrides later ones take precedence 
 for p in /usr/local/opt/coreutils/libexec/gnubin /usr/local/bin ~/bin ; do
@@ -164,11 +161,8 @@ done
 #
 # ##########################################
 
-# Run the bulk of the custom setup scripts
-# Not needed since oh-my-zsh should handle this for the custom folder
-# for file in ~/.mydotfiles/zsh.d/*.sh ; do
-#   source $file
-# done
+# Run shell configuration (shared + zsh-specific scripts)
+source ~/.mydotfiles/shell_config.sh
 
 # Final post-run options for local settings
 for file in ~/.{zshrc_local,zshrc_$(hostname),zshrc_$(hostname -s)}; do
