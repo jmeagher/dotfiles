@@ -1,7 +1,5 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "jmeagher-dotfiles",
-  "description": "Personal Claude Code plugins from jmeagher's dotfiles",
   "owner": {
     "name": "jmeagher"
   },
@@ -14,6 +12,16 @@
         "name": "jmeagher"
       },
       "source": "./plugins/jmeagher-notifications",
+      "category": "productivity"
+    },
+    {
+      "name": "jpm",
+      "description": "Personal git and workflow commands for common tasks not covered by other plugins.",
+      "version": "1.0.0",
+      "author": {
+        "name": "jmeagher"
+      },
+      "source": "./plugins/jpm",
       "category": "productivity"
     }
   ]
