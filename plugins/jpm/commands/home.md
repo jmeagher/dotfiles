@@ -1,12 +1,12 @@
 ---
-allowed-tools: Bash(git branch:*), Bash(git switch:*), Bash(git checkout:*), Bash(git pull:*), Bash(git symbolic-ref:*)
+allowed-tools: Bash(git branch:*), Bash(git switch:*), Bash(git checkout:*), Bash(git pull:*), Bash(git symbolic-ref:*), Bash(sed:*), Bash(grep:*), Bash(tr:*), Bash(head:*)
 description: Switch to the default branch (main or master) and pull the latest changes
 ---
 
 ## Context
 
 - Current branch: !`git branch --show-current`
-- Default branch: !`git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||' || git branch -r | grep -E 'origin/(main|master)$' | head -1 | sed 's|.*origin/||' | tr -d ' '`
+- Default branch: !`git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed "s|refs/remotes/origin/||" || git branch -r | grep -E "origin/(main|master)" | head -1 | sed "s|.*origin/||" | tr -d " "`
 
 ## Your task
 
