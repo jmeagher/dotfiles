@@ -1,5 +1,5 @@
 
-if [ "`uname`" == "Darwin" ] ; then
+if [ "$(uname)" = "Darwin" ] ; then
 
     # Set java home to the OSX java
     if [ "$JAVA_HOME" = "" ] ; then
