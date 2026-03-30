@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // \"\"' | grep -q 'claude/settings\\.json$' && bash claude/setup.sh 2>&1 || true",
+            "statusMessage": "Regenerating ~/.claude/settings.json..."
+          }
+        ]
+      }
+    ]
+  }
+}
