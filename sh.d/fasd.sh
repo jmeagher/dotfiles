@@ -1,6 +1,6 @@
 
 
-if [ "" != "`which fasd 2> /dev/null `" ] ; then
+if command -v fasd > /dev/null 2>&1 ; then
   eval "$(fasd --init auto)"
   alias fv="fasd -aie $EDITOR"
   alias v="fasd -aie $EDITOR"

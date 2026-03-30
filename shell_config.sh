@@ -16,7 +16,7 @@ done
 
 # Source shell-specific scripts
 if [ -n "$ZSH_VERSION" ]; then
-  for _f in "$_DOTFILES/zsh.d"/*.sh "$_DOTFILES/zsh.d"/*.zsh; do
+  for _f in "$_DOTFILES/zsh.d"/*.sh(N) "$_DOTFILES/zsh.d"/*.zsh(N); do
     [ -r "$_f" ] && . "$_f"
   done
 elif [ -n "$BASH_VERSION" ]; then
