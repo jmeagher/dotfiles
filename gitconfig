@@ -35,8 +35,8 @@
 
 [core]
 	excludesfile = ~/.gitignore_global
-	splitIndex = true # Make it faster for big repos
-	untackedCache = true # Make it faster for big repos
+	# splitIndex = true # Make it faster for big repos
+	# untackedCache = true # Make it faster for big repos
 	# fsmonitor = true # faster status checks https://github.blog/2022-06-29-improve-git-monorepo-performance-with-a-file-system-monitor/
 
 [alias]
@@ -44,7 +44,7 @@
 	prunepr = "!git for-each-ref refs/heads/pr-* --format='%(refname:short)' | while read ref ; do git branch -D $ref ; done"
 
 [feature]
-	manyFiles = 1 # Make it faster for big repos
+	# manyFiles = 1 # Make it faster for big repos
 
 [pull]
 	ff = only
