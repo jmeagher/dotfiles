@@ -1,7 +1,7 @@
 
 # Various setup things related to golang
 
-if [ "" != "`which go 2> /dev/null `" ] ; then
+if command -v go > /dev/null 2>&1 ; then
 
     if [ "" = "$GOPATH" ] ; then
         GOPATH=~/.gocode

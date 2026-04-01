@@ -1,4 +1,4 @@
-if [ "" != "`which rbenv 2> /dev/null `" ] ; then
+if command -v rbenv > /dev/null 2>&1 ; then
     eval " $(rbenv init - )"
 
     # Handy ruby things
@@ -73,7 +73,7 @@ if [ "" != "`which rbenv 2> /dev/null `" ] ; then
       done
     }
 
-  if [ "" != "`which rspec 2> /dev/null `" ] ; then
+  if command -v rspec > /dev/null 2>&1 ; then
       alias rspec="rspec -c -f d"
   fi
 else

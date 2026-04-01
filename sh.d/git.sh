@@ -1,4 +1,4 @@
-if [ "" != "`which git 2> /dev/null `" ] ; then
+if command -v git > /dev/null 2>&1 ; then
     function git_all_status() {
         for g in */.git ; do
             cd $(dirname $g)

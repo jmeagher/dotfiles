@@ -8,7 +8,7 @@ nonascii() { LANG=C grep --color=always '[^ -~]\+'; }
 export HISTCONTROL=erasedups
 
 
-if [ "" != "`which tput 2> /dev/null `" ] ; then
+if command -v tput > /dev/null 2>&1 ; then
   alias diffw='diff -W $(( $(tput cols) - 2 ))'
 else
   alias diffw='diff -W $(( $COLUMNS - 2 ))'

@@ -5,7 +5,7 @@ for file in /usr/local/etc/bash_completion /opt/local/etc/bash_completion /etc/b
 done
 
 # Special homebrew version
-if [ "" != "`which brew 2> /dev/null `" ] ; then
+if command -v brew > /dev/null 2>&1 ; then
   if [ -f $(brew --prefix)/etc/bash_completion ]; then
     . $(brew --prefix)/etc/bash_completion
   fi
