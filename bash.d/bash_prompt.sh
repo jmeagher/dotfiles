@@ -56,9 +56,9 @@ parse_aws_info() {
 
 _RUBY_CHECK=""
 if [ "$ENABLE_RUBY_PROMPT" = "true" ] ; then
-  if [ "" != "`which rbenv 2> /dev/null `" ] ; then
+  if command -v rbenv > /dev/null 2>&1 ; then
     _RUBY_CHECK=rbenv
-  elif [ "" != "`which rvm 2> /dev/null `" ] ; then
+  elif command -v rvm > /dev/null 2>&1 ; then
     _RUBY_CHECK=rvm
   fi
 fi
@@ -217,13 +217,13 @@ PS_END="\n\[${_RESET}\]$ "
 PS_TIME="\[${_MAGENTA}\]\$(prompt_time)"
 
 # Extra stuff
-if [ "" != "`which git 2> /dev/null `" ] ; then
+if command -v git > /dev/null 2>&1 ; then
   PS_GIT="\[${_CYAN}\]\$(parse_git_info)"
 else
   PS_GIT=
 fi
 
-if [ "" != "`which svn 2> /dev/null `" ] ; then
+if command -v svn > /dev/null 2>&1 ; then
   PS_SVN="\[${_CYAN}\]\$(parse_svn_info)"
 else
   PS_SVN=

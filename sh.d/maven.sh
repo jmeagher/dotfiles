@@ -1,6 +1,6 @@
 
 # Setup custom maven shortcuts
-if [ "" != "`which mvn 2> /dev/null `" ] ; then
+if command -v mvn > /dev/null 2>&1 ; then
     function m() {
         start=`pwd`
         found=false
