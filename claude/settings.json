@@ -95,7 +95,6 @@
     "pr-review-toolkit@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
     "explanatory-output-style@claude-plugins-official": true,
-    "learning-output-style@claude-plugins-official": true,
     "remember@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
