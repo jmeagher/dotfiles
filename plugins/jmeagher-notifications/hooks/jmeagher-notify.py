@@ -7,7 +7,6 @@ Registered for events via hooks/hooks.json:
   Stop              — sets tmux window to "✓ done"; plays sound + desktop banner;
                       if idle longer than IDLE_THRESHOLD_SECONDS, speaks a notification
   Notification      — sets tmux window to "⏳ waiting"; plays sound + desktop banner
-  SubagentStop      — speaks a notification with tmux context
 
 Platform behavior:
   macOS   : runs `say "<message>"`, `afplay <sound>`, and `osascript` notifications
@@ -21,6 +20,7 @@ import os
 import subprocess
 import sys
 import time
+import urllib.request
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
@@ -33,6 +33,14 @@ TIMESTAMP_FILE = "/tmp/claude_last_prompt_time"
 # Message spoken (macOS) or beeped (other) when the Stop event fires idle.
 # Common alternatives: "waiting for input", "Claude is done", "your turn"
 NOTIFY_MSG = "all done"
+
+# ntfy topic for push notifications. If unset or empty, ntfy notifications are skipped.
+# Set to a topic name to receive push notifications via https://ntfy.sh/<topic>.
+# CLAUDE_NTFY_TOPIC=
+
+# Controls whether `say`/`espeak` speech is used. Set to "0" or "false" to disable.
+# Default (unset or any other value): speech is enabled.
+# CLAUDE_SAY_ENABLED=
 
 MACOS_SOUND_FILE = "/System/Library/Sounds/Ping.aiff"
 
@@ -99,6 +107,24 @@ def sound_notify(title: str, message: str) -> None:
         subprocess.run(["notify-send", title, message], check=False)
 
 
+def ntfy_notify(title: str, message: str) -> None:
+    """Send a push notification via ntfy.sh if CLAUDE_NTFY_TOPIC is set."""
+    topic = os.environ.get("CLAUDE_NTFY_TOPIC", "")
+    if not topic:
+        return
+    try:
+        url = f"https://ntfy.sh/{topic}"
+        req = urllib.request.Request(
+            url,
+            data=message.encode("utf-8"),
+            headers={"Title": title},
+            method="POST",
+        )
+        urllib.request.urlopen(req, timeout=5)
+    except Exception:
+        pass
+
+
 def platform_say(message: str) -> None:
     """Speak a message (macOS/Linux) or beep (other platforms)."""
     if sys.platform == "darwin":
@@ -150,6 +176,14 @@ def elapsed_seconds() -> float:
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 
+def _say_if_enabled(message: str) -> None:
+    """Call platform_say unless CLAUDE_SAY_ENABLED is set to '0' or 'false'."""
+    val = os.environ.get("CLAUDE_SAY_ENABLED", "")
+    if val.lower() in ("0", "false"):
+        return
+    platform_say(message)
+
+
 def main() -> None:
     try:
         data = json.loads(sys.stdin.read())
@@ -166,17 +200,15 @@ def main() -> None:
         tmux_info = get_tmux_info()
         set_tmux_window_name("✓ done")
         sound_notify("Claude: Task finished", tmux_info)
+        ntfy_notify("Claude: Task finished", tmux_info)
         if elapsed_seconds() >= IDLE_THRESHOLD_SECONDS:
-            platform_say(NOTIFY_MSG)
+            _say_if_enabled(NOTIFY_MSG)
 
     elif event == "Notification":
         tmux_info = get_tmux_info()
         set_tmux_window_name("⏳ waiting")
         sound_notify("Claude: Attention needed", tmux_info)
-
-    elif event == "SubagentStop":
-        tmux_info = get_tmux_info()
-        platform_say(f"Subagent finished in {tmux_info}")
+        ntfy_notify("Claude: Attention needed", tmux_info)
 
     sys.exit(0)
 
