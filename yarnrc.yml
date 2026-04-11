@@ -1,0 +1,5 @@
+# Yarn Berry configuration (~/.yarnrc.yml)
+# Supply chain protection: block packages published less than 10 days ago.
+# Override: yarn add <pkg> --min-release-age 0
+npmMinimalAgeGate: "10d"
+enableScripts: false

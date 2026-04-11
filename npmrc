@@ -1,0 +1,5 @@
+# npm user config (~/.npmrc)
+# Supply chain protection: block packages published less than 10 days ago.
+# Override: npm install <pkg> --min-release-age=0
+min-release-age=10
+ignore-scripts=true

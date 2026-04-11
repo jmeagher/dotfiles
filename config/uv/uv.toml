@@ -1,0 +1,8 @@
+# uv configuration
+# Supply chain protection: block packages published less than 10 days ago.
+# Override per-command: uv add --no-config <pkg>
+# Override per-package in pyproject.toml:
+#   [tool.uv.exclude-newer-package]
+#   my-private-pkg = false
+
+exclude-newer = "10 days"
