@@ -29,6 +29,16 @@ linkit vim .vim
 linkit tmux.conf .tmux.conf
 linkit gitconfig .gitconfig
 linkit gitignore_global .gitignore_global
+linkit npmrc .npmrc
+linkit yarnrc.yml .yarnrc.yml
+linkit gemrc .gemrc
+linkit zshenv .zshenv
+
+# Config files in nested directories require the parent dir to exist first
+mkdir -p ~/.config/uv
+linkit config/uv/uv.toml .config/uv/uv.toml
+mkdir -p ~/.cargo
+linkit cargo-config.toml .cargo/config.toml
 
 mkdir -p ~/bin
 

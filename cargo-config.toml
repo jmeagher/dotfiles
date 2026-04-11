@@ -1,0 +1,9 @@
+# Cargo configuration (~/.cargo/config.toml)
+# Supply chain protection notes:
+#   - Use 'cargo-install' alias (in sh.d/cargo-age-gate.sh) for --locked installs
+#   - Use 'cargo-safe' alias to run cargo-audit + cargo-vet before building
+#   - cargo-cooldown (COOLDOWN_MINUTES env var) wraps cargo for age enforcement
+
+[net]
+# Use system git binary (avoids libgit2 supply chain exposure)
+git-fetch-with-cli = true

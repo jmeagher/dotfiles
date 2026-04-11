@@ -1,0 +1,7 @@
+# RubyGems configuration (~/.gemrc)
+# Supply chain protection: gem.coop mirrors rubygems.org with a built-in 48h cooldown.
+# gem.coop is listed first so it is used preferentially.
+# Bundler: set source "https://gem.coop" in your Gemfiles to get the same cooldown.
+:sources:
+- https://gem.coop/
+- https://rubygems.org/
