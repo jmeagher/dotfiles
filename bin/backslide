@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+# backslide - run backslide via Docker
+# Mounts the current directory as /app and exposes port 4100 for the dev server.
+# Usage: backslide [bs-args...]
+
+# For docs on this see https://github.com/sinedied/backslide
+
+exec docker run -it --rm -v "$(pwd):/app" -w /app -p 4100:4100 registry.gitlab.com/mpolitze/backslide-docker:latest "$@"
