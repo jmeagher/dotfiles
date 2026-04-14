@@ -5,4 +5,4 @@
 
 # For docs on this see https://github.com/sinedied/backslide
 
-exec docker run -it --rm -v "$(pwd):/app" -w /app -p 4100:4100 registry.gitlab.com/mpolitze/backslide-docker:latest "$@"
+exec docker run -it --rm --init -v "$(pwd):/app" -w /app -p 4100:4100 registry.gitlab.com/mpolitze/backslide-docker@sha256:002ef9723bee156d955c6873b5512250c7b59cd133fff8fc2c605f8a99b984f5 "$@"
