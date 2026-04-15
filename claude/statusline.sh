@@ -12,8 +12,14 @@
 #
 # Context window: progress bar + percentage + size, e.g.  [████░░░░░░░░░░░░░░░░] 23% /200k
 #
-# Additional info (when available, shown in grey after location):
-#   agent name, worktree name, cost ($0.12), token count (14k tok), duration (15s)
+# Additional info (when available, shown after location):
+#   agent name, worktree name, cost ($0.12), token breakdown, duration (15s)
+#
+# Token breakdown (per-turn from current_usage):
+#   o:1.2k  output tokens        red    (50× cost — most expensive)
+#   i:8.5k  uncached input       grey   (10× cost)
+#   rc:2k   cache reads          green  (1× cost — the savings)
+#   wc:5k   cache writes         orange (written this turn for future reads)
 #
 # Max and thinking mode are read from ~/.claude/settings.json since the
 # statusline JSON input does not reliably expose them.
@@ -36,10 +42,11 @@ cwd=$(printf '%s' "$input" | jq -r '.workspace.current_dir // .cwd // ""')
 
 # Cost / tokens / duration
 cost_usd=$(printf '%s' "$input" | jq -r '.cost.total_cost_usd // empty')
-total_tokens=$(printf '%s' "$input" | jq -r '
-  ((.context_window.total_input_tokens // 0) + (.context_window.total_output_tokens // 0))
-  | if . > 0 then tostring else empty end
-')
+# Per-turn token breakdown (current_usage)
+cur_input=$(printf '%s' "$input" | jq -r '.context_window.current_usage.input_tokens // empty')
+cur_output=$(printf '%s' "$input" | jq -r '.context_window.current_usage.output_tokens // empty')
+cur_cache_read=$(printf '%s' "$input" | jq -r '.context_window.current_usage.cache_read_input_tokens // empty')
+cur_cache_write=$(printf '%s' "$input" | jq -r '.context_window.current_usage.cache_creation_input_tokens // empty')
 duration_ms=$(printf '%s' "$input" | jq -r '.cost.total_duration_ms // empty')
 
 # Worktree / agent
@@ -140,12 +147,32 @@ if [ -n "$cost_usd" ]; then
 fi
 
 tokens_out=""
-if [ -n "$total_tokens" ]; then
-    tokens_fmt=$(printf '%s' "$total_tokens" | awk '{
-        if ($1 >= 1000) printf "%dk tok", int($1/1000 + 0.5)
-        else printf "%d tok", $1
-    }')
-    tokens_out=$(printf '  \033[90m%s\033[0m' "$tokens_fmt")
+if [ -n "$cur_output" ] || [ -n "$cur_input" ]; then
+    # Helper: format as X.Xk if >= 1000, else plain number
+    _k() { printf '%s' "${1:-0}" | awk '{
+        if ($1>=1000) {
+            v=$1/1000; r=int(v*10+0.5)/10
+            if (r==int(r)) printf "%dk",int(r); else printf "%.1fk",r
+        } else printf "%d",$1
+    }'; }
+
+    out_fmt=$(_k "$cur_output")
+    in_fmt=$(_k "$cur_input")
+
+    # Output: red (50× cost) | Uncached input: grey (10× cost)
+    tokens_out=$(printf '  \033[31mo:%s\033[0m \033[90mi:%s\033[0m' "$out_fmt" "$in_fmt")
+
+    # Cache reads: green (1× cost — the savings show here)
+    if [ -n "$cur_cache_read" ] && [ "$cur_cache_read" -gt 0 ] 2>/dev/null; then
+        read_fmt=$(_k "$cur_cache_read")
+        tokens_out="${tokens_out}$(printf ' \033[32mrc:%s\033[0m' "$read_fmt")"
+    fi
+
+    # Cache writes: orange (pay now, save later)
+    if [ -n "$cur_cache_write" ] && [ "$cur_cache_write" -gt 0 ] 2>/dev/null; then
+        write_fmt=$(_k "$cur_cache_write")
+        tokens_out="${tokens_out}$(printf ' \033[38;5;208mwc:%s\033[0m' "$write_fmt")"
+    fi
 fi
 
 duration_out=""
