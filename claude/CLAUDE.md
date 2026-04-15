@@ -21,3 +21,4 @@ Sub-agents need the same tool permissions as the parent. On permission failure, 
 
 @~/CLAUDE.local.md
 
+@RTK.md

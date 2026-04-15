@@ -23,6 +23,6 @@ export NPM_CONFIG_IGNORE_SCRIPTS=true
 # --- Homebrew ---
 # Prevent silent tap updates pulling in new (unreviewed) formula versions.
 export HOMEBREW_NO_AUTO_UPDATE=1
-# Uncomment to enable formula-age checks in the brew() wrapper (requires ~2GB tap clone):
-#   export HOMEBREW_NO_INSTALL_FROM_API=1
-# After setting, run once: brew tap homebrew/core
+# Required for formula-age checks in the brew() wrapper (uses local tap instead of JSON API).
+# One-time setup: brew tap homebrew/core  (~2 GB clone)
+export HOMEBREW_NO_INSTALL_FROM_API=1
