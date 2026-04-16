@@ -1,5 +1,8 @@
 if command -v claude > /dev/null 2>&1 ; then
-    alias cde='CLAUDE_CODE_ENABLE_TELEMETRY=1 OTEL_LOG_TOOL_DETAILS=1 \
-               claude --enable-auto-mode \
-               --model sonnet --effort medium'
+    _cde() { CLAUDE_CODE_ENABLE_TELEMETRY=1 OTEL_LOG_TOOL_DETAILS=1 \
+             claude --enable-auto-mode --model "$1" --effort medium "${@:2}"; }
+    alias cde='_cde haiku'
+    alias cdh='_cde haiku'
+    alias cds='_cde sonnet'
+    alias cdo='_cde opus'
 fi
