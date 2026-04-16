@@ -29,10 +29,10 @@ linkit vim .vim
 linkit tmux.conf .tmux.conf
 linkit gitconfig .gitconfig
 linkit gitignore_global .gitignore_global
-linkit npmrc .npmrc
+# linkit npmrc .npmrc
 linkit yarnrc.yml .yarnrc.yml
 linkit gemrc .gemrc
-linkit zshenv .zshenv
+# linkit zshenv .zshenv
 
 # Config files in nested directories require the parent dir to exist first
 mkdir -p ~/.config/uv
@@ -82,5 +82,3 @@ sh "$(pwd)/claude/setup.sh"
 echo "Hit enter to install vundle bundles, ctrl-c to skip"
 read a
 vim +BundleInstall +qall
-
-
