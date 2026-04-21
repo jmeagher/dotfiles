@@ -156,7 +156,22 @@
       "Bash(pup incidents services:*)",
       "Bash(pup incidents settings:*)",
       "Bash(pup incidents teams:*)",
-      "Bash(pup incidents postmortem-templates:*)"
+      "Bash(pup incidents postmortem-templates:*)",
+      "Bash(glab issue list:*)",
+      "Bash(glab issue view:*)",
+      "Bash(glab mr list:*)",
+      "Bash(glab mr view:*)",
+      "Bash(glab repo list:*)",
+      "Bash(glab repo view:*)",
+      "Bash(glab ci list:*)",
+      "Bash(glab ci view:*)",
+      "Bash(glab ci status:*)",
+      "Bash(acli jira workitem view:*)",
+      "Bash(acli jira workitem search:*)",
+      "Bash(acli jira board get:*)",
+      "Bash(acli jira board search:*)",
+      "Bash(acli jira board list-sprints:*)",
+      "Bash(acli jira project list:*)"
     ],
     "defaultMode": "default"
   },

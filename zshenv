@@ -1,4 +1,4 @@
-# ~/.zshenv — sourced for ALL zsh instances: interactive, non-interactive, scripts, Makefiles.
+# Sourced from ~/.zshenv for ALL zsh instances: interactive, non-interactive, scripts, Makefiles.
 # Keep this file to env-var exports only. No aliases, no functions, no prompts.
 #
 # PURPOSE: supply chain age-gate env vars must live here (not in .zshrc / sh.d)

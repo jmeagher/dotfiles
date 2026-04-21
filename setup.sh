@@ -27,7 +27,6 @@ linkit ./ .mydotfiles
 linkit vimrc .vimrc
 linkit vim .vim
 linkit tmux.conf .tmux.conf
-linkit gitconfig .gitconfig
 linkit gitignore_global .gitignore_global
 # linkit npmrc .npmrc
 linkit yarnrc.yml .yarnrc.yml
@@ -75,6 +74,26 @@ ensure_shell_config() {
 ensure_shell_config ~/.bash_profile
 ensure_shell_config ~/.bashrc
 ensure_shell_config ~/.zshrc
+
+# Inject dotfiles gitconfig as a git include (avoids replacing ~/.gitconfig).
+ensure_gitconfig() {
+    _file=~/.gitconfig
+    touch "$_file"
+    grep -q "\.mydotfiles/gitconfig" "$_file" && echo "$_file already includes dotfiles gitconfig" && return 0
+    echo "Adding dotfiles gitconfig include to $_file"
+    printf '\n[include]\n\tpath = ~/.mydotfiles/gitconfig\n' >> "$_file"
+}
+ensure_gitconfig
+
+# Inject dotfiles zshenv as a source line in ~/.zshenv.
+ensure_zshenv() {
+    _file=~/.zshenv
+    touch "$_file"
+    grep -q "\.mydotfiles/zshenv" "$_file" && echo "$_file already sources dotfiles zshenv" && return 0
+    echo "Adding dotfiles zshenv source to $_file"
+    printf '\n# Load dotfiles zsh environment\n. ~/.mydotfiles/zshenv\n' >> "$_file"
+}
+ensure_zshenv
 
 # Set up Claude Code configuration
 sh "$(pwd)/claude/setup.sh"

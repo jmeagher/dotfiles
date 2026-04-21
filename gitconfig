@@ -34,7 +34,7 @@
 	default = current
 
 [core]
-	excludesfile = ~/.gitignore_global
+	excludesfile = ~/.mydotfiles/gitignore_global
 	# splitIndex = true # Make it faster for big repos
 	# untackedCache = true # Make it faster for big repos
 	# fsmonitor = true # faster status checks https://github.blog/2022-06-29-improve-git-monorepo-performance-with-a-file-system-monitor/
@@ -48,5 +48,3 @@
 
 [pull]
 	ff = only
-[credential "https://gitlab.com"]
-	helper = "!f() { printf 'username=oauth2\\npassword='; glab auth status --show-token --hostname gitlab.com 2>&1 | awk '/Token found:/{print $NF}'; }; f"
