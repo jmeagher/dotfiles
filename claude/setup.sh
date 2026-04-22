@@ -16,7 +16,8 @@ fi
 echo "Linking ~/.claude/CLAUDE.md"
 ln -s "$CLAUDE_MD_SRC" "$CLAUDE_MD_TGT"
 
-# RTK.md: symlink if rtk is installed (referenced via @RTK.md in CLAUDE.md)
+# RTK.md: CLAUDE.md always @-imports this file, so it must always exist.
+# Symlink to the full docs when rtk is installed; write a stub otherwise.
 RTK_MD_SRC="$DOTFILES_DIR/claude/RTK.md"
 RTK_MD_TGT="$HOME/.claude/RTK.md"
 if command -v rtk > /dev/null 2>&1; then
@@ -28,23 +29,11 @@ if command -v rtk > /dev/null 2>&1; then
     echo "Linking ~/.claude/RTK.md (rtk detected)"
     ln -s "$RTK_MD_SRC" "$RTK_MD_TGT"
 else
-    echo "rtk not found — skipping RTK.md symlink"
-fi
-
-# RTK hook: symlink into ~/.claude/hooks/ if rtk is installed
-RTK_HOOK_SRC="$DOTFILES_DIR/claude/hooks/rtk-rewrite.sh"
-RTK_HOOK_DIR="$HOME/.claude/hooks"
-RTK_HOOK_TGT="$RTK_HOOK_DIR/rtk-rewrite.sh"
-if command -v rtk > /dev/null 2>&1; then
-    mkdir -p "$RTK_HOOK_DIR"
-    if [ -e "$RTK_HOOK_TGT" ] && [ ! -h "$RTK_HOOK_TGT" ]; then
-        echo "~/.claude/hooks/rtk-rewrite.sh exists and is not a symlink — move it first"
-        exit 1
+    # Write a stub so the @RTK.md import in CLAUDE.md resolves without error.
+    if [ ! -e "$RTK_MD_TGT" ]; then
+        echo "rtk not found — writing stub ~/.claude/RTK.md"
+        printf '# RTK not installed\n\nrtk is not installed on this machine. Install it to enable token-saving rewrites.\n' > "$RTK_MD_TGT"
     fi
-    [ -h "$RTK_HOOK_TGT" ] && rm "$RTK_HOOK_TGT"
-    echo "Linking ~/.claude/hooks/rtk-rewrite.sh (rtk detected)"
-    ln -s "$RTK_HOOK_SRC" "$RTK_HOOK_TGT"
-    chmod +x "$RTK_HOOK_SRC"
 fi
 
 # ~/CLAUDE.local.md: create a stub if not present (local/work repo may symlink a real one here)
@@ -60,20 +49,19 @@ SETTINGS_BASE="$DOTFILES_DIR/claude/settings.json"
 STATUSLINE_PATH="$DOTFILES_DIR/claude/statusline.sh"
 if command -v jq > /dev/null 2>&1; then
     echo "Generating ~/.claude/settings.json from dotfiles base"
-    GENERATED=$(jq --arg mp_path "$DOTFILES_DIR" --arg sl_path "$STATUSLINE_PATH" \
+    jq --arg mp_path "$DOTFILES_DIR" --arg sl_path "$STATUSLINE_PATH" \
         '.statusLine.command = $sl_path | .extraKnownMarketplaces["jmeagher-dotfiles"] = {"source": {"source": "directory", "path": $mp_path}, "autoUpdate": true}' \
-        "$SETTINGS_BASE")
-
-    # Conditionally inject RTK PreToolUse hook if rtk is installed
-    if command -v rtk > /dev/null 2>&1; then
-        echo "  Injecting RTK hook into settings.json (rtk detected)"
-        GENERATED=$(echo "$GENERATED" | jq --arg hook_path "$RTK_HOOK_TGT" \
-            '.hooks.PreToolUse += [{"matcher": "Bash", "hooks": [{"type": "command", "command": $hook_path}]}]')
-    fi
-
-    echo "$GENERATED" > "$CLAUDE_SETTINGS"
+        "$SETTINGS_BASE" > "$CLAUDE_SETTINGS"
 else
     echo "WARNING: jq not found; copying settings.json without path injection"
     echo "  Install jq and re-run setup.sh, or manually set statusLine.command and marketplace path"
     cp "$SETTINGS_BASE" "$CLAUDE_SETTINGS"
+fi
+
+# RTK hook: let rtk install its own hook script and patch settings.json.
+# Runs after settings.json is written so rtk patches the freshly generated file.
+# --hook-only skips RTK.md management (we handle that above via symlink).
+if command -v rtk > /dev/null 2>&1; then
+    echo "Installing RTK hook via rtk init"
+    rtk init -g --auto-patch --hook-only
 fi
