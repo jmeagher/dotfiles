@@ -42,6 +42,7 @@
 [alias]
 	copr = "!f() { git fetch -fu origin refs/pull/$1/head:pr-$1; git checkout pr-$1; } ; f"
 	prunepr = "!git for-each-ref refs/heads/pr-* --format='%(refname:short)' | while read ref ; do git branch -D $ref ; done"
+	home = "!f() { branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||'); if [ -z \"$branch\" ]; then branch=$(git remote show origin 2>/dev/null | awk '/HEAD branch/ {print $NF}'); fi; if [ -z \"$branch\" ]; then branch=main; fi; git switch \"$branch\" && git pull; }; f"
 
 [feature]
 	# manyFiles = 1 # Make it faster for big repos
