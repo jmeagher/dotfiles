@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2319,SC2015
+# SC2319: Intentional pattern — test harness deliberately captures $? from [ ... ] test to feed check().
+# SC2015: Intentional pattern — final line uses [ ... ] && echo ... || { ...; exit 1; } for control flow.
 # Tests for verify-gate.sh and session-cleanup.sh. Each case runs in its own temp dir.
 set -u
 HOOKS_DIR="$(cd "$(dirname "$0")/../hooks" && pwd)"
