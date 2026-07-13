@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Outer agentic-coding-loop runner: fresh Claude context per iteration
+# (avoids context rot; state lives in SPEC.md/TODO.md/LOOP_LOG.md/git).
+# Usage: code-loop [max_iterations]   (run from the target project root)
+set -euo pipefail
+
+max="${1:-10}"
+[ -f TODO.md ] && [ -f SPEC.md ] || { echo "SPEC.md/TODO.md not found — run /loop-init first" >&2; exit 2; }
+
+for i in $(seq 1 "$max"); do
+  if ! grep -q '^- \[ \]' TODO.md; then
+    echo "TODO complete after $((i - 1)) iteration(s)."
+    exit 0
+  fi
+  echo "=== iteration $i/$max: $(grep -m1 '^- \[ \]' TODO.md) ==="
+  # In -p mode unlisted tools are auto-denied (no prompt possible), so Bash must
+  # be explicitly allowed or the loop cannot verify, branch, or commit.
+  # That grants unrestricted shell — only run this in projects you trust.
+  claude -p "/code-loop 1" --permission-mode acceptEdits \
+    --allowedTools "Bash,Read,Edit,Write" --output-format json \
+    | jq -r '.result // "no result"' || echo "iteration $i: claude exited non-zero — continuing" >&2
+done
+
+if grep -q '^- \[ \]' TODO.md; then
+  echo "Budget exhausted ($max iterations); unchecked items remain. Review LOOP_LOG.md, then re-run or /feedback."
+  exit 1
+fi
+echo "TODO complete after $max iteration(s)."
