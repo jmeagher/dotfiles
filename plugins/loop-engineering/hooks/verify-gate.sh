@@ -14,8 +14,8 @@ cd "$cwd" || exit 0
 
 # Gate only applies while /code-loop has armed it in this project.
 [ -f .loop/active ] || exit 0
-# Strip backtick residue in case extraction from SPEC.md was sloppy.
-verify_cmd=$(head -1 .loop/verify 2>/dev/null | tr -d '`')
+# Strip backtick residue (sloppy extraction) and CR (CRLF-authored SPEC.md).
+verify_cmd=$(head -1 .loop/verify 2>/dev/null | tr -d '`\r')
 [ -n "$verify_cmd" ] || exit 0   # fail safe: never trap a session on broken state
 
 # Verify FIRST: a passing project always unblocks, even if a stale counter

@@ -18,7 +18,10 @@ lives only in chat.
 
 ## Guardrails
 - No verify command in SPEC.md → /code-loop refuses to run.
-- One TODO item per iteration; hard iteration budgets everywhere.
+- One TODO item per iteration; hard iteration budgets everywhere. The gate's
+  3-strike escalation is per session, so under `bin/code-loop` (fresh context
+  each iteration) a persistently-failing item gets a fresh 3-strike budget per
+  iteration, up to the runner's `[n]` cap — it does not give up after 3 total.
 - Anti-reward-hacking rules in SPEC.md; the gate reports "do NOT weaken tests".
 - Known limitation: the agent could edit SPEC.md/.loop to weaken the gate, or
   disarm it outright (`rm -f .loop/active`). The gate prevents accidental
