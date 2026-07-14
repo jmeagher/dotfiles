@@ -1,0 +1,9 @@
+{
+  "name": "recipes",
+  "version": "1.0.0",
+  "description": "Recipe formatting skills, including Cooking for Engineers tabular recipe notation with gram-based measurements.",
+  "author": {
+    "name": "jmeagher"
+  },
+  "license": "MIT"
+}
