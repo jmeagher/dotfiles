@@ -23,6 +23,16 @@
       },
       "source": "./plugins/jpm",
       "category": "productivity"
+    },
+    {
+      "name": "recipes",
+      "description": "Recipe formatting skills, including Cooking for Engineers tabular recipe notation with gram-based measurements.",
+      "version": "1.0.0",
+      "author": {
+        "name": "jmeagher"
+      },
+      "source": "./plugins/recipes",
+      "category": "productivity"
     }
   ]
 }
