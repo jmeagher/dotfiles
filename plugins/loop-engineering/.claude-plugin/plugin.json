@@ -1,0 +1,9 @@
+{
+  "name": "loop-engineering",
+  "version": "0.1.0",
+  "description": "Development loops: agentic coding loop with verification gate, and developer feedback loop",
+  "author": {
+    "name": "jmeagher"
+  },
+  "license": "MIT"
+}

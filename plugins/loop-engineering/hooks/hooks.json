@@ -1,0 +1,26 @@
+{
+  "description": "Verification gate for /code-loop: Stop is blocked until the project's verify command passes; SessionStart clears stale gate state.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/verify-gate.sh",
+            "timeout": 600
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-cleanup.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

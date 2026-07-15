@@ -33,6 +33,16 @@
       },
       "source": "./plugins/recipes",
       "category": "productivity"
+    },
+    {
+      "name": "loop-engineering",
+      "description": "Development loops: agentic coding loop with verification gate, and developer feedback loop",
+      "version": "0.1.0",
+      "author": {
+        "name": "jmeagher"
+      },
+      "source": "./plugins/loop-engineering",
+      "category": "productivity"
     }
   ]
 }
