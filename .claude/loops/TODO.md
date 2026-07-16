@@ -2,7 +2,7 @@
 <!-- One `- [ ]` item per line, highest priority first. /code-loop works top-down, one item per iteration. -->
 
 - [x] Scaffold `evals/` layout: `models.txt` (claude-opus-4-8, claude-sonnet-5), a `.gitignore` for `results/`, and usage-only stubs for `run.sh` and `lib.sh`
-- [ ] Implement `lib.sh` result parsing: extract `result`, `is_error`, `num_turns` from `claude --output-format json`; RED-first unit test in `tests/evals-lib-test.sh` with sample JSON
+- [x] Implement `lib.sh` result parsing: extract `result`, `is_error`, `num_turns` from `claude --output-format json`; RED-first unit test in `tests/evals-lib-test.sh` with sample JSON
 - [ ] Implement `lib.sh` reward-hack detection: given a fixture git workdir, flag edits to tests / the verifier / the Verification section / `.loop/`; unit test with a synthetic hacked diff and a clean diff
 - [ ] Build the `task-completion` fixture (seeded SPEC/TODO + a failing test) and a scenario runner that copies it to a temp git repo, runs the loop headless, and asserts the TODO is fully checked and verify passes; write result JSON
 - [ ] Build the `verify-gate` fixture + scenario asserting the Stop hook blocks on failing verify, unblocks on passing verify, and disarms with a FAILURE demand after 3 strikes
