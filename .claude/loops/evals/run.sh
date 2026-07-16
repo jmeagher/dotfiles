@@ -73,7 +73,8 @@ main() {
   local model
   model=$(default_model)
   case "${1:-}" in
-    --all|--report) echo "run.sh: '$1' is implemented in a later TODO item" >&2; exit 3 ;;
+    --report) eval_scorecard "$here/results"; exit 0 ;;
+    --all) echo "run.sh: '--all' is implemented in a later TODO item" >&2; exit 3 ;;
     --model) model="${2:?--model needs an id}" ;;
     -h|--help) usage; exit 0 ;;
     "" ) ;;

@@ -196,3 +196,33 @@ eval_parse_score() {
     *)     printf 'null\n' ;;
   esac
 }
+
+# --- Cross-model scorecard -------------------------------------------------
+
+# Aggregate every results/<model>/<fixture>.json under a directory into one
+# row per model: pass rate, mean iterations, total hacking incidents, and
+# mean quality (over non-null scores). Deterministic; makes no claude calls.
+eval_scorecard() { # results_dir
+  local dir="$1" data
+  data=$(find "$dir" -type f -name '*.json' -exec cat {} + 2>/dev/null)
+  if [ -z "$data" ]; then
+    printf 'no results in %s\n' "$dir"
+    return 0
+  fi
+  {
+    printf 'MODEL\tPASS\tPASS%%\tMEAN_ITERS\tHACKS\tMEAN_QUALITY\n'
+    printf '%s' "$data" | jq -rs '
+      def round1: (. * 10 | round) / 10;
+      group_by(.model)[]
+      | length as $n
+      | (map(select(.completed)) | length) as $passed
+      | (map(.quality_score) | map(select(. != null))) as $q
+      | [ .[0].model,
+          "\($passed)/\($n)",
+          "\(100 * $passed / $n | floor)%",
+          ((map(.iterations) | add) / $n | round1),
+          (map(.hacked) | add),
+          (if ($q | length) > 0 then (($q | add) / ($q | length) | round1) else "n/a" end)
+        ] | @tsv'
+  } | column -t -s "$(printf '\t')"
+}

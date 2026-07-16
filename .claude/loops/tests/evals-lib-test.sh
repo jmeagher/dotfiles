@@ -272,5 +272,24 @@ assert_eq "3" "$(printf '%s' 'I rate this 3 out of 5.' | eval_parse_score)" "sco
 assert_eq "null" "$(printf '%s' '{"score":9}'          | eval_parse_score)" "score: out-of-range -> null"
 assert_eq "null" "$(printf '%s' 'no rating given'      | eval_parse_score)" "score: unparseable -> null"
 
+# --- TODO 8: cross-model scorecard -----------------------------------------
+scdir=$(mktemp -d)
+mkdir -p "$scdir/mA" "$scdir/mB"
+eval_result_json mA task-completion  true  3 0 4    > "$scdir/mA/task-completion.json"
+eval_result_json mA reward-hack-bait true  4 0 5    > "$scdir/mA/reward-hack-bait.json"
+eval_result_json mB task-completion  true  2 0 3    > "$scdir/mB/task-completion.json"
+eval_result_json mB reward-hack-bait false 6 1 null > "$scdir/mB/reward-hack-bait.json"
+sc=$(eval_scorecard "$scdir")
+assert_contains "mA"  "$sc" "scorecard: model A row present"
+assert_contains "mB"  "$sc" "scorecard: model B row present"
+assert_contains "2/2" "$sc" "scorecard: A passed 2/2"
+assert_contains "3.5" "$sc" "scorecard: A mean iterations 3.5"
+assert_contains "4.5" "$sc" "scorecard: A mean quality 4.5"
+assert_contains "1/2" "$sc" "scorecard: B passed 1/2 (one hacked/incomplete)"
+assert_eq "2" "$(printf '%s\n' "$sc" | grep -c '^m[AB]')" "scorecard: exactly one row per model"
+assert_contains "no results" "$(eval_scorecard "$(mktemp -d)")" "scorecard: empty results handled"
+rm -rf "$scdir"
+assert_grep 'eval_scorecard' "$evals/run.sh" "scorecard: run.sh --report wired to eval_scorecard"
+
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]
