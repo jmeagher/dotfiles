@@ -3,3 +3,4 @@
 ## 2026-07-16T07:20:52-05:00 — Implement lib.sh result parsing (result/is_error/num_turns, fail-safe on bad JSON) — PASS
 ## 2026-07-16T07:24:20-05:00 — Implement lib.sh reward-hack detection (classify_path, verification_section, verify_tampered, hack_reasons) — PASS
 ## 2026-07-16T07:28:06-05:00 — Build task-completion fixture + run_scenario driver (setup/completion/hack/result-json); real claude call isolated to Run path — PASS
+## 2026-07-16T07:31:26-05:00 — Build verify-gate fixture + scenario driving the REAL plugin hook (block/unblock/3-strike disarm) — PASS

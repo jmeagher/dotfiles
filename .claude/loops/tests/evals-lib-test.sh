@@ -55,6 +55,14 @@ assert_empty() { # value desc
   fi
 }
 
+assert_absent() { # path desc
+  if [ ! -e "$1" ]; then
+    pass=$((pass + 1)); printf 'ok   - %s\n' "$2"
+  else
+    fail=$((fail + 1)); printf 'FAIL - %s (expected absent: %s)\n' "$2" "$1"
+  fi
+}
+
 sources_clean() { # path desc — file sources under a fresh bash with no error
   if bash -c '. "$1"' _ "$1" >/dev/null 2>&1; then
     pass=$((pass + 1)); printf 'ok   - %s\n' "$2"
@@ -189,6 +197,43 @@ assert_eq "0"               "$(printf '%s' "$rj" | jq -r '.hacked')"       "resu
 assert_eq "4"               "$(printf '%s' "$rj" | jq -r '.quality_score')" "result_json: quality"
 assert_eq "null" "$(printf '%s' "$(eval_result_json m f false 1 2 null)" | jq -r '.quality_score')" \
   "result_json: quality may be null"
+
+# --- TODO 5: verify-gate hook behavior (drives the REAL plugin hook) --------
+assert_file "$evals/fixtures/verify-gate/SPEC.md"  "gate fixture: SPEC.md present"
+assert_file "$evals/fixtures/verify-gate/check.sh" "gate fixture: toggle check present"
+
+gate=$(eval_gate_script)
+assert_file "$gate" "gate: verify-gate.sh located (repo source or installed cache)"
+
+if [ -f "$gate" ]; then
+  gwd=$(mktemp -d)
+  cp -R "$evals/fixtures/verify-gate/." "$gwd/"
+  eval_arm_gate "$gwd"
+  assert_eq "bash check.sh" "$(cat "$gwd/.loop/verify")" "gate arm: verify extracted from SPEC.md"
+  assert_file "$gwd/.loop/active" "gate arm: armed marker set"
+
+  # Failing verify (no PASS marker): block, exit 2, blocks->1, stays armed.
+  rm -f "$gwd/PASS"
+  o=$(printf '{"cwd":"%s"}' "$gwd" | bash "$gate" 2>&1); rc=$?
+  assert_eq "2" "$rc" "gate: blocks (exit 2) when verify fails"
+  assert_eq "1" "$(cat "$gwd/.loop/blocks" 2>/dev/null)" "gate: increments blocks to 1"
+  assert_file "$gwd/.loop/active" "gate: stays armed after first failure"
+  assert_contains "STOP BLOCKED" "$o" "gate: emits STOP BLOCKED guidance"
+
+  # Passing verify (PASS marker present): unblock, exit 0, disarmed.
+  touch "$gwd/PASS"
+  o=$(printf '{"cwd":"%s"}' "$gwd" | bash "$gate" 2>&1); rc=$?
+  assert_eq "0" "$rc" "gate: unblocks (exit 0) when verify passes"
+  assert_absent "$gwd/.loop/active" "gate: disarms on pass"
+
+  # Third consecutive failure: disarm + demand a FAILURE report.
+  eval_arm_gate "$gwd"; rm -f "$gwd/PASS"; echo 2 > "$gwd/.loop/blocks"
+  o=$(printf '{"cwd":"%s"}' "$gwd" | bash "$gate" 2>&1); rc=$?
+  assert_eq "2" "$rc" "gate: 3rd consecutive failure still exit 2"
+  assert_contains "FAILURE" "$o" "gate: demands a FAILURE report at 3 strikes"
+  assert_absent "$gwd/.loop/active" "gate: disarms after 3 strikes"
+  rm -rf "$gwd"
+fi
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

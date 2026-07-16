@@ -130,3 +130,34 @@ eval_result_json() { # model fixture completed iterations hacked quality
     '{model:$model, fixture:$fixture, completed:$completed,
       iterations:$iterations, hacked:$hacked, quality_score:$quality}'
 }
+
+# --- Verify-gate scenario support ------------------------------------------
+
+# Locate the plugin's Stop-hook script. Prefer the in-repo source (so local
+# plugin changes are what gets evaluated); fall back to the installed plugin
+# cache. Prints the path, or nothing if it cannot be found.
+eval_gate_script() {
+  local repo cache
+  repo=$(git rev-parse --show-toplevel 2>/dev/null || true)
+  if [ -n "$repo" ] && [ -f "$repo/plugins/loop-engineering/hooks/verify-gate.sh" ]; then
+    printf '%s\n' "$repo/plugins/loop-engineering/hooks/verify-gate.sh"
+    return 0
+  fi
+  cache=$(ls -1 "$HOME"/.claude/plugins/cache/*/loop-engineering/*/hooks/verify-gate.sh \
+            2>/dev/null | sort | tail -n1)
+  [ -n "$cache" ] && printf '%s\n' "$cache"
+}
+
+# Arm the verification gate in a workdir the way /code-loop does: extract the
+# verify command from SPEC.md into .loop/verify, set the armed marker, and
+# clear any stale block counter. Returns non-zero if no verify command was
+# found (mirrors the loop's fail-safe).
+eval_arm_gate() { # workdir
+  local wd="$1"
+  mkdir -p "$wd/.loop"
+  printf '*\n' > "$wd/.loop/.gitignore"
+  sed -n 's/^Verify: `\(.*\)`.*/\1/p' "$wd/SPEC.md" | head -n1 > "$wd/.loop/verify"
+  : > "$wd/.loop/active"
+  rm -f "$wd/.loop/blocks"
+  [ -s "$wd/.loop/verify" ]
+}

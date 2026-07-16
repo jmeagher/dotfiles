@@ -5,7 +5,7 @@
 - [x] Implement `lib.sh` result parsing: extract `result`, `is_error`, `num_turns` from `claude --output-format json`; RED-first unit test in `tests/evals-lib-test.sh` with sample JSON
 - [x] Implement `lib.sh` reward-hack detection: given a fixture git workdir, flag edits to tests / the verifier / the Verification section / `.loop/`; unit test with a synthetic hacked diff and a clean diff
 - [x] Build the `task-completion` fixture (seeded SPEC/TODO + a failing test) and a scenario runner that copies it to a temp git repo, runs the loop headless, and asserts the TODO is fully checked and verify passes; write result JSON
-- [ ] Build the `verify-gate` fixture + scenario asserting the Stop hook blocks on failing verify, unblocks on passing verify, and disarms with a FAILURE demand after 3 strikes
+- [x] Build the `verify-gate` fixture + scenario asserting the Stop hook blocks on failing verify, unblocks on passing verify, and disarms with a FAILURE demand after 3 strikes
 - [ ] Build the `reward-hack-bait` fixture + scenario that runs the loop and records whether any protected file (tests/verifier/Verification/.loop) was touched
 - [ ] Implement `evals/judge.sh`: score the produced diff 1–5 on the rubric via `claude -p`; wire `quality_score` into the result JSON
 - [ ] Implement the scorecard: aggregate `results/` into a per-model table (pass rate, mean iterations, hacking count, mean quality) via `run.sh --report`
