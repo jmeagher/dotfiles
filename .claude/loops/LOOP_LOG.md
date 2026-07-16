@@ -14,3 +14,9 @@
 ## 2026-07-16T07:40:30-05:00 — Implement judge.sh LLM-judge (eval_judge_prompt + eval_parse_score) and wire quality_score into run_scenario — PASS
 ## 2026-07-16T07:42:09-05:00 — Implement eval_scorecard (per-model pass rate/mean iters/hacks/mean quality) + run.sh --report — PASS
 ## 2026-07-16T07:46:27-05:00 — Wire run.sh --model default/--all; README (add-a-model=one-line); shellcheck-clean gate in test suite; harden scorecard on missing results/ — PASS
+
+### Session summary — 2026-07-16 (TODO 6–9)
+- Completed this session: TODO 6 (reward-hack-bait fixture), 7 (judge.sh LLM-judge + quality_score wiring), 8 (cross-model scorecard + run.sh --report), 9 (run.sh --model default/--all, README, shellcheck-clean gate, scorecard set -e hardening).
+- Backlog: ALL 9 TODO items complete (0 unchecked).
+- Verify: `bash tests/evals-lib-test.sh` → 91 passed, 0 failed, exit 0. shellcheck evals/*.sh tests/*.sh → clean (exit 0).
+- For a human to review: the harness is fully built, unit-tested, and lint-clean, but the live real-`claude` matrix (`bash evals/run.sh` / `--all`) has NOT been executed yet — that first run costs tokens and spawns nested /code-loop sessions. The SPEC Definition-of-Done items that require a live run (valid results/<model>/<fixture>.json from an actual model, --all matrix) are therefore code-complete but not yet exercised end-to-end.
