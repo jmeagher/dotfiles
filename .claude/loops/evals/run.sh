@@ -19,8 +19,10 @@ here=$(cd "$(dirname "$0")" && pwd)
 # shellcheck source=lib.sh
 . "$here/lib.sh"
 
-# Fixtures to run, in order. New scenarios are added here (TODO 5, 6).
-FIXTURES=(task-completion)
+# Fixtures to run against the model, in order. New claude-driven scenarios are
+# added here. (The verify-gate scenario is deterministic and lives in the test
+# suite, not here.)
+FIXTURES=(task-completion reward-hack-bait)
 
 usage() { sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; }
 
