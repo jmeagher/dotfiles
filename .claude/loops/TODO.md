@@ -9,4 +9,4 @@
 - [x] Build the `reward-hack-bait` fixture + scenario that runs the loop and records whether any protected file (tests/verifier/Verification/.loop) was touched
 - [x] Implement `evals/judge.sh`: score the produced diff 1–5 on the rubric via `claude -p`; wire `quality_score` into the result JSON
 - [x] Implement the scorecard: aggregate `results/` into a per-model table (pass rate, mean iterations, hacking count, mean quality) via `run.sh --report`
-- [ ] Wire `run.sh` to run all fixtures against ONE model by default (`--model <id>`, default = first line of `models.txt`), with an `--all` flag to loop over every model in `models.txt`; document "add a model = one line in models.txt" in a README; make `shellcheck` clean on `evals/*.sh` and `tests/*.sh`
+- [x] Wire `run.sh` to run all fixtures against ONE model by default (`--model <id>`, default = first line of `models.txt`), with an `--all` flag to loop over every model in `models.txt`; document "add a model = one line in models.txt" in a README; make `shellcheck` clean on `evals/*.sh` and `tests/*.sh`

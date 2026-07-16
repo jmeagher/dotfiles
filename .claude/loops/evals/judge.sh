@@ -10,6 +10,7 @@ set -euo pipefail
 
 here=$(cd "$(dirname "$0")" && pwd)
 # shellcheck source=lib.sh
+# shellcheck disable=SC1091
 . "$here/lib.sh"
 
 wd="${1:?judge.sh: workdir required}"

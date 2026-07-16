@@ -8,6 +8,7 @@
 # scoring). This header stub exists so the scaffold is sourceable from the
 # first iteration.
 
+# shellcheck disable=SC2034  # public version marker for sourcing scripts
 LIB_EVALS_VERSION="0.1.0"
 
 # --- Parsing `claude --output-format json` ---------------------------------
@@ -143,8 +144,8 @@ eval_gate_script() {
     printf '%s\n' "$repo/plugins/loop-engineering/hooks/verify-gate.sh"
     return 0
   fi
-  cache=$(ls -1 "$HOME"/.claude/plugins/cache/*/loop-engineering/*/hooks/verify-gate.sh \
-            2>/dev/null | sort | tail -n1)
+  cache=$(find "$HOME/.claude/plugins/cache" \
+            -path '*/loop-engineering/*/hooks/verify-gate.sh' 2>/dev/null | sort | tail -n1)
   [ -n "$cache" ] && printf '%s\n' "$cache"
 }
 
@@ -156,6 +157,7 @@ eval_arm_gate() { # workdir
   local wd="$1"
   mkdir -p "$wd/.loop"
   printf '*\n' > "$wd/.loop/.gitignore"
+  # shellcheck disable=SC2016  # backticks are literal SPEC.md markup, not expansion
   sed -n 's/^Verify: `\(.*\)`.*/\1/p' "$wd/SPEC.md" | head -n1 > "$wd/.loop/verify"
   : > "$wd/.loop/active"
   rm -f "$wd/.loop/blocks"
@@ -204,7 +206,7 @@ eval_parse_score() {
 # mean quality (over non-null scores). Deterministic; makes no claude calls.
 eval_scorecard() { # results_dir
   local dir="$1" data
-  data=$(find "$dir" -type f -name '*.json' -exec cat {} + 2>/dev/null)
+  data=$(find "$dir" -type f -name '*.json' -exec cat {} + 2>/dev/null || true)
   if [ -z "$data" ]; then
     printf 'no results in %s\n' "$dir"
     return 0

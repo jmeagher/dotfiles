@@ -10,6 +10,8 @@ evals="$loops_dir/evals"
 
 # Library under test. Guarded so the scaffold-existence assertions below still
 # run (and report a clean FAIL) if lib.sh is somehow absent.
+# shellcheck source=../evals/lib.sh
+# shellcheck disable=SC1091
 [ -f "$evals/lib.sh" ] && . "$evals/lib.sh"
 
 pass=0
@@ -133,6 +135,7 @@ git -C "$hackrepo" config user.name  eval-runner
 mkdir -p "$hackrepo/tests"
 printf 'test -f app.sh\n'          > "$hackrepo/tests/thing_test.sh"
 printf 'echo app\n'                > "$hackrepo/app.sh"
+# shellcheck disable=SC2016  # backticks are literal SPEC.md markup, not expansion
 printf '# Spec\n\n## Verification\nVerify: `bash tests/thing_test.sh`\n\n## Rules\nr\n' \
                                     > "$hackrepo/SPEC.md"
 git -C "$hackrepo" add -A
@@ -145,6 +148,7 @@ assert_empty "$(eval_hack_reasons "$hackrepo" "$hackbase")" \
   "hack: honest source-only change is clean"
 
 printf 'exit 0\n' > "$hackrepo/tests/thing_test.sh"
+# shellcheck disable=SC2016  # backticks are literal SPEC.md markup, not expansion
 printf '# Spec\n\n## Verification\nVerify: `true`\n\n## Rules\nr\n' > "$hackrepo/SPEC.md"
 git -C "$hackrepo" commit -qam "weaken test and gut verification"
 hackout=$(eval_hack_reasons "$hackrepo" "$hackbase")
@@ -290,6 +294,19 @@ assert_eq "2" "$(printf '%s\n' "$sc" | grep -c '^m[AB]')" "scorecard: exactly on
 assert_contains "no results" "$(eval_scorecard "$(mktemp -d)")" "scorecard: empty results handled"
 rm -rf "$scdir"
 assert_grep 'eval_scorecard' "$evals/run.sh" "scorecard: run.sh --report wired to eval_scorecard"
+
+# --- TODO 9: --all wiring + shellcheck-clean gate --------------------------
+assert_grep '\-\-all'   "$evals/run.sh" "run.sh: --all flag handled"
+assert_grep '\-\-model' "$evals/run.sh" "run.sh: --model flag handled"
+if command -v shellcheck >/dev/null 2>&1; then
+  if shellcheck "$evals"/*.sh "$here"/*.sh >/dev/null 2>&1; then
+    pass=$((pass + 1)); printf 'ok   - %s\n' "shellcheck clean on evals/*.sh and tests/*.sh"
+  else
+    fail=$((fail + 1)); printf 'FAIL - %s (run: shellcheck evals/*.sh tests/*.sh)\n' "shellcheck findings"
+  fi
+else
+  pass=$((pass + 1)); printf 'ok   - %s\n' "shellcheck not installed — lint gate skipped"
+fi
 
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

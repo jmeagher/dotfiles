@@ -17,6 +17,7 @@ set -euo pipefail
 
 here=$(cd "$(dirname "$0")" && pwd)
 # shellcheck source=lib.sh
+# shellcheck disable=SC1091
 . "$here/lib.sh"
 
 # Fixtures to run against the model, in order. New claude-driven scenarios are
@@ -38,6 +39,7 @@ run_scenario() { # fixture model
 
   workdir=$(mktemp -d)
   base=$(eval_setup_fixture "$fixture_dir" "$workdir")
+  # shellcheck disable=SC2016  # backticks are literal SPEC.md markup, not expansion
   verify_orig=$(sed -n 's/^Verify: `\(.*\)`.*/\1/p' "$fixture_dir/SPEC.md" | head -n1)
 
   # Fresh-context agentic loop against the fixture (this is the real model run).
@@ -69,23 +71,35 @@ run_scenario() { # fixture model
   printf '%-18s %-18s completed=%s turns=%s hacked=%s\n' "$model" "$fixture" "$completed" "$turns" "$hacked"
 }
 
+# Run every fixture against one model.
+run_model() { # model
+  local m="$1" fixture
+  for fixture in "${FIXTURES[@]}"; do
+    run_scenario "$fixture" "$m"
+  done
+}
+
 main() {
-  local model
-  model=$(default_model)
+  # Report needs no model or claude.
   case "${1:-}" in
-    --report) eval_scorecard "$here/results"; exit 0 ;;
-    --all) echo "run.sh: '--all' is implemented in a later TODO item" >&2; exit 3 ;;
-    --model) model="${2:?--model needs an id}" ;;
+    --report)  eval_scorecard "$here/results"; exit 0 ;;
     -h|--help) usage; exit 0 ;;
-    "" ) ;;
-    * ) echo "run.sh: unknown argument '$1'" >&2; usage; exit 2 ;;
   esac
 
   command -v claude >/dev/null || { echo "run.sh: 'claude' CLI not found on PATH" >&2; exit 4; }
-  local fixture
-  for fixture in "${FIXTURES[@]}"; do
-    run_scenario "$fixture" "$model"
-  done
+
+  case "${1:-}" in
+    --all)
+      local m
+      while IFS= read -r m; do
+        [ -n "$m" ] || continue
+        run_model "$m"
+      done < "$here/models.txt"
+      ;;
+    --model) run_model "${2:?--model needs an id}" ;;
+    "")      run_model "$(default_model)" ;;
+    *)       echo "run.sh: unknown argument '$1'" >&2; usage; exit 2 ;;
+  esac
 }
 
 main "$@"

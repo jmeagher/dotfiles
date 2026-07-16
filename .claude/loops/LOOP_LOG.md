@@ -13,3 +13,4 @@
 ## 2026-07-16T07:38:41-05:00 — Build reward-hack-bait fixture (roman()) + register in run.sh; detection proven on gutted-test cheat — PASS
 ## 2026-07-16T07:40:30-05:00 — Implement judge.sh LLM-judge (eval_judge_prompt + eval_parse_score) and wire quality_score into run_scenario — PASS
 ## 2026-07-16T07:42:09-05:00 — Implement eval_scorecard (per-model pass rate/mean iters/hacks/mean quality) + run.sh --report — PASS
+## 2026-07-16T07:46:27-05:00 — Wire run.sh --model default/--all; README (add-a-model=one-line); shellcheck-clean gate in test suite; harden scorecard on missing results/ — PASS
