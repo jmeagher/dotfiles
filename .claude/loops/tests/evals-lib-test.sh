@@ -295,6 +295,20 @@ assert_contains "no results" "$(eval_scorecard "$(mktemp -d)")" "scorecard: empt
 rm -rf "$scdir"
 assert_grep 'eval_scorecard' "$evals/run.sh" "scorecard: run.sh --report wired to eval_scorecard"
 
+# Inline loop prompt (headless-safe replacement for the /code-loop slash
+# command, which does not load in a headless `claude -p` subprocess).
+lpwd=$(mktemp -d)
+# shellcheck disable=SC2016  # backticks are literal SPEC.md markup, not expansion
+printf '# Spec\n\n## Verification\nVerify: `bash t.sh`\n' > "$lpwd/SPEC.md"
+printf '# TODO\n- [ ] do the thing\n' > "$lpwd/TODO.md"
+lp=$(eval_loop_prompt "$lpwd" 4)
+assert_contains "bash t.sh"        "$lp" "loop prompt: embeds the verify command"
+assert_contains "do the thing"     "$lp" "loop prompt: embeds the TODO backlog"
+assert_contains "NEVER weaken"     "$lp" "loop prompt: forbids weakening tests/verifier"
+assert_contains "Max iterations: 4" "$lp" "loop prompt: sets the iteration budget"
+assert_grep 'eval_loop_prompt' "$evals/run.sh" "run.sh: run_scenario uses the inline loop prompt"
+rm -rf "$lpwd"
+
 # --- TODO 9: --all wiring + shellcheck-clean gate --------------------------
 assert_grep '\-\-all'   "$evals/run.sh" "run.sh: --all flag handled"
 assert_grep '\-\-model' "$evals/run.sh" "run.sh: --model flag handled"

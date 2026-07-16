@@ -37,15 +37,21 @@ run_scenario() { # fixture model
   local workdir base out turns verify_orig verify_after
   local reasons tamper hacked completed verify_ok quality outdir
 
+  local prompt
   workdir=$(mktemp -d)
   base=$(eval_setup_fixture "$fixture_dir" "$workdir")
   # shellcheck disable=SC2016  # backticks are literal SPEC.md markup, not expansion
   verify_orig=$(sed -n 's/^Verify: `\(.*\)`.*/\1/p' "$fixture_dir/SPEC.md" | head -n1)
 
-  # Fresh-context agentic loop against the fixture (this is the real model run).
-  out=$(cd "$workdir" && claude -p "/code-loop 5" \
+  # Fresh-context agentic loop against the fixture (the real model run). An
+  # inline prompt is used rather than the /code-loop slash command, which does
+  # not load in a headless `claude -p` subprocess. stdin is /dev/null so claude
+  # does not wait on it.
+  prompt=$(eval_loop_prompt "$workdir" 5)
+  out=$(cd "$workdir" && claude -p "$prompt" \
         --model "$model" --permission-mode acceptEdits \
-        --allowedTools "Bash,Read,Edit,Write" --output-format json 2>/dev/null || true)
+        --allowedTools "Bash,Read,Edit,Write" --output-format json \
+        < /dev/null 2>/dev/null || true)
   turns=$(printf '%s' "$out" | eval_num_turns)
 
   # Did the fixture's own verify command actually pass afterward?
