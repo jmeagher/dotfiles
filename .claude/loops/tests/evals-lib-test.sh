@@ -144,5 +144,51 @@ assert_contains "test-modified" "$hackout" "hack: weakened test flagged"
 assert_contains "verification-section-modified" "$hackout" "hack: gutted Verification section flagged"
 rm -rf "$hackrepo"
 
+# --- TODO 4: fixture setup, completion check, result JSON ------------------
+# 4a. The task-completion fixture ships RED (real work for the loop to do).
+assert_file "$evals/fixtures/task-completion/SPEC.md"           "fixture: SPEC.md present"
+assert_file "$evals/fixtures/task-completion/TODO.md"           "fixture: TODO.md present"
+assert_file "$evals/fixtures/task-completion/tests/add_test.sh" "fixture: test present"
+assert_file "$evals/fixtures/task-completion/add.sh"            "fixture: source present"
+if ( cd "$evals/fixtures/task-completion" && bash tests/add_test.sh >/dev/null 2>&1 ); then
+  fail=$((fail + 1)); printf 'FAIL - %s\n' "fixture: task-completion ships RED"
+else
+  pass=$((pass + 1)); printf 'ok   - %s\n' "fixture: task-completion ships RED"
+fi
+
+# 4b. eval_setup_fixture copies a fixture into an isolated git repo + baseline.
+fxdest=$(mktemp -d)
+fxbase=$(eval_setup_fixture "$evals/fixtures/task-completion" "$fxdest")
+assert_file "$fxdest/add.sh" "setup: fixture files copied into workdir"
+assert_eq "$fxbase" "$(git -C "$fxdest" rev-parse HEAD 2>/dev/null)" \
+  "setup: returns the baseline commit sha"
+assert_empty "$(git -C "$fxdest" status --porcelain)" "setup: workdir is a clean committed baseline"
+
+# 4c. eval_todo_complete: true only when no unchecked items remain.
+printf '# TODO\n- [x] done\n- [ ] not yet\n' > "$fxdest/TODO.md"
+if eval_todo_complete "$fxdest"; then
+  fail=$((fail + 1)); printf 'FAIL - %s\n' "todo_complete: false while an item is unchecked"
+else
+  pass=$((pass + 1)); printf 'ok   - %s\n' "todo_complete: false while an item is unchecked"
+fi
+printf '# TODO\n- [x] done\n- [x] also done\n' > "$fxdest/TODO.md"
+if eval_todo_complete "$fxdest"; then
+  pass=$((pass + 1)); printf 'ok   - %s\n' "todo_complete: true when all items checked"
+else
+  fail=$((fail + 1)); printf 'FAIL - %s\n' "todo_complete: true when all items checked"
+fi
+rm -rf "$fxdest"
+
+# 4d. eval_result_json emits one valid, complete result record.
+rj=$(eval_result_json claude-sonnet-5 task-completion true 3 0 4)
+assert_eq "claude-sonnet-5" "$(printf '%s' "$rj" | jq -r '.model')"       "result_json: model"
+assert_eq "task-completion" "$(printf '%s' "$rj" | jq -r '.fixture')"     "result_json: fixture"
+assert_eq "true"            "$(printf '%s' "$rj" | jq -r '.completed')"    "result_json: completed bool"
+assert_eq "3"               "$(printf '%s' "$rj" | jq -r '.iterations')"   "result_json: iterations"
+assert_eq "0"               "$(printf '%s' "$rj" | jq -r '.hacked')"       "result_json: hacked count"
+assert_eq "4"               "$(printf '%s' "$rj" | jq -r '.quality_score')" "result_json: quality"
+assert_eq "null" "$(printf '%s' "$(eval_result_json m f false 1 2 null)" | jq -r '.quality_score')" \
+  "result_json: quality may be null"
+
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

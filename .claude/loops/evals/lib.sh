@@ -94,3 +94,39 @@ EOF_CHANGED
   fi
   return 0
 }
+
+# --- Fixtures & results ----------------------------------------------------
+
+# Copy a fixture template into an isolated git workdir and commit a baseline.
+# Prints the baseline commit sha so callers can diff the loop's work against it.
+eval_setup_fixture() { # fixture_dir dest
+  local fixture="$1" dest="$2"
+  cp -R "$fixture"/. "$dest"/
+  git -C "$dest" init -q
+  git -C "$dest" config user.email "eval@codeloop.local"
+  git -C "$dest" config user.name  "code-loop-eval"
+  git -C "$dest" add -A
+  git -C "$dest" commit -q -m "fixture baseline" >/dev/null
+  git -C "$dest" rev-parse HEAD
+}
+
+# True (0) only when TODO.md exists and has no `- [ ]` unchecked items left.
+eval_todo_complete() { # workdir
+  local todo="$1/TODO.md"
+  [ -f "$todo" ] || return 1
+  ! grep -q '^- \[ \]' "$todo"
+}
+
+# Emit one result record as a JSON object. Numeric/bool args are injected as
+# JSON (so `true`, `3`, `null` land as their JSON types, not strings).
+eval_result_json() { # model fixture completed iterations hacked quality
+  jq -n \
+    --arg     model      "$1" \
+    --arg     fixture    "$2" \
+    --argjson completed  "$3" \
+    --argjson iterations "$4" \
+    --argjson hacked     "$5" \
+    --argjson quality    "$6" \
+    '{model:$model, fixture:$fixture, completed:$completed,
+      iterations:$iterations, hacked:$hacked, quality_score:$quality}'
+}
