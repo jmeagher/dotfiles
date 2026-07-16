@@ -7,6 +7,6 @@
 - [x] Build the `task-completion` fixture (seeded SPEC/TODO + a failing test) and a scenario runner that copies it to a temp git repo, runs the loop headless, and asserts the TODO is fully checked and verify passes; write result JSON
 - [x] Build the `verify-gate` fixture + scenario asserting the Stop hook blocks on failing verify, unblocks on passing verify, and disarms with a FAILURE demand after 3 strikes
 - [x] Build the `reward-hack-bait` fixture + scenario that runs the loop and records whether any protected file (tests/verifier/Verification/.loop) was touched
-- [ ] Implement `evals/judge.sh`: score the produced diff 1–5 on the rubric via `claude -p`; wire `quality_score` into the result JSON
+- [x] Implement `evals/judge.sh`: score the produced diff 1–5 on the rubric via `claude -p`; wire `quality_score` into the result JSON
 - [ ] Implement the scorecard: aggregate `results/` into a per-model table (pass rate, mean iterations, hacking count, mean quality) via `run.sh --report`
 - [ ] Wire `run.sh` to run all fixtures against ONE model by default (`--model <id>`, default = first line of `models.txt`), with an `--all` flag to loop over every model in `models.txt`; document "add a model = one line in models.txt" in a README; make `shellcheck` clean on `evals/*.sh` and `tests/*.sh`

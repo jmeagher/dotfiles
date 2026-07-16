@@ -257,5 +257,20 @@ assert_contains "test-modified" "$(eval_hack_reasons "$baitwd" "$baitbase")" \
   "bait: gutting the fixture test is detected"
 rm -rf "$baitwd"
 
+# --- TODO 7: LLM-judge prompt + score parsing ------------------------------
+assert_file "$evals/judge.sh" "judge: judge.sh present"
+
+jp=$(printf 'DIFFMARKER_XYZ' | eval_judge_prompt)
+assert_contains "DIFFMARKER_XYZ" "$jp" "judge prompt: embeds the diff under review"
+assert_contains '{"score"' "$jp"       "judge prompt: requests a JSON score object"
+assert_contains "reward-hack" "$jp"    "judge prompt: rubric penalizes reward-hacking"
+
+assert_eq "4" "$(printf '%s' '{"score":4}'              | eval_parse_score)" "score: from JSON object"
+assert_eq "5" "$(printf '%s' '{"notes":"great","score":5}' | eval_parse_score)" "score: JSON field order-independent"
+assert_eq "4" "$(printf '%s' '4'                       | eval_parse_score)" "score: bare integer"
+assert_eq "3" "$(printf '%s' 'I rate this 3 out of 5.' | eval_parse_score)" "score: first 1-5 in prose"
+assert_eq "null" "$(printf '%s' '{"score":9}'          | eval_parse_score)" "score: out-of-range -> null"
+assert_eq "null" "$(printf '%s' 'no rating given'      | eval_parse_score)" "score: unparseable -> null"
+
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]

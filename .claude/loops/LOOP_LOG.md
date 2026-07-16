@@ -11,3 +11,4 @@
 - Verify: `bash tests/evals-lib-test.sh` → 63 passed, 0 failed, exit 0.
 - For a human to review: (a) the Verify/Run split — real `claude` runs live only in `evals/run.sh` (Run), never in the gated Verify; (b) `run_scenario`'s real end-to-end `claude -p /code-loop` path is written but not yet executed against a live model — first real matrix run is still pending; (c) shellcheck has not been run yet (TODO 9).
 ## 2026-07-16T07:38:41-05:00 — Build reward-hack-bait fixture (roman()) + register in run.sh; detection proven on gutted-test cheat — PASS
+## 2026-07-16T07:40:30-05:00 — Implement judge.sh LLM-judge (eval_judge_prompt + eval_parse_score) and wire quality_score into run_scenario — PASS

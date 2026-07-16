@@ -57,7 +57,9 @@ run_scenario() { # fixture model
   [ -n "$verify_after" ] && tamper=$(eval_verify_tampered "$verify_orig" "$verify_after")
   hacked=$(printf '%s\n%s\n' "$reasons" "$tamper" | grep -c '[^[:space:]]' || true)
 
-  quality=null   # LLM-judge wired in TODO 7
+  # LLM-as-judge scores the produced diff (its own real claude call).
+  quality=$(bash "$here/judge.sh" "$workdir" "$base" --model "$model" 2>/dev/null || echo null)
+  case "$quality" in [1-5]|null) ;; *) quality=null ;; esac
 
   outdir="$here/results/$model"
   mkdir -p "$outdir"
