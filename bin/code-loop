@@ -2,23 +2,120 @@
 # Outer agentic-coding-loop runner: fresh Claude context per iteration
 # (avoids context rot; state lives in SPEC.md/TODO.md/LOOP_LOG.md/git).
 # Usage: code-loop [max_iterations]   (run from the target project root)
+#
+# Headless note: `claude -p` does NOT load plugin slash commands or hooks, so
+# this runner cannot use `/code-loop` and cannot rely on the Stop-hook gate.
+# Instead it drives each iteration with an INLINE prompt and enforces the gate
+# ITSELF between iterations: it runs the project's Verify command, rejects
+# reward-hacking (edits to tests/verifier/Verification/.loop), and bails with a
+# FAILURE report after repeated iterations that make no verified progress.
 set -euo pipefail
 
+MAX_STRIKES=3
 max="${1:-10}"
 [ -f TODO.md ] && [ -f SPEC.md ] || { echo "SPEC.md/TODO.md not found — run /loop-init first" >&2; exit 2; }
 
+# Verify command, extracted from SPEC.md the same way /code-loop does.
+# shellcheck disable=SC2016  # backticks are literal SPEC.md markup, not expansion
+verify=$(sed -n 's/^Verify: `\(.*\)`.*/\1/p' SPEC.md | head -n1 | tr -d '`\r')
+[ -n "$verify" ] || { echo "SPEC.md ## Verification has no 'Verify:' command — run /loop-init" >&2; exit 2; }
+
+is_git=$(git rev-parse --is-inside-work-tree 2>/dev/null || echo false)
+
+# Inline prompt for one iteration (replaces the /code-loop slash command).
+build_prompt() {
+  cat <<EOF
+You are one iteration of an agentic coding loop, working in the current
+directory (a git repository). Do exactly one thing: complete the TOPMOST
+unchecked item in TODO.md (a line starting with '- [ ]'), then stop.
+
+=== SPEC.md ===
+$(cat SPEC.md)
+
+=== TODO.md ===
+$(cat TODO.md)
+
+Steps for this iteration:
+1. Take the topmost '- [ ]' item in TODO.md. Work on ONLY that item.
+2. Implement it test-first with real, complete code — no stubs or placeholders.
+3. Run the verify command and make it pass: $verify
+   Do NOT weaken tests, the verifier, the SPEC ## Verification section, or
+   anything under .loop/ to make it pass — fix the real code instead.
+4. When verify passes, change that item's '- [ ]' to '- [x]' in TODO.md, append
+   a one-line note to LOOP_LOG.md, and commit everything (git add -A && commit).
+Then stop.
+EOF
+}
+
+# Print any protected files an iteration's commits touched (empty = clean).
+hack_reasons() { # before_ref after_ref
+  local before="$1" after="$2" p b h
+  git diff --name-only "$before" "$after" 2>/dev/null | while IFS= read -r p; do
+    case "$p" in
+      .loop/*|*/.loop/*) echo "  .loop state: $p" ;;
+      tests/*|*/tests/*|test/*|*/test/*|*_test.*|*/test_*|test_*|*.test.*|*.spec.*)
+        echo "  test/verifier: $p" ;;
+    esac
+  done
+  if git diff --name-only "$before" "$after" 2>/dev/null | grep -q 'SPEC\.md$'; then
+    b=$(git show "$before:SPEC.md" 2>/dev/null \
+        | awk '/^## Verification[[:space:]]*$/{s=1;next} /^## /{s=0} s')
+    h=$(awk '/^## Verification[[:space:]]*$/{s=1;next} /^## /{s=0} s' SPEC.md 2>/dev/null)
+    [ "$b" = "$h" ] || echo "  ## Verification section: SPEC.md"
+  fi
+  return 0
+}
+
+strikes=0
 for i in $(seq 1 "$max"); do
-  if ! grep -q '^- \[ \]' TODO.md; then
+  remaining=$(grep -c '^- \[ \]' TODO.md || true)
+  if [ "${remaining:-0}" -eq 0 ]; then
     echo "TODO complete after $((i - 1)) iteration(s)."
     exit 0
   fi
-  echo "=== iteration $i/$max: $(grep -m1 '^- \[ \]' TODO.md) ==="
-  # In -p mode unlisted tools are auto-denied (no prompt possible), so Bash must
-  # be explicitly allowed or the loop cannot verify, branch, or commit.
-  # That grants unrestricted shell — only run this in projects you trust.
-  claude -p "/code-loop 1" --permission-mode acceptEdits \
-    --allowedTools "Bash,Read,Edit,Write" --output-format json \
-    | jq -r '.result // "no result"' || echo "iteration $i: claude exited non-zero — continuing" >&2
+  item=$(grep -m1 '^- \[ \]' TODO.md)
+  echo "=== iteration $i/$max: $item ==="
+
+  before=""
+  [ "$is_git" = true ] && before=$(git rev-parse HEAD 2>/dev/null || echo "")
+
+  # Fresh-context iteration. In -p mode unlisted tools are auto-denied (no prompt
+  # possible), so Bash must be explicitly allowed — that grants unrestricted
+  # shell; only run this in projects you trust. stdin is /dev/null so claude
+  # does not wait on it.
+  claude -p "$(build_prompt)" --permission-mode acceptEdits \
+    --allowedTools "Bash,Read,Edit,Write" --output-format json < /dev/null \
+    | jq -r '.result // "no result"' \
+    || echo "iteration $i: claude exited non-zero — continuing" >&2
+
+  # Reward-hacking guard: reject edits to protected files in this iteration.
+  if [ "$is_git" = true ] && [ -n "$before" ]; then
+    after=$(git rev-parse HEAD 2>/dev/null || echo "")
+    if [ -n "$after" ] && [ "$before" != "$after" ]; then
+      offending=$(hack_reasons "$before" "$after")
+      if [ -n "$offending" ]; then
+        echo "ABORT: reward-hacking detected — the loop modified protected files:" >&2
+        printf '%s\n' "$offending" >&2
+        exit 3
+      fi
+    fi
+  fi
+
+  # Verify enforcement (replaces the Stop-hook gate, which does not fire headless):
+  # an iteration counts only if verify passes AND a TODO item got checked off.
+  now=$(grep -c '^- \[ \]' TODO.md || true)
+  if bash -c "$verify" >/dev/null 2>&1 && [ "${now:-0}" -lt "${remaining:-0}" ]; then
+    strikes=0
+  else
+    strikes=$((strikes + 1))
+    echo "iteration $i: no verified progress (strike $strikes/$MAX_STRIKES)" >&2
+    if [ "$strikes" -ge "$MAX_STRIKES" ]; then
+      echo "FAILURE: $MAX_STRIKES iterations without verified progress on: $item" >&2
+      echo "Verify still fails or no TODO item completed. Review LOOP_LOG.md and the" >&2
+      echo "working tree; fix manually or refine SPEC/TODO, then re-run." >&2
+      exit 1
+    fi
+  fi
 done
 
 if grep -q '^- \[ \]' TODO.md; then
