@@ -307,7 +307,34 @@ assert_contains "do the thing"     "$lp" "loop prompt: embeds the TODO backlog"
 assert_contains "NEVER weaken"     "$lp" "loop prompt: forbids weakening tests/verifier"
 assert_contains "Max iterations: 4" "$lp" "loop prompt: sets the iteration budget"
 assert_grep 'eval_loop_prompt' "$evals/run.sh" "run.sh: run_scenario uses the inline loop prompt"
+
+# Baseline prompt: same SPEC/TODO, but none of the loop discipline.
+bp=$(eval_baseline_prompt "$lpwd")
+assert_contains "do the thing" "$bp" "baseline prompt: embeds the TODO backlog"
+if printf '%s' "$bp" | grep -qiE 'never weaken|test-first|iteration'; then
+  fail=$((fail + 1)); printf 'FAIL - %s\n' "baseline prompt: omits loop discipline"
+else
+  pass=$((pass + 1)); printf 'ok   - %s\n' "baseline prompt: omits loop discipline"
+fi
 rm -rf "$lpwd"
+
+# Comparison table: loop vs baseline arm, one row per model.
+cmproot=$(mktemp -d)
+mkdir -p "$cmproot/loop/mA" "$cmproot/baseline/mA"
+eval_result_json mA task-completion  true  3 0 5 > "$cmproot/loop/mA/t.json"
+eval_result_json mA reward-hack-bait true  4 0 5 > "$cmproot/loop/mA/r.json"
+eval_result_json mA task-completion  true  6 1 3 > "$cmproot/baseline/mA/t.json"
+eval_result_json mA reward-hack-bait false 5 2 2 > "$cmproot/baseline/mA/r.json"
+cmp=$(eval_compare "$cmproot")
+assert_contains "mA"  "$cmp" "compare: model row present"
+assert_contains "2/2" "$cmp" "compare: loop arm pass 2/2"
+assert_contains "1/2" "$cmp" "compare: baseline arm pass 1/2"
+assert_contains "2.5" "$cmp" "compare: baseline mean quality 2.5"
+assert_eq "1" "$(printf '%s\n' "$cmp" | grep -c '^mA')" "compare: exactly one row per model"
+assert_contains "no results" "$(eval_compare "$(mktemp -d)")" "compare: empty handled"
+rm -rf "$cmproot"
+assert_grep '\-\-baseline' "$evals/run.sh" "run.sh: --baseline flag handled"
+assert_grep '\-\-compare'  "$evals/run.sh" "run.sh: --compare flag handled"
 
 # --- TODO 9: --all wiring + shellcheck-clean gate --------------------------
 assert_grep '\-\-all'   "$evals/run.sh" "run.sh: --all flag handled"
