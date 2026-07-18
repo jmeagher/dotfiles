@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Outer agentic-coding-loop runner: fresh Claude context per iteration
-# (avoids context rot; state lives in SPEC.md/TODO.md/LOOP_LOG.md/git).
-# Usage: code-loop [max_iterations]   (run from the target project root)
+# (avoids context rot; state lives in loops/<project>/{SPEC,TODO,LOOP_LOG}.md
+# and git).
+# Usage: code-loop <project> [max_iterations]   (run from the target repo root)
 #
 # Headless note: `claude -p` does NOT load plugin slash commands or hooks, so
 # this runner cannot use `/code-loop` and cannot rely on the Stop-hook gate.
@@ -12,13 +13,30 @@
 set -euo pipefail
 
 MAX_STRIKES=3
-max="${1:-10}"
-[ -f TODO.md ] && [ -f SPEC.md ] || { echo "SPEC.md/TODO.md not found — run /loop-init first" >&2; exit 2; }
+usage() {
+  echo "Usage: code-loop <project> [max_iterations]" >&2
+  if [ -d loops ]; then
+    echo "Available projects:" >&2
+    # shellcheck disable=SC2012  # project names are kebab-case slugs; ls is fine
+    ls loops 2>/dev/null | sed 's/^/  /' >&2
+  else
+    echo "No loops/ directory here — run /loop-init <project> first." >&2
+  fi
+  exit 2
+}
+
+[ $# -ge 1 ] || usage
+project="$1"
+max="${2:-10}"
+spec="loops/$project/SPEC.md"
+todo="loops/$project/TODO.md"
+log="loops/$project/LOOP_LOG.md"
+[ -f "$todo" ] && [ -f "$spec" ] || { echo "Project '$project' not found ($spec missing)." >&2; usage; }
 
 # Verify command, extracted from SPEC.md the same way /code-loop does.
 # shellcheck disable=SC2016  # backticks are literal SPEC.md markup, not expansion
-verify=$(sed -n 's/^Verify: `\(.*\)`.*/\1/p' SPEC.md | head -n1 | tr -d '`\r')
-[ -n "$verify" ] || { echo "SPEC.md ## Verification has no 'Verify:' command — run /loop-init" >&2; exit 2; }
+verify=$(sed -n 's/^Verify: `\(.*\)`.*/\1/p' "$spec" | head -n1 | tr -d '`\r')
+[ -n "$verify" ] || { echo "$spec ## Verification has no 'Verify:' command — run /loop-init" >&2; exit 2; }
 
 is_git=$(git rev-parse --is-inside-work-tree 2>/dev/null || echo false)
 
@@ -26,23 +44,24 @@ is_git=$(git rev-parse --is-inside-work-tree 2>/dev/null || echo false)
 build_prompt() {
   cat <<EOF
 You are one iteration of an agentic coding loop, working in the current
-directory (a git repository). Do exactly one thing: complete the TOPMOST
-unchecked item in TODO.md (a line starting with '- [ ]'), then stop.
+directory (a git repository) on the loop project '$project'. Do exactly one
+thing: complete the TOPMOST unchecked item in $todo (a line starting with
+'- [ ]'), then stop.
 
-=== SPEC.md ===
-$(cat SPEC.md)
+=== $spec ===
+$(cat "$spec")
 
-=== TODO.md ===
-$(cat TODO.md)
+=== $todo ===
+$(cat "$todo")
 
 Steps for this iteration:
-1. Take the topmost '- [ ]' item in TODO.md. Work on ONLY that item.
+1. Take the topmost '- [ ]' item in $todo. Work on ONLY that item.
 2. Implement it test-first with real, complete code — no stubs or placeholders.
 3. Run the verify command and make it pass: $verify
    Do NOT weaken tests, the verifier, the SPEC ## Verification section, or
    anything under .loop/ to make it pass — fix the real code instead.
-4. When verify passes, change that item's '- [ ]' to '- [x]' in TODO.md, append
-   a one-line note to LOOP_LOG.md, and commit everything (git add -A && commit).
+4. When verify passes, change that item's '- [ ]' to '- [x]' in $todo, append
+   a one-line note to $log, and commit everything (git add -A && commit).
 Then stop.
 EOF
 }
@@ -57,24 +76,24 @@ hack_reasons() { # before_ref after_ref
         echo "  test/verifier: $p" ;;
     esac
   done
-  if git diff --name-only "$before" "$after" 2>/dev/null | grep -q 'SPEC\.md$'; then
-    b=$(git show "$before:SPEC.md" 2>/dev/null \
+  if git diff --name-only "$before" "$after" 2>/dev/null | grep -qx "$spec"; then
+    b=$(git show "$before:$spec" 2>/dev/null \
         | awk '/^## Verification[[:space:]]*$/{s=1;next} /^## /{s=0} s')
-    h=$(awk '/^## Verification[[:space:]]*$/{s=1;next} /^## /{s=0} s' SPEC.md 2>/dev/null)
-    [ "$b" = "$h" ] || echo "  ## Verification section: SPEC.md"
+    h=$(awk '/^## Verification[[:space:]]*$/{s=1;next} /^## /{s=0} s' "$spec" 2>/dev/null)
+    [ "$b" = "$h" ] || echo "  ## Verification section: $spec"
   fi
   return 0
 }
 
 strikes=0
 for i in $(seq 1 "$max"); do
-  remaining=$(grep -c '^- \[ \]' TODO.md || true)
+  remaining=$(grep -c '^- \[ \]' "$todo" || true)
   if [ "${remaining:-0}" -eq 0 ]; then
     echo "TODO complete after $((i - 1)) iteration(s)."
     exit 0
   fi
-  item=$(grep -m1 '^- \[ \]' TODO.md)
-  echo "=== iteration $i/$max: $item ==="
+  item=$(grep -m1 '^- \[ \]' "$todo")
+  echo "=== $project iteration $i/$max: $item ==="
 
   before=""
   [ "$is_git" = true ] && before=$(git rev-parse HEAD 2>/dev/null || echo "")
@@ -103,7 +122,7 @@ for i in $(seq 1 "$max"); do
 
   # Verify enforcement (replaces the Stop-hook gate, which does not fire headless):
   # an iteration counts only if verify passes AND a TODO item got checked off.
-  now=$(grep -c '^- \[ \]' TODO.md || true)
+  now=$(grep -c '^- \[ \]' "$todo" || true)
   if bash -c "$verify" >/dev/null 2>&1 && [ "${now:-0}" -lt "${remaining:-0}" ]; then
     strikes=0
   else
@@ -111,15 +130,15 @@ for i in $(seq 1 "$max"); do
     echo "iteration $i: no verified progress (strike $strikes/$MAX_STRIKES)" >&2
     if [ "$strikes" -ge "$MAX_STRIKES" ]; then
       echo "FAILURE: $MAX_STRIKES iterations without verified progress on: $item" >&2
-      echo "Verify still fails or no TODO item completed. Review LOOP_LOG.md and the" >&2
+      echo "Verify still fails or no TODO item completed. Review $log and the" >&2
       echo "working tree; fix manually or refine SPEC/TODO, then re-run." >&2
       exit 1
     fi
   fi
 done
 
-if grep -q '^- \[ \]' TODO.md; then
-  echo "Budget exhausted ($max iterations); unchecked items remain. Review LOOP_LOG.md, then re-run or /feedback."
+if grep -q '^- \[ \]' "$todo"; then
+  echo "Budget exhausted ($max iterations); unchecked items remain. Review $log, then re-run or /feedback."
   exit 1
 fi
 echo "TODO complete after $max iteration(s)."

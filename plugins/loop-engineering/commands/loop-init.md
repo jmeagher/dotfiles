@@ -1,21 +1,29 @@
 ---
 allowed-tools: Read, Write, Bash(ls:*), Bash(cat:*)
-description: Scaffold loop-engineering state files (SPEC.md, TODO.md, LOOP_LOG.md) in the current project
+description: Scaffold a loop-engineering project (loops/<name>/ with SPEC.md, TODO.md, LOOP_LOG.md)
+argument-hint: <project-name> [description]
 ---
 
 ## Context
 
-- Existing SPEC.md: !`cat SPEC.md 2>/dev/null || echo "MISSING"`
-- Existing TODO.md: !`cat TODO.md 2>/dev/null || echo "MISSING"`
+- Existing loop projects: !`ls loops 2>/dev/null || echo "none"`
 - Project files: !`ls`
 
 ## Your task
 
-Scaffold the loop state files for this project. Arguments (optional project description): $ARGUMENTS
+Scaffold the state files for ONE named loop project. Arguments: $ARGUMENTS
+— the FIRST word is the project name (required); the rest is an optional
+project description.
 
-1. If SPEC.md already exists, STOP and tell the user it exists — never overwrite it.
-2. Interview the user briefly (one round of questions max) for anything you cannot infer from the project: the goal, the 3–7 core requirements, and the exact shell commands to build, test, and run this project.
-3. Write `SPEC.md` with EXACTLY these sections:
+1. If no project name was given, STOP and ask for one. The name must be a
+   short kebab-case slug (lowercase letters, digits, hyphens) — it becomes the
+   directory `loops/<name>/`. If the name is not a valid slug, STOP and say so.
+2. If `loops/<name>/SPEC.md` already exists, STOP and tell the user it exists —
+   never overwrite it. Mention `/loop-projects` to inspect existing projects.
+3. Interview the user briefly (one round of questions max) for anything you
+   cannot infer from the project: the goal, the 3–7 core requirements, and the
+   exact shell commands to build, test, and run this project.
+4. Write `loops/<name>/SPEC.md` with EXACTLY these sections:
 
 ```markdown
 # Spec: <project name>
@@ -43,7 +51,7 @@ Run: `<command to launch the app locally>`
 - If you learn a project-specific lesson, append it to CLAUDE.md.
 ```
 
-4. Write `TODO.md`:
+5. Write `loops/<name>/TODO.md`:
 
 ```markdown
 # TODO
@@ -52,9 +60,14 @@ Run: `<command to launch the app locally>`
 - [ ] <first task>
 ```
 
-   Derive initial items from the Requirements; each item must be completable in one loop iteration (roughly one focused change + its tests).
-5. Write `LOOP_LOG.md` containing only the line `# Loop Log` — it is append-only from here on.
-6. Confirm the Verify command actually runs (`Bash` it once); if it fails on a fresh scaffold, that is fine — report the output so the user knows the starting state.
-7. Tell the user: review/edit SPEC.md, then run `/code-loop` to start the loop.
+   Derive initial items from the Requirements; each item must be completable in
+   one loop iteration (roughly one focused change + its tests).
+6. Write `loops/<name>/LOOP_LOG.md` containing only the line `# Loop Log` — it
+   is append-only from here on.
+7. Confirm the Verify command actually runs (`Bash` it once); if it fails on a
+   fresh scaffold, that is fine — report the output so the user knows the
+   starting state.
+8. Tell the user: review/edit `loops/<name>/SPEC.md`, then run
+   `/code-loop <name>` to start the loop.
 
 Do only these steps — no other actions.

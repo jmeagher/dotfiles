@@ -1,7 +1,7 @@
 {
   "name": "loop-engineering",
-  "version": "0.1.0",
-  "description": "Development loops: agentic coding loop with verification gate, and developer feedback loop",
+  "version": "0.2.0",
+  "description": "Development loops: agentic coding loop with verification gate, developer feedback loop, and multiple loop projects per repo",
   "author": {
     "name": "jmeagher"
   },
