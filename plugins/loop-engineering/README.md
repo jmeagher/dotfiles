@@ -31,6 +31,15 @@ several exist. `/loop-init` always requires a name (a kebab-case slug).
 
 ## Guardrails
 - No verify command in a project's SPEC.md → /code-loop refuses to run.
+- TODO item quality, enforced whenever `/loop-init`, `/code-loop`, or
+  `/feedback` create or edit `TODO.md`: every implementation item must be
+  actionable from `SPEC.md` plus that single line alone; investigation
+  items are tagged `[INVESTIGATE]` and produce a written finding instead of
+  code; cross-item dependencies get an explicit `(ref: <exact text>)`
+  pointer instead of assumed shared context; and any item bundling more
+  than one focused change is split into smaller, independently-
+  implementable items. `/code-loop` re-splits an item on the spot if it
+  turns out not to be self-contained once work starts.
 - One TODO item per iteration; hard iteration budgets everywhere. The gate's
   3-strike escalation is per session, so under `bin/code-loop` (fresh context
   each iteration) a persistently-failing item gets a fresh 3-strike budget per

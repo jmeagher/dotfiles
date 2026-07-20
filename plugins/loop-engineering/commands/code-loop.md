@@ -44,17 +44,37 @@ Run the agentic coding loop for ONE project. Arguments: $ARGUMENTS
 **Iterate — repeat up to the max-iterations budget:**
 6. Take the TOPMOST unchecked item in `PROJ/TODO.md`. Work on ONLY that item
    this iteration.
-7. Implement it test-first: write the failing test, see it fail, implement, see
-   it pass. Follow every rule in SPEC.md's `## Rules` section — in particular:
-   no placeholders, and never touch tests/verifier/`.loop/` to make checks pass.
+7. Branch on item type:
+   - **`[INVESTIGATE]` item:** research the open question (read code, run
+     read-only commands, consult SPEC.md) and produce a written finding —
+     never product code. Record the finding as one or both of: a note
+     appended to `PROJ/LOOP_LOG.md`, or new implementation item(s) inserted
+     into `PROJ/TODO.md` that point back at this investigation via
+     `(ref: <exact text of this item>)`. Then proceed to step 8.
+   - **Implementation item (no tag):** before touching code, confirm the
+     line is fully actionable from `PROJ/SPEC.md` plus that single line
+     alone. If it silently depends on missing context (another item, an
+     unresolved investigation, an assumption not stated in SPEC.md), do NOT
+     guess — stop this iteration's implementation, rewrite the item in
+     `PROJ/TODO.md` (add an explicit `(ref: ...)` pointer, or split it into
+     smaller self-contained items per SPEC.md's TODO item-quality rules),
+     then restart step 6 against the revised topmost item. Otherwise
+     implement it test-first: write the failing test, see it fail,
+     implement, see it pass. Follow every rule in SPEC.md's `## Rules`
+     section — in particular: no placeholders, and never touch
+     tests/verifier/`.loop/` to make checks pass.
 8. Run the Verify command. If it fails, fix and re-run — do not proceed on red.
 9. On green: mark the item `- [x]` in `PROJ/TODO.md`, append one line to
    `PROJ/LOOP_LOG.md` — `## <date -Iseconds output> — <item> — PASS` — and
    commit everything for this item (code, tests, TODO.md, LOOP_LOG.md) in one
    commit.
-10. If an iteration reveals new necessary work, add it as a new `- [ ]` item to
-    `PROJ/TODO.md` (prioritized, not appended blindly) instead of expanding the
-    current task.
+10. If an iteration reveals new necessary work, add it as new item(s) to
+    `PROJ/TODO.md` (prioritized, not appended blindly) instead of expanding
+    the current task — following SPEC.md's TODO item-quality rules: tag
+    `[INVESTIGATE]` for open questions, keep every implementation item
+    self-contained (actionable from SPEC.md + that line alone), add
+    explicit `(ref: ...)` pointers for any cross-item dependency, and split
+    anything bundling more than one focused change into separate items.
 
 **Finish — when the TODO has no unchecked items OR the iteration budget is spent:**
 11. Run the Verify command one final time and report its real output.
