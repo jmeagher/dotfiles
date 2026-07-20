@@ -23,7 +23,10 @@ project description.
 3. Interview the user briefly (one round of questions max) for anything you
    cannot infer from the project: the goal, the 3–7 core requirements, and the
    exact shell commands to build, test, and run this project.
-4. Write `loops/<name>/SPEC.md` with EXACTLY these sections:
+4. Write `loops/<name>/SPEC.md` with EXACTLY these sections. Note the
+   `## Rules` section includes the TODO item-quality rules that
+   `/code-loop` and `/feedback` also enforce whenever they add or edit
+   items later:
 
 ```markdown
 # Spec: <project name>
@@ -49,19 +52,51 @@ Run: `<command to launch the app locally>`
 - One TODO item per iteration: implement, verify, commit, update TODO.md.
 - When a decision changes the spec, edit this file in the same commit.
 - If you learn a project-specific lesson, append it to CLAUDE.md.
+- TODO item quality (applies whenever TODO.md is created or edited):
+  - Every implementation item must be fully actionable from this SPEC.md
+    plus that single TODO line alone — no missing context.
+  - Investigation items are tagged `[INVESTIGATE]` and are kept distinct
+    from implementation items — they produce a written finding, never
+    product code.
+  - A cross-item dependency gets an explicit `(ref: <exact text of the
+    other item>)` pointer — never an assumption of shared context.
+  - Any item covering more than one focused change is split into
+    separate, independently-implementable items.
 ```
 
 5. Write `loops/<name>/TODO.md`:
 
 ```markdown
 # TODO
-<!-- One `- [ ]` item per line, highest priority first. /code-loop works top-down, one item per iteration. -->
+<!-- One `- [ ]` item per line, highest priority first. /code-loop works
+top-down, one item per iteration.
+
+Two item types:
+  - Implementation item (default, no tag): must be fully actionable from
+    SPEC.md plus that single line alone — no missing context. Ready to
+    build test-first, this iteration, in isolation.
+  - `- [ ] [INVESTIGATE] <question>`: an open question that must be
+    resolved before dependent work can be scoped. Produces a written
+    finding (a note in LOOP_LOG.md, and/or new referenced implementation
+    items), never product code.
+
+If an item depends on another item or a prior investigation's finding,
+add an explicit `(ref: <exact text of the other item>)` pointer instead
+of assuming shared context. Split any item that bundles more than one
+focused change into separate, independently-implementable items. -->
 
 - [ ] <first task>
 ```
 
-   Derive initial items from the Requirements; each item must be completable in
-   one loop iteration (roughly one focused change + its tests).
+   Derive initial items from the Requirements. Classify each as an
+   implementation item (default) or `[INVESTIGATE]` (an open question that
+   must be answered before dependent work can be scoped). Each implementation
+   item must be self-contained — actionable from SPEC.md plus that single
+   line, with no unstated dependencies — and completable in one loop
+   iteration (roughly one focused change + its tests). If an item depends on
+   another item's outcome, add an explicit `(ref: ...)` pointer to it rather
+   than assuming shared context. Break any multi-part or ambiguous
+   requirement into several smaller items now, before the loop starts.
 6. Write `loops/<name>/LOOP_LOG.md` containing only the line `# Loop Log` — it
    is append-only from here on.
 7. Confirm the Verify command actually runs (`Bash` it once); if it fails on a

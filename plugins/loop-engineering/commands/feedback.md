@@ -31,8 +31,16 @@ Arguments (optional project name): $ARGUMENTS
    leave feedback as conversation only:
    - Changed/clarified requirement or done-criterion → edit `PROJ/SPEC.md`
      (Requirements or Definition of Done).
-   - New or reprioritized work → insert a `- [ ]` item into `PROJ/TODO.md` at
-     the right priority position.
+   - New or reprioritized work → insert an item into `PROJ/TODO.md` at the
+     right priority position, following SPEC.md's TODO item-quality rules:
+     tag it `- [ ] [INVESTIGATE] <question>` if it's an open question rather
+     than ready-to-build work; otherwise make it a plain implementation item
+     that is fully actionable from SPEC.md plus that single line alone. If
+     the feedback only makes sense alongside another TODO item or a past
+     investigation's finding, add an explicit `(ref: <exact text of the
+     other item>)` pointer rather than leaving the connection implicit. If a
+     single piece of feedback bundles more than one focused change, split it
+     into multiple items now rather than filing one compound item.
    - A correction the agent should apply to every future run (style, process,
      recurring mistake) → append a rule to `CLAUDE.md`.
    Show the user each edit as you make it.
