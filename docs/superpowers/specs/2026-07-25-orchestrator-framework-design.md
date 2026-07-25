@@ -220,7 +220,11 @@ one.
   `queue.py status`. There is no automatic timeout/retry — resolving a
   stuck task is the Orchestrator's judgment call, not framework logic.
 - `generate.py` fails loudly on: unresolvable model tier/harness
-  combination, unknown tool name in an `agents/*.yaml`, malformed YAML.
+  combination, and malformed/incomplete `agents/*.yaml` (missing a required
+  field). It does not validate tool-name spelling against each harness's
+  tool vocabulary — that list is harness-owned and would go stale; an
+  unrecognized tool name is a harness-level problem to surface at runtime,
+  not something our generator can check structurally.
 - Concurrent writers to `tasks.jsonl`: append-only, single-line writes mean
   the worst case under concurrent access is interleaved lines from two
   processes — each individually still valid JSON, no file corruption. No
