@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Generate harness-native agent files from the neutral agents/*.yaml source."""
 import copy
+import json
 import sys
 from pathlib import Path
 
@@ -88,6 +89,28 @@ def write_claude_code(agents, models, out_dir):
 
 def write_opencode(agents, models, out_dir):
     write_markdown_agents(agents, models, "opencode", out_dir)
+
+
+def render_cursor(agents, models):
+    modes = []
+    for agent in agents.values():
+        model = resolve_model(agent, "cursor", models)
+        modes.append(
+            {
+                "name": agent["name"],
+                "description": agent["description"].strip(),
+                "tools": agent["tools"]["cursor"],
+                "model": model,
+                "prompt": agent["prompt"].strip(),
+            }
+        )
+    return json.dumps({"modes": modes}, indent=2, sort_keys=True) + "\n"
+
+
+def write_cursor(agents, models, out_path):
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(render_cursor(agents, models))
 
 
 if __name__ == "__main__":

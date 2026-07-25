@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -111,3 +112,29 @@ def test_write_opencode_produces_expected_frontmatter(tmp_path):
     assert "name: worker" in content
     assert "model: opencode-low-model" in content
     assert "You are the test worker." in content
+
+
+def test_write_cursor_raises_when_model_unset(tmp_path):
+    agents_dir = write_fixture_agents(tmp_path)
+    agents = generate.load_agents(agents_dir)
+    agents["worker"]["tier"] = "high"
+    out_path = tmp_path / "modes.json"
+    with pytest.raises(generate.GenerateError, match="is null"):
+        generate.write_cursor(agents, FIXTURE_MODELS, out_path)
+
+
+def test_write_cursor_structure_when_model_set(tmp_path):
+    agents_dir = write_fixture_agents(tmp_path)
+    agents = generate.load_agents(agents_dir)
+    models = {
+        "tiers": {
+            **FIXTURE_MODELS["tiers"],
+            "cursor": {"high": "x", "medium": "y", "low": "cursor-low-model"},
+        }
+    }
+    out_path = tmp_path / "modes.json"
+    generate.write_cursor(agents, models, out_path)
+    data = json.loads(out_path.read_text())
+    assert data["modes"][0]["name"] == "worker"
+    assert data["modes"][0]["model"] == "cursor-low-model"
+    assert data["modes"][0]["tools"] == ["*"]
