@@ -17,12 +17,15 @@ Run from the repo root (this is already wired into the main `setup.sh`):
 sh ai/orchestrator-framework/setup.sh
 ```
 
-This generates agent files into `~/.claude/agents/`, `~/.config/opencode/agent/`,
-and `~/.orchestrator-cursor-modes.json` — available in every project you open
-afterward, not just this repo.
+This always generates Claude Code agent files into `~/.claude/agents/` (it
+ships real model defaults) and symlinks `queue.py` to `~/bin/orchestrator-queue`
+— both available in every project you open afterward, not just this repo.
 
-Before OpenCode/Cursor tiers will resolve, copy the example override file and
-fill in the model ids your setup actually exposes:
+OpenCode and Cursor output (`~/.config/opencode/agent/`,
+`~/.orchestrator-cursor-modes.json`) are **skipped** until you provide model
+ids for them — `setup.sh` prints a NOTE and moves on rather than failing.
+Copy the example override file, fill in the model ids your setup actually
+exposes, then re-run `setup.sh` to generate those two as well:
 
 ```bash
 cp ai/orchestrator-framework/models.local.yaml.example ai/orchestrator-framework/models.local.yaml
@@ -74,8 +77,8 @@ terminal, same as any other harness — just without automatic hand-off.
 | Path | Role |
 |---|---|
 | `agents/*.yaml` | Neutral agent source: role, prompt, tool policy, default model tier |
-| `models.yaml` | `tier -> harness -> model id`; Claude Code ships real defaults, OpenCode/Cursor start `null` |
+| `models.yaml` | `harness -> tier -> model id`; Claude Code ships real defaults, OpenCode/Cursor start `null` |
 | `models.local.yaml` | Gitignored per-machine override, filled in from `models.local.yaml.example` |
 | `queue.py` | Dependency-free CLI implementing the task-queue protocol; symlinked to `~/bin/orchestrator-queue` by `setup.sh` so agent prompts can call it as a bare command from any project |
 | `generate.py` | Reads `agents/*.yaml` + `models.yaml`(+local), writes harness-native agent files directly into place |
-| `setup.sh` | Runs `generate.py` into `~/.claude/agents`, `~/.config/opencode/agent`, and a Cursor modes file; symlinks `queue.py` to `~/bin/orchestrator-queue` |
+| `setup.sh` | Symlinks `queue.py` to `~/bin/orchestrator-queue` (always) and runs `generate.py` into `~/.claude/agents` (always) plus `~/.config/opencode/agent` and a Cursor modes file (only once `models.local.yaml` exists) |
