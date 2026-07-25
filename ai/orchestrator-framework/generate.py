@@ -86,5 +86,9 @@ def write_claude_code(agents, models, out_dir):
     write_markdown_agents(agents, models, "claude-code", out_dir)
 
 
+def write_opencode(agents, models, out_dir):
+    write_markdown_agents(agents, models, "opencode", out_dir)
+
+
 if __name__ == "__main__":
     sys.exit(1)  # CLI wiring added in Task 6

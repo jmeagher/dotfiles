@@ -100,3 +100,14 @@ def test_write_claude_code_fails_loudly_on_null_model(tmp_path):
     out_dir = tmp_path / "claude-out"
     with pytest.raises(generate.GenerateError, match="is null"):
         generate.write_claude_code(agent, FIXTURE_MODELS, out_dir)
+
+
+def test_write_opencode_produces_expected_frontmatter(tmp_path):
+    agents_dir = write_fixture_agents(tmp_path)
+    agents = generate.load_agents(agents_dir)
+    out_dir = tmp_path / "opencode-out"
+    generate.write_opencode(agents, FIXTURE_MODELS, out_dir)
+    content = (out_dir / "worker.md").read_text()
+    assert "name: worker" in content
+    assert "model: opencode-low-model" in content
+    assert "You are the test worker." in content
