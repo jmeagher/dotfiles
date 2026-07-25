@@ -1207,6 +1207,14 @@ Expected: three "Wrote ... to ..." lines print, and `orchestrator.md`'s `cat` ou
 
 FRAMEWORK_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# queue.py has no external dependencies, so link it unconditionally --
+# agent prompts invoke it as a bare `orchestrator-queue` command regardless
+# of whether agent-file generation below succeeds.
+mkdir -p "$HOME/bin"
+echo "Linking ~/bin/orchestrator-queue"
+[ -h "$HOME/bin/orchestrator-queue" ] && rm "$HOME/bin/orchestrator-queue"
+ln -s "$FRAMEWORK_DIR/queue.py" "$HOME/bin/orchestrator-queue"
+
 # Runtime dependency check (PyYAML) — warn and continue, don't hard-fail
 # the whole dotfiles setup, matching claude/setup.sh's jq check.
 if ! python3 -c "import yaml" > /dev/null 2>&1; then
@@ -1215,28 +1223,22 @@ if ! python3 -c "import yaml" > /dev/null 2>&1; then
     exit 0
 fi
 
-if [ ! -e "$FRAMEWORK_DIR/models.local.yaml" ]; then
-    echo "NOTE: $FRAMEWORK_DIR/models.local.yaml not found — OpenCode/Cursor model"
-    echo "  tiers will stay unset. Copy models.local.yaml.example to models.local.yaml"
-    echo "  and fill in your own model ids to enable those harnesses."
+mkdir -p "$HOME/.claude/agents"
+
+GENERATE_ARGS="--models-local $FRAMEWORK_DIR/models.local.yaml --claude-code-out $HOME/.claude/agents"
+
+if [ -e "$FRAMEWORK_DIR/models.local.yaml" ]; then
+    mkdir -p "$HOME/.config/opencode/agent"
+    GENERATE_ARGS="$GENERATE_ARGS --opencode-out $HOME/.config/opencode/agent --cursor-out $HOME/.orchestrator-cursor-modes.json"
+else
+    echo "NOTE: $FRAMEWORK_DIR/models.local.yaml not found -- only generating Claude Code"
+    echo "  agents (it ships real defaults). Copy models.local.yaml.example to"
+    echo "  models.local.yaml and fill in your OpenCode/Cursor model ids, then"
+    echo "  re-run this script to generate those too."
 fi
 
-mkdir -p "$HOME/.claude/agents" "$HOME/.config/opencode/agent" "$HOME/bin"
-
-# Agent prompts invoke the queue CLI as a bare `orchestrator-queue` command
-# (it must resolve on PATH from inside any project being orchestrated, not
-# just from this dotfiles checkout) — symlink it into ~/bin like this repo's
-# other bin/ scripts.
-echo "Linking ~/bin/orchestrator-queue"
-[ -h "$HOME/bin/orchestrator-queue" ] && rm "$HOME/bin/orchestrator-queue"
-ln -s "$FRAMEWORK_DIR/queue.py" "$HOME/bin/orchestrator-queue"
-
 echo "Generating orchestrator framework agents"
-python3 "$FRAMEWORK_DIR/generate.py" \
-    --models-local "$FRAMEWORK_DIR/models.local.yaml" \
-    --claude-code-out "$HOME/.claude/agents" \
-    --opencode-out "$HOME/.config/opencode/agent" \
-    --cursor-out "$HOME/.orchestrator-cursor-modes.json"
+python3 "$FRAMEWORK_DIR/generate.py" $GENERATE_ARGS
 ```
 
 - [ ] **Step 4: Make it executable and wire it into the root `setup.sh`**
