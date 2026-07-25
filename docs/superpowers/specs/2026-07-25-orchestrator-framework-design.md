@@ -145,7 +145,7 @@ given task's output warrants a Reviewer pass.
 
 ## 4. Model tier configuration
 
-`models.yaml` maps `tier -> harness -> model id`. Only Claude Code ships
+`models.yaml` maps `harness -> tier -> model id`. Only Claude Code ships
 with confident defaults — OpenCode and Cursor model availability depends on
 the user's own provider/plan configuration there, so those start as `null`
 placeholders filled in once via `models.local.yaml` (gitignored, same
