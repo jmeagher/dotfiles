@@ -1,0 +1,14 @@
+# Copy this file to models.local.yaml (gitignored) and fill in the model
+# ids your OpenCode/Cursor setup actually exposes. Values here override the
+# matching keys in models.yaml; anything you don't set falls back to
+# models.yaml's default (which is `null` for opencode/cursor tiers until you
+# fill them in).
+tiers:
+  opencode:
+    high: anthropic/claude-opus-4-8
+    medium: anthropic/claude-sonnet-5
+    low: anthropic/claude-haiku-4-5
+  cursor:
+    high: claude-4.8-opus
+    medium: claude-4.8-sonnet
+    low: claude-4.5-haiku
