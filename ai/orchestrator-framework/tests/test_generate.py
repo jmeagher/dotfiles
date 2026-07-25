@@ -147,8 +147,8 @@ def test_write_opencode_renders_permission_map(tmp_path):
     generate.write_opencode(agents, FIXTURE_MODELS, out_dir)
     content = (out_dir / "reviewer.md").read_text()
     assert "permission:" in content
-    assert "read: allow" in content
-    assert "bash: allow" in content
+    assert "\n  read: allow" in content
+    assert "\n  bash: allow" in content
 
 
 def test_write_cursor_raises_when_model_unset(tmp_path):
