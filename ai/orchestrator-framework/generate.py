@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generate harness-native agent files from the neutral agents/*.yaml source."""
+import argparse
 import copy
 import json
 import sys
@@ -113,5 +114,34 @@ def write_cursor(agents, models, out_path):
     out_path.write_text(render_cursor(agents, models))
 
 
+def main(argv=None):
+    parser = argparse.ArgumentParser(prog="generate.py")
+    parser.add_argument("--agents-dir", default=str(DEFAULT_AGENTS_DIR))
+    parser.add_argument("--models", default=str(DEFAULT_MODELS_PATH))
+    parser.add_argument("--models-local", default=None)
+    parser.add_argument("--claude-code-out")
+    parser.add_argument("--opencode-out")
+    parser.add_argument("--cursor-out")
+    args = parser.parse_args(argv)
+
+    try:
+        agents = load_agents(args.agents_dir)
+        models = load_models(args.models, args.models_local)
+
+        if args.claude_code_out:
+            write_claude_code(agents, models, args.claude_code_out)
+            print(f"Wrote Claude Code agents to {args.claude_code_out}")
+        if args.opencode_out:
+            write_opencode(agents, models, args.opencode_out)
+            print(f"Wrote OpenCode agents to {args.opencode_out}")
+        if args.cursor_out:
+            write_cursor(agents, models, args.cursor_out)
+            print(f"Wrote Cursor modes to {args.cursor_out}")
+    except GenerateError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
+    return 0
+
+
 if __name__ == "__main__":
-    sys.exit(1)  # CLI wiring added in Task 6
+    sys.exit(main())
