@@ -72,6 +72,18 @@ workflow is: switch to the relevant Custom Mode, run
 `orchestrator-queue next --for <role>` / `append ...` in a
 terminal, same as any other harness — just without automatic hand-off.
 
+## Known limitation: Bash scoping on Claude Code and OpenCode
+
+Orchestrator and Consultant are designed to only need `orchestrator-queue`,
+never general shell access. Neither Claude Code nor OpenCode can enforce
+that as a hard restriction at the subagent level today (verified against
+both harnesses' actual docs) — Claude Code's tool declarations are
+whole-tool-name only, and while OpenCode's `permission.bash` does support
+real per-command glob scoping, this generator doesn't build that out yet.
+Both harnesses currently grant these two agents a plain, unscoped Bash —
+the "only runs `orchestrator-queue`" behavior is enforced by the agent's own
+prompt instructions, not by the platform.
+
 ## Layout
 
 | Path | Role |

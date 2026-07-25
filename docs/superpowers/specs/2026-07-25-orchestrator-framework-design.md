@@ -111,19 +111,32 @@ command (`~/bin/orchestrator-queue`, a symlink to `queue.py`, set up
 alongside the agent files) rather than referenced by a project-relative
 path. Every agent prompt invokes it as `orchestrator-queue append/status/next`.
 
-Each harness's Orchestrator agent gets Bash access **scoped to
-`orchestrator-queue` only** (e.g., Claude Code's
-`Bash(orchestrator-queue *)` tool permission pattern) — never general Bash,
-and no direct Read/Write on
+**Known limitation, corrected after implementation (verified against actual
+harness docs, not assumed):** Neither Claude Code nor OpenCode supports
+scoping a subagent's Bash access to one specific command at the
+tool-declaration level. Claude Code's subagent `tools:` frontmatter is a
+flat allow-list of whole tool names only (no argument/command-pattern
+scoping — that syntax exists only in `settings.json`'s
+`permissions.allow`, which applies session-wide, not per-subagent).
+OpenCode's `permission.bash` field *does* support real per-command glob
+scoping (e.g. allow `orchestrator-queue *`, deny everything else), but this
+generator does not build that out yet — it only emits whole-tool
+allow/deny, the same granularity as Claude Code. So on both harnesses,
+Orchestrator and Consultant get a **plain, unscoped `Bash`/`bash` grant**;
+"only runs `orchestrator-queue`" is enforced solely by the agent's own
+prompt instructions, not by the harness. Exploiting OpenCode's finer-grained
+`permission.bash` glob scoping to make this a real hard restriction there is
+a documented future improvement, not implemented in this pass.
+
+Orchestrator has no Read/Write/Edit at all, and no direct read access to
 `tasks.jsonl` either, since `queue.py status`/`next` already surface
-everything the Orchestrator needs via stdout. This is the entirety of the
-Orchestrator's tool access — organizing the other agents through the queue
-is all it can do. Worker has unrestricted Bash regardless, so `queue.py` is
-just one more command it can run. Reviewer keeps its own general Bash
-(needed for tests/linters/build) which likewise already covers `queue.py`.
-Consultant has no *general* Bash, but does get Bash scoped to `queue.py`
-only — the same restricted grant as the Orchestrator — so it can report
-its plan back without gaining the ability to run arbitrary commands.
+everything it needs via stdout — Bash (to run `queue.py`/`orchestrator-queue`)
+plus the harness's subagent-invocation tool is the entirety of its access.
+Worker has unrestricted access regardless, so the queue CLI is just one more
+command it can run. Reviewer keeps its own general Bash (needed for
+tests/linters/build), which likewise already covers the queue CLI.
+Consultant has no Edit/Write and, per the paragraph above, an unscoped (not
+command-restricted) Bash/bash grant on Claude Code and OpenCode alike.
 
 For Cursor: the human switches Custom Mode and manually runs
 `queue.py next --for <role>` / `queue.py append ...` in a terminal between
@@ -134,10 +147,10 @@ mechanism differs (manual vs. programmatic).
 
 | Agent | Tools | Default tier | Job |
 |---|---|---|---|
-| **Orchestrator** | `Bash` scoped to `queue.py` only, plus the harness's subagent-invocation tool (Task in Claude Code, its equivalent in OpenCode; manual in Cursor) — no Read/Write/Edit, no general Bash | high | Talks to the end user, breaks their problem into tasks, calls `queue.py next --for <role>` to pick the next task for whichever agent should run it, invokes that agent, reads back its `completed` event (including any `spawned` children), and decides what's next. Never reads/writes project source directly. |
+| **Orchestrator** | `Bash` granted (unscoped — see the known-limitation note in §2) to run `queue.py`/`orchestrator-queue`, plus the harness's subagent-invocation tool (Task in Claude Code, its equivalent in OpenCode; manual in Cursor) — no Read/Write/Edit, no general Bash | high | Talks to the end user, breaks their problem into tasks, calls `queue.py next --for <role>` to pick the next task for whichever agent should run it, invokes that agent, reads back its `completed` event (including any `spawned` children), and decides what's next. Never reads/writes project source directly. |
 | **Worker** | Unrestricted (all tools) | low | The only agent that edits code. Picks up one task at a time, does the read/write implementation work, appends a `completed` event with a `result` summary and any follow-up tasks it thinks are needed via `spawned`. |
 | **Reviewer** | Read, Grep, Glob, general `Bash` (tests/linters/build, which also covers `queue.py`) — no Edit/Write to source | medium | Invoked at the Orchestrator's judgment (not automatically on every task). Inspects a completed task's diff/output, runs relevant checks, and reports findings as new `created` tasks assigned back to `worker` rather than fixing anything itself. |
-| **Consultant** | Read, Grep, Glob, web search/fetch, `Bash` scoped to `queue.py` only — no general Bash, no Edit/Write | high | Invoked for architecture/planning decisions. Produces a plan or decision as its `completed` result — typically a set of ordered `spawned` tasks assigned to `worker` — but never touches code itself. |
+| **Consultant** | Read, Grep, Glob, web search/fetch, Bash granted (unscoped — see §2) to run queue.py/orchestrator-queue — no Edit/Write | high | Invoked for architecture/planning decisions. Produces a plan or decision as its `completed` result — typically a set of ordered `spawned` tasks assigned to `worker` — but never touches code itself. |
 
 Review is **not** an automatic gate after every Worker task — the
 Orchestrator (running at the `high` tier) decides case-by-case whether a

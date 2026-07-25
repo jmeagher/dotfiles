@@ -11,14 +11,14 @@ tools:
     - "Glob"
     - "WebSearch"
     - "WebFetch"
-    - "Bash(orchestrator-queue *)"
+    - "Bash"
   opencode:
-    - "read"
-    - "grep"
-    - "glob"
-    - "websearch"
-    - "webfetch"
-    - "bash(orchestrator-queue *)"
+    read: allow
+    grep: allow
+    glob: allow
+    websearch: allow
+    webfetch: allow
+    bash: allow
   cursor:
     - "read"
     - "search"

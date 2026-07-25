@@ -6,11 +6,11 @@ description: >-
 tier: high
 tools:
   claude-code:
-    - "Bash(orchestrator-queue *)"
+    - "Bash"
     - "Task"
   opencode:
-    - "bash(orchestrator-queue *)"
-    - "task"
+    bash: allow
+    task: allow
   cursor:
     - "terminal(orchestrator-queue *)"
 prompt: |

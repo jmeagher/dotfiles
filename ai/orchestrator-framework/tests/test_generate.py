@@ -12,8 +12,20 @@ FIXTURE_AGENT = {
     "name": "worker",
     "description": "Test worker agent.",
     "tier": "low",
-    "tools": {"claude-code": ["*"], "opencode": ["*"], "cursor": ["*"]},
+    "tools": {"claude-code": ["*"], "opencode": "*", "cursor": ["*"]},
     "prompt": "You are the test worker.\n",
+}
+
+FIXTURE_RESTRICTED_AGENT = {
+    "name": "reviewer",
+    "description": "Test reviewer agent.",
+    "tier": "low",
+    "tools": {
+        "claude-code": ["Read", "Bash"],
+        "opencode": {"read": "allow", "bash": "allow"},
+        "cursor": ["read", "terminal"],
+    },
+    "prompt": "You are the test reviewer.\n",
 }
 
 FIXTURE_MODELS = {
@@ -82,7 +94,7 @@ def test_resolve_model_returns_concrete_id():
     assert generate.resolve_model(agent, "claude-code", FIXTURE_MODELS) == "claude-haiku-4-5-20251001"
 
 
-def test_write_claude_code_produces_expected_frontmatter(tmp_path):
+def test_write_claude_code_omits_tools_line_for_wildcard(tmp_path):
     agents_dir = write_fixture_agents(tmp_path)
     agents = generate.load_agents(agents_dir)
     out_dir = tmp_path / "claude-out"
@@ -90,8 +102,19 @@ def test_write_claude_code_produces_expected_frontmatter(tmp_path):
     content = (out_dir / "worker.md").read_text()
     assert "name: worker" in content
     assert "model: claude-haiku-4-5-20251001" in content
-    assert "tools: *" in content
+    assert "tools:" not in content
     assert "You are the test worker." in content
+
+
+def test_write_claude_code_renders_explicit_tools_list(tmp_path):
+    agents_dir = tmp_path / "agents"
+    agents_dir.mkdir()
+    (agents_dir / "reviewer.yaml").write_text(yaml.safe_dump(FIXTURE_RESTRICTED_AGENT))
+    agents = generate.load_agents(agents_dir)
+    out_dir = tmp_path / "claude-out"
+    generate.write_claude_code(agents, FIXTURE_MODELS, out_dir)
+    content = (out_dir / "reviewer.md").read_text()
+    assert "tools: Read, Bash" in content
 
 
 def test_write_claude_code_fails_loudly_on_null_model(tmp_path):
@@ -103,7 +126,7 @@ def test_write_claude_code_fails_loudly_on_null_model(tmp_path):
         generate.write_claude_code(agent, FIXTURE_MODELS, out_dir)
 
 
-def test_write_opencode_produces_expected_frontmatter(tmp_path):
+def test_write_opencode_omits_permission_for_wildcard(tmp_path):
     agents_dir = write_fixture_agents(tmp_path)
     agents = generate.load_agents(agents_dir)
     out_dir = tmp_path / "opencode-out"
@@ -111,7 +134,21 @@ def test_write_opencode_produces_expected_frontmatter(tmp_path):
     content = (out_dir / "worker.md").read_text()
     assert "name: worker" in content
     assert "model: opencode-low-model" in content
+    assert "permission:" not in content
     assert "You are the test worker." in content
+
+
+def test_write_opencode_renders_permission_map(tmp_path):
+    agents_dir = tmp_path / "agents"
+    agents_dir.mkdir()
+    (agents_dir / "reviewer.yaml").write_text(yaml.safe_dump(FIXTURE_RESTRICTED_AGENT))
+    agents = generate.load_agents(agents_dir)
+    out_dir = tmp_path / "opencode-out"
+    generate.write_opencode(agents, FIXTURE_MODELS, out_dir)
+    content = (out_dir / "reviewer.md").read_text()
+    assert "permission:" in content
+    assert "read: allow" in content
+    assert "bash: allow" in content
 
 
 def test_write_cursor_raises_when_model_unset(tmp_path):

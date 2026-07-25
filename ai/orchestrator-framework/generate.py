@@ -64,16 +64,30 @@ def resolve_model(agent, harness, models):
 
 
 def render_markdown_agent(agent, harness, model):
-    tools = ", ".join(agent["tools"][harness])
-    return (
-        "---\n"
-        f"name: {agent['name']}\n"
-        f"description: {agent['description'].strip()}\n"
-        f"tools: {tools}\n"
-        f"model: {model}\n"
-        "---\n\n"
-        f"{agent['prompt'].strip()}\n"
-    )
+    tools = agent["tools"][harness]
+    lines = [
+        "---",
+        f"name: {agent['name']}",
+        f"description: {agent['description'].strip()}",
+    ]
+    if harness == "opencode":
+        # OpenCode's tool permissions are a map (permission: {name: allow/ask/deny}),
+        # not a comma-joined list. The "*" sentinel means "omit the field entirely",
+        # matching Claude Code's own omit-for-all-tools convention below.
+        if tools != "*":
+            lines.append("permission:")
+            for tool_name, action in tools.items():
+                lines.append(f"  {tool_name}: {action}")
+    else:
+        # Claude Code (and any other list-based markdown harness): comma-joined
+        # tool names. ["*"] means "omit tools: entirely" -- Claude Code has no
+        # wildcard token; omitting the field is the documented way to grant all
+        # tools to a subagent.
+        if tools != ["*"]:
+            lines.append(f"tools: {', '.join(tools)}")
+    lines.append(f"model: {model}")
+    lines.append("---")
+    return "\n".join(lines) + "\n\n" + agent["prompt"].strip() + "\n"
 
 
 def write_markdown_agents(agents, models, harness, out_dir):

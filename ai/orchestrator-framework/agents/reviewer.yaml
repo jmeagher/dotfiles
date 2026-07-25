@@ -11,10 +11,10 @@ tools:
     - "Glob"
     - "Bash"
   opencode:
-    - "read"
-    - "grep"
-    - "glob"
-    - "bash"
+    read: allow
+    grep: allow
+    glob: allow
+    bash: allow
   cursor:
     - "read"
     - "search"
