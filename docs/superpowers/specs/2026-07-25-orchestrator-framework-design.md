@@ -105,9 +105,16 @@ hand-writes raw JSON lines. Subcommands:
 - `queue.py next --for <role>` — returns the oldest task that is `created`
   but not yet `in_progress` and assigned to `<role>`, or nothing if none.
 
-Each harness's Orchestrator agent gets Bash access **scoped to `queue.py`
-only** (e.g., Claude Code's `Bash(python3 .orchestrator/queue.py *)` tool
-permission pattern) — never general Bash, and no direct Read/Write on
+`queue.py` itself lives only in this dotfiles repo, not inside whatever
+project is being orchestrated — so it's installed once as a `PATH`-resolvable
+command (`~/bin/orchestrator-queue`, a symlink to `queue.py`, set up
+alongside the agent files) rather than referenced by a project-relative
+path. Every agent prompt invokes it as `orchestrator-queue append/status/next`.
+
+Each harness's Orchestrator agent gets Bash access **scoped to
+`orchestrator-queue` only** (e.g., Claude Code's
+`Bash(orchestrator-queue *)` tool permission pattern) — never general Bash,
+and no direct Read/Write on
 `tasks.jsonl` either, since `queue.py status`/`next` already surface
 everything the Orchestrator needs via stdout. This is the entirety of the
 Orchestrator's tool access — organizing the other agents through the queue
