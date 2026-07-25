@@ -61,5 +61,30 @@ def resolve_model(agent, harness, models):
     return model
 
 
+def render_markdown_agent(agent, harness, model):
+    tools = ", ".join(agent["tools"][harness])
+    return (
+        "---\n"
+        f"name: {agent['name']}\n"
+        f"description: {agent['description'].strip()}\n"
+        f"tools: {tools}\n"
+        f"model: {model}\n"
+        "---\n\n"
+        f"{agent['prompt'].strip()}\n"
+    )
+
+
+def write_markdown_agents(agents, models, harness, out_dir):
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for agent in agents.values():
+        model = resolve_model(agent, harness, models)
+        (out_dir / f"{agent['name']}.md").write_text(render_markdown_agent(agent, harness, model))
+
+
+def write_claude_code(agents, models, out_dir):
+    write_markdown_agents(agents, models, "claude-code", out_dir)
+
+
 if __name__ == "__main__":
     sys.exit(1)  # CLI wiring added in Task 6
