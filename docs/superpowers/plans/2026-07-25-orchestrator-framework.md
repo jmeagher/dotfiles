@@ -640,6 +640,7 @@ tools:
     - "grep"
     - "glob"
     - "websearch"
+    - "webfetch"
     - "bash(orchestrator-queue *)"
   cursor:
     - "read"
