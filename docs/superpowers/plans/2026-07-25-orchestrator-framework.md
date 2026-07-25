@@ -886,7 +886,7 @@ git commit -m "Add agent source YAML, models config, and generate.py loader"
 
 ---
 
-### Task 3: Claude Code adapter
+### Task 3: Shared markdown-agent renderer + Claude Code adapter
 
 **Files:**
 - Modify: `ai/orchestrator-framework/generate.py`
@@ -894,7 +894,7 @@ git commit -m "Add agent source YAML, models config, and generate.py loader"
 
 **Interfaces:**
 - Consumes: `generate.load_agents`, `generate.resolve_model`, `generate.GenerateError` (Task 2).
-- Produces (consumed by Task 6): `generate.render_claude_code(agent, model) -> str`, `generate.write_claude_code(agents, models, out_dir) -> None`.
+- Produces (consumed by Task 4 and Task 6): `generate.render_markdown_agent(agent, harness, model) -> str` (shared by any harness whose agent format is YAML-frontmatter markdown — Claude Code and OpenCode both are, per spec §5, "structurally near-identical"), `generate.write_markdown_agents(agents, models, harness, out_dir) -> None`, `generate.write_claude_code(agents, models, out_dir) -> None` (thin wrapper: `write_markdown_agents(agents, models, "claude-code", out_dir)`).
 
 - [ ] **Step 1: Add the failing tests**
 
@@ -927,13 +927,13 @@ def test_write_claude_code_fails_loudly_on_null_model(tmp_path):
 Run: `ai/orchestrator-framework/.venv/bin/pytest ai/orchestrator-framework/tests/test_generate.py -k claude_code -v`
 Expected: FAIL — `AttributeError: module 'generate' has no attribute 'write_claude_code'`.
 
-- [ ] **Step 3: Implement the Claude Code adapter**
+- [ ] **Step 3: Implement the shared renderer and the Claude Code adapter**
 
 In `ai/orchestrator-framework/generate.py`, add after `resolve_model`:
 
 ```python
-def render_claude_code(agent, model):
-    tools = ", ".join(agent["tools"]["claude-code"])
+def render_markdown_agent(agent, harness, model):
+    tools = ", ".join(agent["tools"][harness])
     return (
         "---\n"
         f"name: {agent['name']}\n"
@@ -945,12 +945,16 @@ def render_claude_code(agent, model):
     )
 
 
-def write_claude_code(agents, models, out_dir):
+def write_markdown_agents(agents, models, harness, out_dir):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     for agent in agents.values():
-        model = resolve_model(agent, "claude-code", models)
-        (out_dir / f"{agent['name']}.md").write_text(render_claude_code(agent, model))
+        model = resolve_model(agent, harness, models)
+        (out_dir / f"{agent['name']}.md").write_text(render_markdown_agent(agent, harness, model))
+
+
+def write_claude_code(agents, models, out_dir):
+    write_markdown_agents(agents, models, "claude-code", out_dir)
 ```
 
 - [ ] **Step 4: Run the tests to verify they pass**
@@ -962,7 +966,7 @@ Expected: all tests PASS (8 total so far).
 
 ```bash
 git add ai/orchestrator-framework/generate.py ai/orchestrator-framework/tests/test_generate.py
-git commit -m "Add Claude Code adapter to generate.py"
+git commit -m "Add shared markdown-agent renderer and Claude Code adapter to generate.py"
 ```
 
 ---
@@ -974,8 +978,8 @@ git commit -m "Add Claude Code adapter to generate.py"
 - Modify: `ai/orchestrator-framework/tests/test_generate.py`
 
 **Interfaces:**
-- Consumes: `generate.load_agents`, `generate.resolve_model`, `generate.GenerateError` (Task 2).
-- Produces (consumed by Task 6): `generate.render_opencode(agent, model) -> str`, `generate.write_opencode(agents, models, out_dir) -> None`.
+- Consumes: `generate.load_agents`, `generate.resolve_model`, `generate.GenerateError` (Task 2), `generate.write_markdown_agents` (Task 3 — reused as-is, no new rendering logic needed since Claude Code and OpenCode share one markdown-frontmatter format).
+- Produces (consumed by Task 6): `generate.write_opencode(agents, models, out_dir) -> None`.
 
 - [ ] **Step 1: Add the failing test**
 
@@ -1003,25 +1007,8 @@ Expected: FAIL — `AttributeError: module 'generate' has no attribute 'write_op
 In `ai/orchestrator-framework/generate.py`, add after `write_claude_code`:
 
 ```python
-def render_opencode(agent, model):
-    tools = ", ".join(agent["tools"]["opencode"])
-    return (
-        "---\n"
-        f"name: {agent['name']}\n"
-        f"description: {agent['description'].strip()}\n"
-        f"tools: {tools}\n"
-        f"model: {model}\n"
-        "---\n\n"
-        f"{agent['prompt'].strip()}\n"
-    )
-
-
 def write_opencode(agents, models, out_dir):
-    out_dir = Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    for agent in agents.values():
-        model = resolve_model(agent, "opencode", models)
-        (out_dir / f"{agent['name']}.md").write_text(render_opencode(agent, model))
+    write_markdown_agents(agents, models, "opencode", out_dir)
 ```
 
 - [ ] **Step 4: Run the tests to verify they pass**
