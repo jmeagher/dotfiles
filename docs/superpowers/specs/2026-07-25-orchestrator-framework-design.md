@@ -143,14 +143,22 @@ For Cursor: the human switches Custom Mode and manually runs
 mode switches. Same file, same schema, same script — only the hand-off
 mechanism differs (manual vs. programmatic).
 
+**Claude Code subagent nesting:** the Orchestrator is itself installed as a
+subagent, and Claude Code withholds subagent-spawning from subagents by
+default (confirmed against Claude Code's docs) — so it can't invoke
+Worker/Reviewer/Consultant as a further layer unless
+`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` is raised. `ai/orchestrator-framework/setup.sh`
+sets this to `"2"` in `~/.claude/settings.json`, non-destructively (only if
+not already configured by the user).
+
 ## 3. The four agents
 
 | Agent | Tools | Default tier | Job |
 |---|---|---|---|
-| **Orchestrator** | `Bash` granted (unscoped — see the known-limitation note in §2) to run `queue.py`/`orchestrator-queue`, plus the harness's subagent-invocation tool (Task in Claude Code, its equivalent in OpenCode; manual in Cursor) — no Read/Write/Edit, no general Bash | high | Talks to the end user, breaks their problem into tasks, calls `queue.py next --for <role>` to pick the next task for whichever agent should run it, invokes that agent, reads back its `completed` event (including any `spawned` children), and decides what's next. Never reads/writes project source directly. |
+| **Orchestrator** | `Bash` granted (unscoped — see the known-limitation note in §2) to run `queue.py`/`orchestrator-queue`, plus the harness's subagent-invocation tool (Task in Claude Code, its equivalent in OpenCode; manual in Cursor) — no Read/Write/Edit, no general Bash (OpenCode: explicit `edit: deny`) | high | Talks to the end user, breaks their problem into tasks, calls `queue.py next --for <role>` to pick the next task for whichever agent should run it, invokes that agent, reads back its `completed` event (including any `spawned` children), and decides what's next. Never reads/writes project source directly. |
 | **Worker** | Unrestricted (all tools) | low | The only agent that edits code. Picks up one task at a time, does the read/write implementation work, appends a `completed` event with a `result` summary and any follow-up tasks it thinks are needed via `spawned`. |
-| **Reviewer** | Read, Grep, Glob, general `Bash` (tests/linters/build, which also covers `queue.py`) — no Edit/Write to source | medium | Invoked at the Orchestrator's judgment (not automatically on every task). Inspects a completed task's diff/output, runs relevant checks, and reports findings as new `created` tasks assigned back to `worker` rather than fixing anything itself. |
-| **Consultant** | Read, Grep, Glob, web search/fetch, Bash granted (unscoped — see §2) to run queue.py/orchestrator-queue — no Edit/Write | high | Invoked for architecture/planning decisions. Produces a plan or decision as its `completed` result — typically a set of ordered `spawned` tasks assigned to `worker` — but never touches code itself. |
+| **Reviewer** | Read, Grep, Glob, general `Bash` (tests/linters/build, which also covers `queue.py`) — no Edit/Write to source (OpenCode: explicit `edit: deny`) | medium | Invoked at the Orchestrator's judgment (not automatically on every task). Inspects a completed task's diff/output, runs relevant checks, and reports findings as new `created` tasks assigned back to `worker` rather than fixing anything itself. |
+| **Consultant** | Read, Grep, Glob, web search/fetch, Bash granted (unscoped — see §2) to run queue.py/orchestrator-queue — no Edit/Write (OpenCode: explicit `edit: deny`) | high | Invoked for architecture/planning decisions. Produces a plan or decision as its `completed` result — typically a set of ordered `spawned` tasks assigned to `worker` — but never touches code itself. |
 
 Review is **not** an automatic gate after every Worker task — the
 Orchestrator (running at the `high` tier) decides case-by-case whether a

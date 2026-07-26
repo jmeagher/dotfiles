@@ -22,7 +22,7 @@ FIXTURE_RESTRICTED_AGENT = {
     "tier": "low",
     "tools": {
         "claude-code": ["Read", "Bash"],
-        "opencode": {"read": "allow", "bash": "allow"},
+        "opencode": {"read": "allow", "bash": "allow", "edit": "deny"},
         "cursor": ["read", "terminal"],
     },
     "prompt": "You are the test reviewer.\n",
@@ -149,6 +149,7 @@ def test_write_opencode_renders_permission_map(tmp_path):
     assert "permission:" in content
     assert "\n  read: allow" in content
     assert "\n  bash: allow" in content
+    assert "\n  edit: deny" in content
 
 
 def test_write_cursor_raises_when_model_unset(tmp_path):

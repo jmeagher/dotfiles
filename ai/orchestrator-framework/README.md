@@ -84,6 +84,22 @@ Both harnesses currently grant these two agents a plain, unscoped Bash —
 the "only runs `orchestrator-queue`" behavior is enforced by the agent's own
 prompt instructions, not by the platform.
 
+On OpenCode specifically, every agent except Worker also gets an explicit
+`edit: deny` in its `permission:` map — OpenCode's permission map is an
+override layer, not an allowlist, so leaving `edit` unmentioned would fall
+back to OpenCode's own default (`allow`), silently letting Reviewer/
+Consultant/Orchestrator edit files despite the design intent.
+
+## Claude Code: enabling subagent nesting
+
+By default, Claude Code subagents can't spawn subagents of their own — the
+Orchestrator (itself a subagent invoked from your main session) needs to
+invoke Worker/Reviewer/Consultant as a second layer, which Claude Code
+blocks unless `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` is raised. `setup.sh`
+sets this to `"2"` in `~/.claude/settings.json` automatically (only if you
+haven't already configured your own value) — no action needed on your
+part, but if you ever wonder why that setting appeared, this is why.
+
 ## Layout
 
 | Path | Role |

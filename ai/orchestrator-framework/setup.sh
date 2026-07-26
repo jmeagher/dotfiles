@@ -21,6 +21,23 @@ fi
 
 mkdir -p "$HOME/.claude/agents"
 
+# The Orchestrator agent is itself a subagent and needs to spawn a further
+# layer of subagents (Worker/Reviewer/Consultant) -- Claude Code withholds
+# subagent-spawning from subagents by default, so raise the allowed nesting
+# depth. Only set this if the user hasn't already configured their own
+# value -- never clobber an existing setting.
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+if [ -e "$CLAUDE_SETTINGS" ] && command -v jq > /dev/null 2>&1; then
+    if ! jq -e '.env.CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH' "$CLAUDE_SETTINGS" > /dev/null 2>&1; then
+        echo "Enabling subagent nesting (CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=2) in ~/.claude/settings.json"
+        jq '.env.CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH = "2"' "$CLAUDE_SETTINGS" > "$CLAUDE_SETTINGS.tmp" && mv "$CLAUDE_SETTINGS.tmp" "$CLAUDE_SETTINGS"
+    fi
+elif [ -e "$CLAUDE_SETTINGS" ]; then
+    echo "NOTE: jq not found -- couldn't verify/set CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH in ~/.claude/settings.json"
+    echo "  The Orchestrator agent needs this set to at least 2 to spawn Worker/Reviewer/Consultant."
+    echo "  Add \"env\": {\"CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH\": \"2\"} to that file manually if needed."
+fi
+
 GENERATE_ARGS="--models-local $FRAMEWORK_DIR/models.local.yaml --claude-code-out $HOME/.claude/agents"
 
 if [ -e "$FRAMEWORK_DIR/models.local.yaml" ]; then

@@ -15,6 +15,7 @@ tools:
     grep: allow
     glob: allow
     bash: allow
+    edit: deny
   cursor:
     - "read"
     - "search"

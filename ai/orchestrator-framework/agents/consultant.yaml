@@ -19,6 +19,7 @@ tools:
     websearch: allow
     webfetch: allow
     bash: allow
+    edit: deny
   cursor:
     - "read"
     - "search"

@@ -11,6 +11,7 @@ tools:
   opencode:
     bash: allow
     task: allow
+    edit: deny
   cursor:
     - "terminal(orchestrator-queue *)"
 prompt: |
