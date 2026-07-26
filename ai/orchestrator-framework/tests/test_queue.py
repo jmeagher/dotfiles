@@ -164,18 +164,27 @@ def test_next_returns_oldest_pending_for_role(tmp_path):
             "created_by": "orchestrator",
         },
     )
-    reviewer_task = append(
+    first_reviewer_task = append(
         tmp_path,
         {
             "event": "created",
-            "desc": "for reviewer",
+            "desc": "earlier reviewer task",
+            "assigned_to": "reviewer",
+            "created_by": "orchestrator",
+        },
+    )
+    append(
+        tmp_path,
+        {
+            "event": "created",
+            "desc": "later reviewer task",
             "assigned_to": "reviewer",
             "created_by": "orchestrator",
         },
     )
     result = run_queue(tmp_path, "next", "--for", "reviewer")
     assert result.returncode == 0
-    assert json.loads(result.stdout)["id"] == reviewer_task["id"]
+    assert json.loads(result.stdout)["id"] == first_reviewer_task["id"]
 
 
 def test_next_returns_nonzero_when_none_pending(tmp_path):

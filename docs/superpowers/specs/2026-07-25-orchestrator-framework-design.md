@@ -53,7 +53,9 @@ at setup time, exactly like this repo's `claude/settings.json` generation
 copy):
 
 ```sh
-# ai/orchestrator-framework/setup.sh
+# ai/orchestrator-framework/setup.sh (illustrative — the real script gates
+# --opencode-out/--cursor-out on models.local.yaml existing; see README for
+# the exact conditional invocation)
 python3 generate.py \
   --models models.yaml --models-local models.local.yaml \
   --claude-code-out ~/.claude/agents \
