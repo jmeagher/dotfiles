@@ -36,6 +36,11 @@ elif [ -e "$CLAUDE_SETTINGS" ]; then
     echo "NOTE: jq not found -- couldn't verify/set CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH in ~/.claude/settings.json"
     echo "  The Orchestrator agent needs this set to at least 2 to spawn Worker/Reviewer/Consultant."
     echo "  Add \"env\": {\"CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH\": \"2\"} to that file manually if needed."
+else
+    echo "NOTE: ~/.claude/settings.json not found -- couldn't set CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH"
+    echo "  The Orchestrator agent needs this set to at least 2 to spawn Worker/Reviewer/Consultant."
+    echo "  Run this repo's root setup.sh (which creates settings.json first) or add"
+    echo "  \"env\": {\"CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH\": \"2\"} to that file manually."
 fi
 
 GENERATE_ARGS="--models-local $FRAMEWORK_DIR/models.local.yaml --claude-code-out $HOME/.claude/agents"
