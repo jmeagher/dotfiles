@@ -11,16 +11,6 @@ echo "Linking ~/bin/orchestrator-queue"
 [ -h "$HOME/bin/orchestrator-queue" ] && rm "$HOME/bin/orchestrator-queue"
 ln -s "$FRAMEWORK_DIR/queue.py" "$HOME/bin/orchestrator-queue"
 
-# Runtime dependency check (PyYAML) — warn and continue, don't hard-fail
-# the whole dotfiles setup, matching claude/setup.sh's jq check.
-if ! python3 -c "import yaml" > /dev/null 2>&1; then
-    echo "WARNING: PyYAML not found for python3 — orchestrator agent files won't be generated"
-    echo "  Install it with: python3 -m pip install --user pyyaml (or use a venv)"
-    exit 0
-fi
-
-mkdir -p "$HOME/.claude/agents"
-
 # The Orchestrator agent is itself a subagent and needs to spawn a further
 # layer of subagents (Worker/Reviewer/Consultant) -- Claude Code withholds
 # subagent-spawning from subagents by default, so raise the allowed nesting
@@ -43,6 +33,34 @@ else
     echo "  \"env\": {\"CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH\": \"2\"} to that file manually."
 fi
 
+# generate.py needs PyYAML. Bare python3 often doesn't have it (e.g. a
+# system/homebrew install with no site-packages access) -- bootstrap a
+# local venv automatically rather than requiring the user to do it by hand.
+PYTHON="python3"
+if ! python3 -c "import yaml" > /dev/null 2>&1; then
+    VENV_DIR="$FRAMEWORK_DIR/.venv"
+    if [ ! -x "$VENV_DIR/bin/python3" ]; then
+        echo "PyYAML not found for python3 -- bootstrapping a local venv at $VENV_DIR"
+        if ! python3 -m venv "$VENV_DIR" 2>/dev/null; then
+            echo "WARNING: couldn't create a venv -- orchestrator agent files won't be generated"
+            echo "  Install PyYAML yourself (python3 -m pip install --user pyyaml) and re-run,"
+            echo "  or create $VENV_DIR manually with pyyaml installed."
+            exit 0
+        fi
+    fi
+    if ! "$VENV_DIR/bin/python3" -c "import yaml" > /dev/null 2>&1; then
+        echo "Installing PyYAML into $VENV_DIR"
+        if ! "$VENV_DIR/bin/pip" install -q pyyaml; then
+            echo "WARNING: couldn't install PyYAML -- orchestrator agent files won't be generated"
+            echo "  Install it yourself: $VENV_DIR/bin/pip install pyyaml"
+            exit 0
+        fi
+    fi
+    PYTHON="$VENV_DIR/bin/python3"
+fi
+
+mkdir -p "$HOME/.claude/agents"
+
 GENERATE_ARGS="--models-local $FRAMEWORK_DIR/models.local.yaml --claude-code-out $HOME/.claude/agents"
 
 if [ -e "$FRAMEWORK_DIR/models.local.yaml" ]; then
@@ -56,4 +74,4 @@ else
 fi
 
 echo "Generating orchestrator framework agents"
-python3 "$FRAMEWORK_DIR/generate.py" $GENERATE_ARGS
+"$PYTHON" "$FRAMEWORK_DIR/generate.py" $GENERATE_ARGS

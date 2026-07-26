@@ -133,6 +133,9 @@ def append_event(queue_dir, event):
     event = validate_and_prepare(dict(event), events)
     path = queue_path(queue_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
+    gitignore = path.parent / ".gitignore"
+    if not gitignore.exists():
+        gitignore.write_text("*\n")
     with path.open("a") as f:
         f.write(json.dumps(event, sort_keys=True) + "\n")
     return event

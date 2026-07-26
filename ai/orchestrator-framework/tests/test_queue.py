@@ -34,6 +34,15 @@ def test_append_created_auto_assigns_id(tmp_path):
     assert saved["parent_id"] is None
 
 
+def test_append_creates_self_ignoring_gitignore(tmp_path):
+    append(tmp_path, {
+        "event": "created", "desc": "a",
+        "assigned_to": "worker", "created_by": "orchestrator",
+    })
+    gitignore = tmp_path / ".gitignore"
+    assert gitignore.read_text() == "*\n"
+
+
 def test_append_created_rejects_duplicate_id(tmp_path):
     append(
         tmp_path,
