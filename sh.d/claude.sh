@@ -5,4 +5,8 @@ if command -v claude > /dev/null 2>&1 ; then
     alias cdh='_cde haiku'
     alias cds='_cde sonnet'
     alias cdo='_cde opus'
+
+    if [ -f "$HOME/.claude/agents/orchestrator.md" ]; then
+        alias cor='_cde opus --agent orchestrator'
+    fi
 fi

@@ -98,6 +98,9 @@ ensure_zshenv
 # Set up Claude Code configuration
 sh "$(pwd)/claude/setup.sh"
 
+# Set up the multi-harness orchestrator framework agents
+sh "$(pwd)/ai/orchestrator-framework/setup.sh"
+
 echo "Hit enter to install vundle bundles, ctrl-c to skip"
 read a
 vim +BundleInstall +qall
