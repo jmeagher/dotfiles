@@ -26,7 +26,10 @@ def load_agents(agents_dir):
         for field in REQUIRED_AGENT_FIELDS:
             if field not in data:
                 raise GenerateError(f"{path}: missing required field '{field}'")
-        agents[data["name"]] = data
+        agent_name = data["name"]
+        if agent_name in agents:
+            raise GenerateError(f"duplicate agent name '{agent_name}' in {path} and other file")
+        agents[agent_name] = data
     return agents
 
 
@@ -53,7 +56,7 @@ def resolve_model(agent, harness, models):
     tier = agent["tier"]
     try:
         model = models["tiers"][harness][tier]
-    except KeyError:
+    except (KeyError, TypeError):
         raise GenerateError(f"agent '{agent['name']}': no models.tiers.{harness}.{tier} entry")
     if model is None:
         raise GenerateError(
@@ -65,37 +68,78 @@ def resolve_model(agent, harness, models):
 
 def render_markdown_agent(agent, harness, model):
     tools = agent["tools"][harness]
-    lines = [
-        "---",
-        f"name: {agent['name']}",
-        f"description: {agent['description'].strip()}",
-    ]
+    frontmatter = {
+        "name": agent["name"],
+        "description": agent["description"].strip(),
+    }
+
     if harness == "opencode":
         # OpenCode's tool permissions are a map (permission: {name: allow/ask/deny}),
         # not a comma-joined list. The "*" sentinel means "omit the field entirely",
         # matching Claude Code's own omit-for-all-tools convention below.
         if tools != "*":
-            lines.append("permission:")
-            for tool_name, action in tools.items():
-                lines.append(f"  {tool_name}: {action}")
+            frontmatter["permission"] = tools
     else:
         # Claude Code (and any other list-based markdown harness): comma-joined
         # tool names. ["*"] means "omit tools: entirely" -- Claude Code has no
         # wildcard token; omitting the field is the documented way to grant all
         # tools to a subagent.
         if tools != ["*"]:
-            lines.append(f"tools: {', '.join(tools)}")
-    lines.append(f"model: {model}")
-    lines.append("---")
-    return "\n".join(lines) + "\n\n" + agent["prompt"].strip() + "\n"
+            # Validate that wildcard is not mixed with other tools
+            if "*" in tools and len(tools) > 1:
+                raise GenerateError(
+                    f"agent '{agent['name']}': wildcard '*' cannot be mixed with other tool names in {harness}"
+                )
+            frontmatter["tools"] = tools
+
+    frontmatter["model"] = model
+
+    # Use yaml.safe_dump to properly escape special characters in frontmatter
+    frontmatter_yaml = yaml.safe_dump(frontmatter, default_flow_style=False, sort_keys=False)
+    frontmatter_lines = ["---"] + frontmatter_yaml.rstrip().split("\n") + ["---"]
+
+    return "\n".join(frontmatter_lines) + "\n\n" + agent["prompt"].strip() + "\n"
 
 
 def write_markdown_agents(agents, models, harness, out_dir):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Load manifest of previously generated files
+    manifest_path = out_dir / ".orchestrator-generated.json"
+    previous_generated = set()
+    if manifest_path.exists():
+        try:
+            manifest_data = json.loads(manifest_path.read_text())
+            # Validate structure: must be a dict with a list "agents" field
+            if not isinstance(manifest_data, dict):
+                raise ValueError("manifest top-level must be a dict")
+            agents_list = manifest_data.get("agents", [])
+            if not isinstance(agents_list, list):
+                raise ValueError("manifest 'agents' field must be a list")
+            previous_generated = set(agents_list)
+        except (json.JSONDecodeError, ValueError) as e:
+            # On any parse/shape failure, fail safe: treat as empty manifest
+            # (do not crash, do not delete anything)
+            print(f"warning: corrupted manifest {manifest_path}, treating as empty: {e}", file=sys.stderr)
+            previous_generated = set()
+
+    # Clean up orphaned agent .md files: only delete files we generated before
+    # that are no longer in the current agent set
+    current_agent_names = set(agent["name"] for agent in agents.values())
+    for existing_md in out_dir.glob("*.md"):
+        agent_name = existing_md.stem
+        # Only delete if: (1) we generated it before, AND (2) it's not in current set
+        if agent_name in previous_generated and agent_name not in current_agent_names:
+            existing_md.unlink()
+
+    # Write current agents
     for agent in agents.values():
         model = resolve_model(agent, harness, models)
         (out_dir / f"{agent['name']}.md").write_text(render_markdown_agent(agent, harness, model))
+
+    # Write manifest of generated files for next run
+    manifest_path.write_text(json.dumps({"agents": sorted(current_agent_names)}, indent=2) + "\n")
 
 
 def write_claude_code(agents, models, out_dir):
@@ -110,15 +154,28 @@ def render_cursor(agents, models):
     modes = []
     for agent in agents.values():
         model = resolve_model(agent, "cursor", models)
-        modes.append(
-            {
-                "name": agent["name"],
-                "description": agent["description"].strip(),
-                "tools": agent["tools"]["cursor"],
-                "model": model,
-                "prompt": agent["prompt"].strip(),
-            }
-        )
+        cursor_tools = agent["tools"]["cursor"]
+
+        # Validate that wildcard is not mixed with other tools
+        if isinstance(cursor_tools, list) and "*" in cursor_tools and len(cursor_tools) > 1:
+            raise GenerateError(
+                f"agent '{agent['name']}': wildcard '*' cannot be mixed with other tool names in cursor"
+            )
+
+        mode = {
+            "name": agent["name"],
+            "description": agent["description"].strip(),
+            "model": model,
+            "prompt": agent["prompt"].strip(),
+        }
+
+        # For Cursor, ["*"] means full access (omit the tools field entirely),
+        # following the same omit-for-full-access convention as Claude Code.
+        # Otherwise, include the concrete tool list.
+        if cursor_tools != ["*"]:
+            mode["tools"] = cursor_tools
+
+        modes.append(mode)
     return json.dumps({"modes": modes}, indent=2, sort_keys=True) + "\n"
 
 

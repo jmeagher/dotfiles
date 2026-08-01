@@ -7,6 +7,7 @@ line; nothing is ever rewritten or deleted. A task's current state is
 whatever its most recent event says.
 """
 import argparse
+import fcntl
 import json
 import sys
 from pathlib import Path
@@ -42,10 +43,13 @@ def load_events(queue_dir):
     if not path.exists():
         return []
     events = []
-    for line in path.read_text().splitlines():
+    for line_num, line in enumerate(path.read_text().splitlines(), 1):
         line = line.strip()
         if line:
-            events.append(json.loads(line))
+            try:
+                events.append(json.loads(line))
+            except json.JSONDecodeError as e:
+                raise QueueError(f"malformed JSON in {path}:{line_num}: {e}")
     return events
 
 
@@ -87,6 +91,9 @@ def validate_and_prepare(event, events):
         for field in ("desc", "assigned_to", "created_by"):
             if not event.get(field):
                 raise QueueError(f"created event requires non-empty '{field}'")
+        # Validate assigned_to is a string before membership check
+        if not isinstance(event["assigned_to"], str):
+            raise QueueError(f"assigned_to must be a string, got {type(event['assigned_to']).__name__}")
         if event["assigned_to"] not in VALID_ROLES:
             raise QueueError(f"assigned_to must be one of {sorted(VALID_ROLES)}")
         event.setdefault("parent_id", None)
@@ -114,7 +121,13 @@ def validate_and_prepare(event, events):
     if kind == "completed":
         if not event.get("result"):
             raise QueueError("completed event requires non-empty 'result'")
+        # Validate result is a string
+        if not isinstance(event["result"], str):
+            raise QueueError(f"result must be a string, got {type(event['result']).__name__}")
         event.setdefault("spawned", [])
+        # Validate spawned is a list before iterating
+        if not isinstance(event["spawned"], list):
+            raise QueueError(f"spawned must be a list, got {type(event['spawned']).__name__}")
         for spawned_id in event["spawned"]:
             if spawned_id not in tasks:
                 raise QueueError(
@@ -124,20 +137,31 @@ def validate_and_prepare(event, events):
     elif kind == "blocked":
         if not event.get("reason"):
             raise QueueError("blocked event requires non-empty 'reason'")
+        # Validate reason is a string
+        if not isinstance(event["reason"], str):
+            raise QueueError(f"reason must be a string, got {type(event['reason']).__name__}")
 
     return event
 
 
 def append_event(queue_dir, event):
-    events = load_events(queue_dir)
-    event = validate_and_prepare(dict(event), events)
     path = queue_path(queue_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
     gitignore = path.parent / ".gitignore"
     if not gitignore.exists():
         gitignore.write_text("*\n")
+
+    # Open the file in append mode and hold an exclusive lock across the
+    # load-validate-write sequence to serialize concurrent appends and
+    # prevent duplicate auto-assigned task ids.
     with path.open("a") as f:
-        f.write(json.dumps(event, sort_keys=True) + "\n")
+        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+        try:
+            events = load_events(queue_dir)
+            event = validate_and_prepare(dict(event), events)
+            f.write(json.dumps(event, sort_keys=True) + "\n")
+        finally:
+            fcntl.flock(f.fileno(), fcntl.LOCK_UN)
     return event
 
 
@@ -157,7 +181,11 @@ def cmd_append(args):
 
 
 def cmd_status(args):
-    tasks = fold(load_events(args.queue_dir))
+    try:
+        tasks = fold(load_events(args.queue_dir))
+    except QueueError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
     ordered = list(tasks.values())
     if args.json:
         print(json.dumps(ordered, sort_keys=True))
@@ -170,7 +198,12 @@ def cmd_status(args):
 
 
 def cmd_next(args):
-    for t in fold(load_events(args.queue_dir)).values():
+    try:
+        tasks = fold(load_events(args.queue_dir))
+    except QueueError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
+    for t in tasks.values():
         if t["status"] == "pending" and t.get("assigned_to") == args.for_role:
             print(json.dumps(t, sort_keys=True))
             return 0

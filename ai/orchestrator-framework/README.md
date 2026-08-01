@@ -7,8 +7,6 @@ append-only task queue instead of relying on any one harness's specific
 subagent-invocation mechanism, so the same protocol works whether the
 hand-off is programmatic (Claude Code, OpenCode) or manual (Cursor).
 
-Full design rationale: `docs/superpowers/specs/2026-07-25-orchestrator-framework-design.md`.
-
 ## Install
 
 Run from the repo root (this is already wired into the main `setup.sh`):
