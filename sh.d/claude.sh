@@ -6,13 +6,11 @@ if command -v claude > /dev/null 2>&1 ; then
     alias cds='_cde sonnet'
     alias cdo='_cde opus'
 
-    _cor() {
-        if [ ! -f ~/.claude/agents/orchestrator.md ]; then
-            echo "error: orchestrator agent not installed (expected at ~/.claude/agents/orchestrator.md)" >&2
-            return 1
-        fi
-        CLAUDE_CODE_ENABLE_TELEMETRY=1 OTEL_LOG_TOOL_DETAILS=1 \
-            claude --permission-mode auto --model opus --agent orchestrator --effort medium "$@"
-    }
-    alias cor='_cor'
+    if [ -f "$HOME/.claude/agents/orchestrator.md" ]; then
+        _cor() {
+            CLAUDE_CODE_ENABLE_TELEMETRY=1 OTEL_LOG_TOOL_DETAILS=1 \
+                claude --permission-mode auto --model opus --agent orchestrator --effort medium "$@"
+        }
+        alias cor='_cor'
+    fi
 fi
