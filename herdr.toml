@@ -40,7 +40,10 @@ show_agent_labels_on_pane_borders = true
 status_indicators = "symbols"
 agent_panel_sort = "priority"
 [theme]
-name = "tokyo-night"
+# Swapped from tokyo-night (2026-09-05): its palette is intentionally
+# pastel/desaturated, which read as dim/low-contrast. vesper (near-black bg,
+# pure white fg) matches the ghostty.config swap for the same reason.
+name = "vesper"
 auto_switch = false
 
 [ui.toast]
