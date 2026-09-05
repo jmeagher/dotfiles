@@ -38,6 +38,7 @@ pane_gaps = true
 
 show_agent_labels_on_pane_borders = true
 status_indicators = "symbols"
+agent_panel_sort = "priority"
 [theme]
 name = "tokyo-night"
 auto_switch = false
