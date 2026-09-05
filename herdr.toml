@@ -1,0 +1,44 @@
+# Herdr config — https://herdr.dev/docs/config-reference/
+# Reload after editing: `herdr server reload-config` (or use the in-app global menu)
+#
+# This mirrors tmux.conf's spirit where herdr has an equivalent concept.
+# See tmux.conf for the original tmux bindings this was modeled on.
+
+[keys]
+# remap prefix from ctrl+b to ctrl+a — matches tmux.conf's `set-option -g prefix C-a`
+prefix = "ctrl+a"
+
+# split panes using | and - (side-by-side / stacked), matching tmux.conf's
+# `bind | split-window -h` / `bind - split-window -v`
+split_vertical = "prefix+|"
+split_horizontal = "prefix+-"
+
+# switch panes with Alt-arrow, no prefix needed — matches tmux.conf's
+# `bind -n M-Left/M-Right/M-Up/M-Down select-pane -*`
+focus_pane_left = "alt+left"
+focus_pane_right = "alt+right"
+focus_pane_up = "alt+up"
+focus_pane_down = "alt+down"
+
+# zoom current pane to fullscreen and back — herdr has this built in natively,
+# replacing tmux.conf's manual new-window/swap-pane zoom hack (bind + / bind =)
+zoom = "prefix+z"
+
+[ui]
+# clickable/draggable panes, resizable splits — matches tmux.conf's
+# `set -g mouse on`
+mouse_capture = true
+copy_on_select = true
+
+# visual pane separation, closest herdr analog to tmux.conf's
+# `window-style`/`window-active-style` active-vs-inactive pane highlighting
+pane_borders = true
+pane_gaps = true
+
+show_agent_labels_on_pane_borders = true
+[theme]
+name = "solarized"
+auto_switch = false
+
+[ui.toast]
+delivery = "herdr"
