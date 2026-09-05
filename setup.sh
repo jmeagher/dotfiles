@@ -27,6 +27,8 @@ linkit ./ .mydotfiles
 linkit vimrc .vimrc
 linkit vim .vim
 linkit tmux.conf .tmux.conf
+mkdir -p ~/.config/herdr
+linkit herdr.toml .config/herdr/config.toml
 linkit gitignore_global .gitignore_global
 # linkit npmrc .npmrc
 linkit yarnrc.yml .yarnrc.yml
