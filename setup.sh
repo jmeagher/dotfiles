@@ -29,6 +29,8 @@ linkit vim .vim
 linkit tmux.conf .tmux.conf
 mkdir -p ~/.config/herdr
 linkit herdr.toml .config/herdr/config.toml
+mkdir -p ~/.config/ghostty
+linkit ghostty.config .config/ghostty/config
 linkit gitignore_global .gitignore_global
 # linkit npmrc .npmrc
 linkit yarnrc.yml .yarnrc.yml
@@ -78,8 +80,12 @@ ensure_shell_config ~/.bashrc
 ensure_shell_config ~/.zshrc
 
 # Inject dotfiles gitconfig as a git include (avoids replacing ~/.gitconfig).
+# No-op if the file is already a dotfiles symlink (handled by linkit above) --
+# appending through a symlink back into the repo's own gitconfig would make it
+# include itself.
 ensure_gitconfig() {
     _file=~/.gitconfig
+    [ -h "$_file" ] && return 0
     touch "$_file"
     grep -q "\.mydotfiles/gitconfig" "$_file" && echo "$_file already includes dotfiles gitconfig" && return 0
     echo "Adding dotfiles gitconfig include to $_file"
@@ -88,8 +94,10 @@ ensure_gitconfig() {
 ensure_gitconfig
 
 # Inject dotfiles zshenv as a source line in ~/.zshenv.
+# No-op if the file is already a dotfiles symlink -- same self-include risk as above.
 ensure_zshenv() {
     _file=~/.zshenv
+    [ -h "$_file" ] && return 0
     touch "$_file"
     grep -q "\.mydotfiles/zshenv" "$_file" && echo "$_file already sources dotfiles zshenv" && return 0
     echo "Adding dotfiles zshenv source to $_file"
