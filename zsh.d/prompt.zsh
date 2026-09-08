@@ -100,10 +100,14 @@ else
   }
 
   # Color setup using tput
-  if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
-    export TERM=gnome-256color
-  elif infocmp xterm-256color >/dev/null 2>&1; then
-    export TERM=xterm-256color
+  # Only upgrade a bare "xterm" — leave a more specific TERM (xterm-ghostty,
+  # tmux-256color, screen-256color, etc.) untouched.
+  if [[ $TERM = xterm ]]; then
+    if [[ $COLORTERM = gnome-* ]] && infocmp gnome-256color >/dev/null 2>&1; then
+      export TERM=gnome-256color
+    elif infocmp xterm-256color >/dev/null 2>&1; then
+      export TERM=xterm-256color
+    fi
   fi
 
   HAS_TPUT=
