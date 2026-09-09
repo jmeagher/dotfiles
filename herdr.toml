@@ -14,13 +14,6 @@ prefix = "ctrl+a"
 split_vertical = "prefix+|"
 split_horizontal = "prefix+-"
 
-# switch panes with Alt-arrow, no prefix needed — matches tmux.conf's
-# `bind -n M-Left/M-Right/M-Up/M-Down select-pane -*`
-focus_pane_left = "alt+left"
-focus_pane_right = "alt+right"
-focus_pane_up = "alt+up"
-focus_pane_down = "alt+down"
-
 # zoom current pane to fullscreen and back — herdr has this built in natively,
 # replacing tmux.conf's manual new-window/swap-pane zoom hack (bind + / bind =)
 zoom = "prefix+z"
@@ -39,11 +32,12 @@ pane_gaps = true
 show_agent_labels_on_pane_borders = true
 status_indicators = "symbols"
 agent_panel_sort = "priority"
+
 [theme]
-# Swapped from tokyo-night (2026-09-05): its palette is intentionally
-# pastel/desaturated, which read as dim/low-contrast. vesper (near-black bg,
-# pure white fg) matches the ghostty.config swap for the same reason.
-name = "vesper"
+# name = "tokyo-night"
+# name = "vesper"
+# name = "cobalt2"
+name = "solarized"
 auto_switch = false
 
 [ui.toast]
