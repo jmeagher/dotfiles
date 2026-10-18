@@ -1,3 +1,8 @@
+if command -v mise > /dev/null 2>&1 ; then
+    alias me='mise exec --'
+    eval "$(mise activate)"
+fi
+
 if command -v rbenv > /dev/null 2>&1 ; then
     eval "$(rbenv init -)"
 
@@ -16,7 +21,7 @@ if command -v rbenv > /dev/null 2>&1 ; then
 
     function rbenvsetup() {
       if [ ! -e .ruby-version ] ; then
-          rbenv global > .ruby-version 
+          rbenv global > .ruby-version
       fi
 
       rbenv gemset version 2>&1 > /dev/null
@@ -90,7 +95,7 @@ else
     mkdir -p ~/.rbenv/plugins
     cd ~/.rbenv/plugins
     git clone git://github.com/jamis/rbenv-gemset.git
-    
+
     echo "Things are setup, run rebash now to fix up your environment"
   }
 fi
@@ -100,4 +105,3 @@ if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
   source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
   export PATH="$PATH:$HOME/.rvm/bin"
 fi
-
