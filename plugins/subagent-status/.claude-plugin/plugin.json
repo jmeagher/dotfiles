@@ -1,0 +1,10 @@
+{
+  "name": "subagent-status",
+  "version": "0.1.0",
+  "description": "A side panel showing the status of subagents running under this session.",
+  "author": {
+    "name": "jmeagher"
+  },
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}
