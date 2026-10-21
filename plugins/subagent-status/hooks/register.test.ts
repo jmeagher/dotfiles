@@ -1,7 +1,7 @@
 import { test, expect, mock } from 'claude-code/testing'
 import type { Engine } from 'claude-code/testing'
 
-import { mergeRoster, redact, statusLine, summarize } from './logic'
+import { clean, mergeRoster, redact, statusLine, summarize } from './logic'
 
 const row = (id: string, status: 'running' | 'completed' | 'idle' | 'failed') => ({
   id, name: id, type: 'Explore', description: 'task', status,
@@ -125,4 +125,8 @@ test('statusLine gives every status a third line', () => {
   expect(statusLine(r('killed', 0, 4000))).toEqual({ text: 'killed after 4s', tone: 'error' })
   expect(statusLine(r('failed'))).toEqual({ text: 'failed', tone: 'error' })
   expect(statusLine(r('completed'))).toEqual({ text: 'done', tone: 'dim' })
+})
+
+test('clean strips terminal escapes and control characters', () => {
+  expect(clean('\u001b[31mred\u001b[0m\u009b2J\u0007 ok\nnext\u007f')).toBe('[31mred[0m2J ok next')
 })

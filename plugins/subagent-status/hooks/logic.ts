@@ -17,7 +17,13 @@ const RANK: Record<AgentStatus, number> = {
   completed: 6,
 }
 
-const squash = (s: string) => s.replace(/\s+/g, ' ').trim()
+// Whitespace runs become one space; other control characters (ESC, C1, DEL) are
+// dropped so model- or tool-supplied text cannot inject terminal escapes.
+const squash = (s: string) =>
+  s
+    .replace(/\s+/g, ' ')
+    .replace(/[\u0000-\u001f\u007f-\u009f]/g, '')
+    .trim()
 
 // Mask what looks like a credential: Bearer tokens, key=value pairs, URL userinfo.
 export const redact = (s: string): string =>
