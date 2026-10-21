@@ -1,31 +1,17 @@
 onboarding = false
-# Herdr config — https://herdr.dev/docs/config-reference/
-# Reload after editing: `herdr server reload-config` (or use the in-app global menu)
-#
-# This mirrors tmux.conf's spirit where herdr has an equivalent concept.
-# See tmux.conf for the original tmux bindings this was modeled on.
 
 [keys]
-# remap prefix from ctrl+b to ctrl+a — matches tmux.conf's `set-option -g prefix C-a`
 prefix = "ctrl+a"
 
-# split panes using | and - (side-by-side / stacked), matching tmux.conf's
-# `bind | split-window -h` / `bind - split-window -v`
 split_vertical = "prefix+|"
 split_horizontal = "prefix+-"
 
-# zoom current pane to fullscreen and back — herdr has this built in natively,
-# replacing tmux.conf's manual new-window/swap-pane zoom hack (bind + / bind =)
 zoom = "prefix+z"
 
 [ui]
-# clickable/draggable panes, resizable splits — matches tmux.conf's
-# `set -g mouse on`
 mouse_capture = true
 copy_on_select = true
 
-# visual pane separation, closest herdr analog to tmux.conf's
-# `window-style`/`window-active-style` active-vs-inactive pane highlighting
 pane_borders = true
 pane_gaps = true
 
@@ -34,25 +20,18 @@ status_indicators = "symbols"
 agent_panel_sort = "priority"
 
 [theme]
-# name = "tokyo-night"
-# name = "vesper"
-# name = "cobalt2"
 name = "solarized"
 auto_switch = false
 
 [ui.toast]
 delivery = "herdr"
 
-# Boost contrast in the spaces side panel — default theme colors were too
-# subtle to tell workspace name / branch / status apart at a glance.
 [ui.sidebar.spaces]
 rows = [
   ["state_icon", { token = "workspace", fg = "#00e5ff", bold = true }],
   [{ token = "branch", fg = "#ff2fb0", bold = true }, "git_status"]
 ]
 
-# Boost contrast on tab/agent names in the agents side panel — default
-# theme colors were too subtle to tell them apart at a glance.
 [ui.sidebar.agents]
 rows = [
   ["state_icon", "workspace", { token = "tab", fg = "#ffcc00", bold = true }],
