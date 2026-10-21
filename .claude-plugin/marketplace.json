@@ -43,6 +43,16 @@
       },
       "source": "./plugins/loop-engineering",
       "category": "productivity"
+    },
+    {
+      "name": "subagent-status",
+      "description": "Side panel showing the status of subagents running under a session: colored state, task, and current tool call.",
+      "version": "0.1.0",
+      "author": {
+        "name": "jmeagher"
+      },
+      "source": "./plugins/subagent-status",
+      "category": "productivity"
     }
   ]
 }
