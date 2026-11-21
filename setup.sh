@@ -29,6 +29,8 @@ linkit vim .vim
 linkit tmux.conf .tmux.conf
 mkdir -p ~/.config/herdr
 linkit herdr.toml .config/herdr/config.toml
+# Herdr desktop app (herdr-app/ holds only portable config; app state is left untouched)
+sh "$(pwd)/herdr-app/setup.sh"
 mkdir -p ~/.config/ghostty
 linkit ghostty.config .config/ghostty/config
 linkit gitignore_global .gitignore_global
