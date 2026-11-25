@@ -1,0 +1,13 @@
+{
+  "zoom": 1,
+  "appearance": "dark",
+  "sounds": { "enabled": true },
+  "option_as_alt": "on",
+  "copy_on_select": true,
+  "worktrees": { "directory": "~/.worktrees" },
+  "font_ligatures": false,
+  "terminal_line_height": 1,
+  "terminal_cell_width": 1,
+  "terminal_scroll_speed": 1,
+  "minimum_contrast": 1
+}

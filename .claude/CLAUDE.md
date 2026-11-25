@@ -17,6 +17,9 @@ zsh.d/                    # Zsh-only config (prompt)
 bin/                      # Scripts symlinked into ~/bin
 urllist/                  # Go tool (built by setup.sh into bin/urllist)
 
+herdr-app/                # Portable Herdr desktop-app config (settings, keys, themes, layouts, mods)
+  setup.sh                # Links each tracked file into ~/.config/herdr-app (never the whole dir)
+
 claude/                   # Claude Code config templates (NOT installed directly)
   CLAUDE.md               # Global CLAUDE.md template — symlinked to ~/.claude/CLAUDE.md
   settings.json           # Base settings template — setup.sh generates ~/.claude/settings.json
@@ -46,6 +49,8 @@ oldstuff/                 # Archived/unused configs
 **Claude settings** — `claude/settings.json` is a template; the live file is `~/.claude/settings.json`. Edit the template, then run `bash claude/setup.sh` to regenerate. The setup script injects the marketplace path and statusline path.
 
 **Local overrides** — machine-specific Claude settings go in `~/.claude/settings.local.json` (not tracked in this repo). Machine-specific shell config goes in `~/CLAUDE.local.md` (referenced via `@` import).
+
+**Herdr app** — `herdr-app/` mirrors `~/.config/herdr-app`. Only tracked files are symlinked individually; the app writes its own state (`view.json`, `layouts/.state/`, `frame/`, ...) into that dir. Clone shipped layouts/mods under a new name before editing. `herdr.toml` is for the older TUI `herdr`, which the app does not read. `keys.json` is a full file (any edit makes it entirely yours), so new upstream default keys must be merged by hand.
 
 ## Claude Plugins (jmeagher-dotfiles marketplace)
 
