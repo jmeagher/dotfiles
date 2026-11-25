@@ -1,7 +1,6 @@
 {
   "zoom": 1,
   "appearance": "dark",
-  "theme": { "light": "solarized", "dark": "solarized" },
   "sounds": { "enabled": true },
   "option_as_alt": "on",
   "copy_on_select": true,
