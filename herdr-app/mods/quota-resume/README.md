@@ -19,4 +19,4 @@ Logic is in `detect.js` (pure, tested). Run the tests with:
 
     node --test herdr-app/mods/quota-resume/
 
-Install: `sh herdr-app/setup.sh` links the mod and the `main-quota` layout (the shipped `main` plus a thin strip for this mod; the mod only runs while a layout shows it). Switch with `herdr-app run layout.switch main-quota` or cmd-shift-l.
+Install: `sh herdr-app/setup.sh` links the mod and the `main-quota` layout (the shipped `main` plus a thin strip for this mod; the mod only runs while a layout shows it). Switch to it with cmd-shift-l (layout.switch).
